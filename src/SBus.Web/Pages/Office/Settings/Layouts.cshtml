@@ -4,8 +4,8 @@
     ViewData["Title"] = L["شكل الكراسي"].Value;
 }
 
-<a href="/Office/Settings" class="small">@L["← الإعدادات"]</a>
-<h1 class="h5 my-3">@L["شكل الكراسي"]</h1>
+<a href="/Office/Settings" class="back-link">@L["← الإعدادات"]</a>
+<h1 class="page-title">@L["شكل الكراسي"]</h1>
 
 <partial name="_ErrorSummary" />
 
@@ -26,7 +26,7 @@
         <p class="small text-secondary">
             @L["اكتب كل صف من الكراسي في سطر، من قدام لورا، ومن الشمال لليمين زي ما بتبص على الأتوبيس من ورا. اكتب رقم الكرسي زي ما هو مكتوب عليه، و _ للممر أو المكان الفاضي، و D لمكان السواق."]
         </p>
-        <form method="post">
+        <form method="post" class="panel">
             <div class="mb-2">
                 <label class="form-label" for="name">@L["الاسم"]</label>
                 <input class="form-control" id="name" asp-for="Name" required maxlength="100" placeholder="@L["مثلًا: هايس 14 راكب"]" />

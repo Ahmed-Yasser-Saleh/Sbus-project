@@ -4,10 +4,10 @@
     ViewData["Title"] = L["الخط"].Value;
 }
 
-<a href="/Office/Settings" class="small">@L["← الإعدادات"]</a>
-<h1 class="h5 my-3">@L["ترتيب المحطات"]</h1>
+<a href="/Office/Settings" class="back-link">@L["← الإعدادات"]</a>
+<h1 class="page-title">@L["ترتيب المحطات"]</h1>
 
-<div class="direction-toggle mb-3">
+<div class="segmented mb-3">
     @foreach (var direction in new[] { Direction.CairoToSuez, Direction.SuezToCairo })
     {
         <a class="@(Model.Direction == direction ? "active" : null)" href="?direction=@direction">@Fmt.Direction(direction)</a>
@@ -20,9 +20,9 @@
     @L["رتّب المحطات من أول مكان الأتوبيس بيتحرك منه لحد آخر محطة. اكتب جنب كل محطة بعد كام دقيقة من التحرك بيوصلها، والوقت ده بيظهر للراكب في التذكرة. سيب الأسطر الفاضية زي ما هي."]
 </p>
 
-<form method="post">
+<form method="post" class="panel">
     <input type="hidden" asp-for="Direction" />
-    <table class="table table-sm align-middle route-table">
+    <table class="table data-table align-middle route-table">
         <thead><tr><th>#</th><th>@L["المحطة"]</th><th>@L["بعد كام دقيقة"]</th></tr></thead>
         <tbody>
             @for (var i = 0; i < Model.Rows.Count; i++)

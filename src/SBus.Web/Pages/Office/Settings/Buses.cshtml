@@ -4,14 +4,14 @@
     ViewData["Title"] = L["الأتوبيسات"].Value;
 }
 
-<a href="/Office/Settings" class="small">@L["← الإعدادات"]</a>
-<h1 class="h5 my-3">@L["الأتوبيسات"]</h1>
+<a href="/Office/Settings" class="back-link">@L["← الإعدادات"]</a>
+<h1 class="page-title">@L["الأتوبيسات"]</h1>
 
 <partial name="_ErrorSummary" />
 
 <div class="row g-4">
     <div class="col-md-7">
-        <table class="table table-sm align-middle">
+        <table class="table data-table align-middle">
             <thead><tr><th>@L["اللوحة"]</th><th>@L["شكل الكراسي"]</th><th>@L["الكراسي"]</th><th>@L["الحالة"]</th><th></th></tr></thead>
             <tbody>
                 @foreach (var b in Model.Buses)
@@ -35,7 +35,7 @@
         }
         else
         {
-            <form method="post">
+            <form method="post" class="panel">
                 <input type="hidden" asp-for="Id" />
                 <div class="mb-2">
                     <label class="form-label" for="plate">@L["رقم اللوحة"]</label>

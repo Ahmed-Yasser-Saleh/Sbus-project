@@ -8,136 +8,145 @@
     var bookedSeats = trip.Bookings.Where(b => b.Status == BookingStatus.Confirmed).Sum(b => b.Seats.Count);
 }
 
-<a href="/Office?date=@Fmt.IsoDate(trip.ServiceDate)" class="small no-print">@L["← رحلات اليوم"]</a>
+<a href="/Office?date=@Fmt.IsoDate(trip.ServiceDate)" class="back-link no-print">@L["← رحلات اليوم"]</a>
 
-<section class="d-flex flex-wrap justify-content-between align-items-start gap-2 my-3">
+<div class="page-head">
     <div>
-        <h1 class="h5 mb-1">@Fmt.Direction(trip.Direction) · @Fmt.Time(trip.DepartureTime)</h1>
-        <div class="text-secondary">
-            @Fmt.Date(trip.ServiceDate) · @L["أتوبيس {0}", trip.BusPlateNumber] · @L["السواق {0}", trip.DriverName] (<span dir="ltr">@trip.DriverPhoneNumber</span>)
+        <span class="eyebrow">@Fmt.Direction(trip.Direction) · @Fmt.Date(trip.ServiceDate)</span>
+        <h1>@Fmt.Time(trip.DepartureTime)</h1>
+        <div class="muted">
+            @L["أتوبيس {0}", trip.BusPlateNumber] · @L["السواق {0}", trip.DriverName] (<span dir="ltr">@trip.DriverPhoneNumber</span>)
         </div>
-        <div class="small mt-1">@L["متأكد: {0} كرسي · فاضي: {1} من {2}", bookedSeats, trip.SeatMap.Available, trip.SeatMap.Capacity]</div>
     </div>
-    <button type="button" class="btn btn-outline-secondary btn-sm no-print" data-print>@L["اطبع الكشف للسواق"]</button>
-</section>
+    <button type="button" class="btn btn-outline-dark no-print" data-print>
+        <svg class="i"><use href="#i-print" /></svg> @L["اطبع الكشف للسواق"]
+    </button>
+</div>
+
+<div class="stats stats-3 no-print">
+    <div class="stat"><span class="stat-label">@L["كراسي متأكدة"]</span><span class="stat-value">@bookedSeats</span></div>
+    <div class="stat"><span class="stat-label">@L["كراسي فاضية"]</span><span class="stat-value">@trip.SeatMap.Available</span></div>
+    <div class="stat"><span class="stat-label">@L["الكراسي"]</span><span class="stat-value">@trip.SeatMap.Capacity</span></div>
+</div>
 
 <partial name="_ErrorSummary" />
 
-<h2 class="h6">@L["كشف الركاب (مترتب بمكان الركوب)"]</h2>
-@if (trip.Bookings.Count == 0)
-{
-    <div class="empty-state mb-4">@L["لسه مفيش حجوزات."]</div>
-}
-else
-{
-    <div class="table-responsive mb-4">
-        <table class="table table-sm align-middle manifest">
-            <thead>
-                <tr>
-                    <th>@L["الكرسي"]</th>
-                    <th>@L["الاسم"]</th>
-                    <th>@L["الموبايل"]</th>
-                    <th>@L["يركب من"]</th>
-                    <th>@L["ينزل في"]</th>
-                    <th>@L["الحالة"]</th>
-                    <th class="no-print">@L["المصدر"]</th>
-                    <th class="no-print"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var b in trip.Bookings)
-                {
+<section class="panel panel-flush">
+    <header class="panel-head">
+        <h2>@L["كشف الركاب (مترتب بمكان الركوب)"]</h2>
+        <span class="muted small">@L["{0} حجز", trip.Bookings.Count]</span>
+    </header>
+    @if (trip.Bookings.Count == 0)
+    {
+        <div class="empty-state flat">@L["لسه مفيش حجوزات."]</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table data-table align-middle manifest">
+                <thead>
                     <tr>
-                        <td class="fw-semibold">@Fmt.Seats(b.Seats)</td>
-                        <td>@b.PassengerName</td>
-                        <td dir="ltr"><a href="tel:@b.PhoneNumber">@b.PhoneNumber</a></td>
-                        <td>@b.PickupStopName</td>
-                        <td>@b.DropoffStopName</td>
-                        <td><span class="badge @Fmt.StatusCss(b.Status)">@Fmt.Status(b.Status)</span></td>
-                        <td class="no-print small">@Fmt.Source(b.Source)</td>
-                        <td class="no-print">
-                            <form method="post" asp-page-handler="Cancel" data-confirm="@L["تلغي حجز {0}؟", b.PassengerName]">
-                                <input type="hidden" name="bookingId" value="@b.BookingId" />
-                                <button type="submit" class="btn btn-sm btn-outline-danger">@L["الغي"]</button>
-                            </form>
-                        </td>
+                        <th>@L["الكرسي"]</th>
+                        <th>@L["الاسم"]</th>
+                        <th>@L["الموبايل"]</th>
+                        <th>@L["يركب من"]</th>
+                        <th>@L["ينزل في"]</th>
+                        <th>@L["الحالة"]</th>
+                        <th class="no-print">@L["المصدر"]</th>
+                        <th class="no-print"></th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
+                </thead>
+                <tbody>
+                    @foreach (var b in trip.Bookings)
+                    {
+                        <tr>
+                            <td><span class="seat-chip">@Fmt.Seats(b.Seats)</span></td>
+                            <td class="fw-semibold">@b.PassengerName</td>
+                            <td dir="ltr"><a href="tel:@b.PhoneNumber">@b.PhoneNumber</a></td>
+                            <td>@b.PickupStopName</td>
+                            <td>@b.DropoffStopName</td>
+                            <td><span class="badge @Fmt.StatusCss(b.Status)">@Fmt.Status(b.Status)</span></td>
+                            <td class="no-print muted small">@Fmt.Source(b.Source)</td>
+                            <td class="no-print text-end">
+                                <form method="post" asp-page-handler="Cancel" data-confirm="@L["تلغي حجز {0}؟", b.PassengerName]">
+                                    <input type="hidden" name="bookingId" value="@b.BookingId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">@L["الغي"]</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
 
 @if (!trip.HasDeparted)
 {
-    <div class="row g-4 no-print">
-        <div class="col-lg-7">
-            <h2 class="h6">@L["حجز لراكب بيتصل"]</h2>
-            <form method="post" asp-page-handler="Book" id="booking-form" data-price="@trip.Price" data-max="@SBusConstants.MaxSeatsPerBooking" data-currency="@Fmt.Currency" data-currency-first="@(Languages.IsEnglish ? "true" : "false")">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <partial name="_SeatMap" model="new SeatMapView(trip.SeatMap, true, Model.Input.SeatNumbers)" />
+    <div class="office-grid no-print">
+        <form method="post" asp-page-handler="Book" id="booking-form" class="panel" data-price="@trip.Price" data-max="@SBusConstants.MaxSeatsPerBooking" data-currency="@Fmt.Currency" data-currency-first="@(Languages.IsEnglish ? "true" : "false")">
+            <header class="panel-head"><h2>@L["حجز لراكب بيتصل"]</h2></header>
+            <div class="booking-inner">
+                <partial name="_SeatMap" model="new SeatMapView(trip.SeatMap, true, Model.Input.SeatNumbers)" />
+                <div>
+                    <div class="field">
+                        <label for="name">@L["الاسم"]</label>
+                        <input class="form-control" id="name" asp-for="Input.PassengerName" required maxlength="100" />
                     </div>
-                    <div class="col-md-6">
-                        <div class="mb-2">
-                            <label class="form-label" for="name">@L["الاسم"]</label>
-                            <input class="form-control" id="name" asp-for="Input.PassengerName" required maxlength="100" />
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label" for="phone">@L["الموبايل"]</label>
-                            <input class="form-control" id="phone" asp-for="Input.PhoneNumber" type="tel" dir="ltr" required />
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label" for="pickup">@L["يركب من"]</label>
-                            <select class="form-select" id="pickup" asp-for="Input.PickupStopId">
-                                @foreach (var s in trip.Stops.Take(trip.Stops.Count - 1))
-                                {
-                                    <option value="@s.StopId">@s.StopName</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="dropoff">@L["ينزل في"]</label>
-                            <select class="form-select" id="dropoff" asp-for="Input.DropoffStopId">
-                                @foreach (var s in trip.Stops.Skip(1))
-                                {
-                                    <option value="@s.StopId">@s.StopName</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="summary-box mb-3">
-                            <div>@L["الكراسي:"] <strong data-summary-seats>—</strong></div>
-                            <div>@L["الإجمالي:"] <strong data-summary-total>—</strong></div>
+                    <div class="field">
+                        <label for="phone">@L["الموبايل"]</label>
+                        <input class="form-control" id="phone" asp-for="Input.PhoneNumber" type="tel" dir="ltr" required />
+                    </div>
+                    <div class="field">
+                        <label for="pickup">@L["يركب من"]</label>
+                        <select class="form-select" id="pickup" asp-for="Input.PickupStopId">
+                            @foreach (var s in trip.Stops.Take(trip.Stops.Count - 1))
+                            {
+                                <option value="@s.StopId">@s.StopName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="dropoff">@L["ينزل في"]</label>
+                        <select class="form-select" id="dropoff" asp-for="Input.DropoffStopId">
+                            @foreach (var s in trip.Stops.Skip(1))
+                            {
+                                <option value="@s.StopId">@s.StopName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="checkout compact">
+                        <div class="checkout-lines">
+                            <div><span class="muted">@L["الكراسي:"]</span> <strong data-summary-seats>—</strong></div>
+                            <div class="total"><span class="muted">@L["الإجمالي:"]</span> <strong data-summary-total>—</strong></div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">@L["احجز (متأكد على طول)"]</button>
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
 
-        <div class="col-lg-5">
-            <h2 class="h6">@L["تغيير الأتوبيس أو السواق للرحلة دي بس"]</h2>
-            <form method="post" asp-page-handler="Assign">
-                <div class="mb-2">
-                    <label class="form-label" for="bus">@L["الأتوبيس"]</label>
-                    <select class="form-select" id="bus" name="busId">
-                        @foreach (var bus in Model.Buses)
-                        {
-                            <option value="@bus.BusId" selected="@(bus.BusId == trip.BusId)">@L["{0} ({1} كرسي)", bus.PlateNumber, bus.Capacity]</option>
-                        }
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="driver">@L["السواق"]</label>
-                    <select class="form-select" id="driver" name="driverId">
-                        @foreach (var driver in Model.Drivers)
-                        {
-                            <option value="@driver.DriverId" selected="@(driver.DriverId == trip.DriverId)">@driver.Name</option>
-                        }
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-outline-primary w-100">@L["حفظ"]</button>
-            </form>
-        </div>
+        <form method="post" asp-page-handler="Assign" class="panel">
+            <header class="panel-head"><h2>@L["تغيير الأتوبيس أو السواق للرحلة دي بس"]</h2></header>
+            <div class="field">
+                <label for="bus">@L["الأتوبيس"]</label>
+                <select class="form-select" id="bus" name="busId">
+                    @foreach (var bus in Model.Buses)
+                    {
+                        <option value="@bus.BusId" selected="@(bus.BusId == trip.BusId)">@L["{0} ({1} كرسي)", bus.PlateNumber, bus.Capacity]</option>
+                    }
+                </select>
+            </div>
+            <div class="field">
+                <label for="driver">@L["السواق"]</label>
+                <select class="form-select" id="driver" name="driverId">
+                    @foreach (var driver in Model.Drivers)
+                    {
+                        <option value="@driver.DriverId" selected="@(driver.DriverId == trip.DriverId)">@driver.Name</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-outline-dark w-100">@L["حفظ"]</button>
+        </form>
     </div>
 }

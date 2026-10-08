@@ -4,8 +4,8 @@
     ViewData["Title"] = L["المواعيد"].Value;
 }
 
-<a href="/Office/Settings" class="small">@L["← الإعدادات"]</a>
-<h1 class="h5 my-3">@L["المواعيد الثابتة"]</h1>
+<a href="/Office/Settings" class="back-link">@L["← الإعدادات"]</a>
+<h1 class="page-title">@L["المواعيد الثابتة"]</h1>
 
 <partial name="_ErrorSummary" />
 
@@ -14,7 +14,7 @@
         @foreach (var group in Model.Schedules.GroupBy(s => s.Direction))
         {
             <h2 class="h6 text-secondary">@Fmt.Direction(group.Key)</h2>
-            <table class="table table-sm align-middle">
+            <table class="table data-table align-middle">
                 <thead><tr><th>@L["الساعة"]</th><th>@L["السعر"]</th><th>@L["الأتوبيس"]</th><th>@L["السواق"]</th><th>@L["الحالة"]</th><th></th></tr></thead>
                 <tbody>
                     @foreach (var s in group)
@@ -40,7 +40,7 @@
         }
         else
         {
-            <form method="post">
+            <form method="post" class="panel">
                 <input type="hidden" asp-for="Id" />
                 <div class="mb-2">
                     <label class="form-label" for="direction">@L["الاتجاه"]</label>

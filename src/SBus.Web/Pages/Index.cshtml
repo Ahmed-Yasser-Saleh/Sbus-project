@@ -2,56 +2,102 @@
 @model IndexModel
 @{
     ViewData["Title"] = L["احجز كرسيك"].Value;
+    var date = Model.Date!.Value;
+    var from = Model.Direction == Direction.CairoToSuez ? L["القاهرة"] : L["السويس"];
+    var to = Model.Direction == Direction.CairoToSuez ? L["السويس"] : L["القاهرة"];
 }
 
-<section class="hero mb-3">
-    <h1 class="h4 mb-1">@L["احجز كرسيك في ميني باص S Bus"]</h1>
-    <p class="text-secondary mb-0">@L["اختار الاتجاه واليوم، وبعدين اختار الكرسي اللي يريحك."]</p>
+<section class="hero">
+    <div class="hero-copy">
+        <span class="eyebrow">@L["حجز أونلاين"]</span>
+        <h1>@L["احجز كرسيك في ميني باص S Bus"]</h1>
+        <p>@L["اختار الاتجاه واليوم، وبعدين اختار الكرسي اللي يريحك."]</p>
+    </div>
+    <div class="hero-route" aria-hidden="true">
+        <span class="hero-city">@from</span>
+        <span class="hero-line"><svg class="i"><use href="#i-bus" /></svg></span>
+        <span class="hero-city">@to</span>
+    </div>
 </section>
 
-<div class="direction-toggle mb-3" role="tablist">
-    @foreach (var direction in new[] { Direction.CairoToSuez, Direction.SuezToCairo })
-    {
-        <a class="@(Model.Direction == direction ? "active" : null)"
-           href="?direction=@direction&date=@Fmt.IsoDate(Model.Date!.Value)">@Fmt.Direction(direction)</a>
-    }
-</div>
+<section class="search-card" aria-label="@L["الرحلات"]">
+    <div class="segmented" role="tablist">
+        @foreach (var direction in new[] { Direction.CairoToSuez, Direction.SuezToCairo })
+        {
+            <a role="tab" aria-selected="@(Model.Direction == direction ? "true" : "false")" class="@(Model.Direction == direction ? "active" : null)"
+               href="?direction=@direction&date=@Fmt.IsoDate(date)">@Fmt.Direction(direction)</a>
+        }
+    </div>
 
-<div class="day-strip mb-3">
-    @foreach (var day in Model.Days)
-    {
-        <a class="day @(day == Model.Date ? "active" : null)" href="?direction=@Model.Direction&date=@Fmt.IsoDate(day)">
-            @(day == Model.Days[0] ? L["النهارده"] : day == Model.Days[1] ? L["بكرة"] : Fmt.ShortDate(day))
-        </a>
-    }
-</div>
+    <div class="day-strip" role="tablist">
+        @foreach (var day in Model.Days)
+        {
+            var label = day == Model.Days[0] ? L["النهارده"].Value : day == Model.Days[1] ? L["بكرة"].Value : Fmt.DayName(day);
+            <a role="tab" aria-selected="@(day == Model.Date ? "true" : "false")" class="day @(day == Model.Date ? "active" : null)" href="?direction=@Model.Direction&date=@Fmt.IsoDate(day)">
+                <span class="day-name">@label</span>
+                <span class="day-num">@day.Day</span>
+            </a>
+        }
+    </div>
+</section>
 
-<h2 class="h6 text-secondary mb-2">@Fmt.Direction(Model.Direction) · @Fmt.Date(Model.Date!.Value)</h2>
+<div class="section-head">
+    <h2>@Fmt.Date(date)</h2>
+    <span class="muted">@L["{0} رحلة", Model.Trips.Count]</span>
+</div>
 
 @if (Model.Trips.Count == 0)
 {
-    <div class="empty-state">@L["مفيش رحلات متاحة في اليوم ده."]</div>
+    <div class="empty-state">
+        <svg class="i i-lg"><use href="#i-calendar" /></svg>
+        <p>@L["مفيش رحلات متاحة في اليوم ده."]</p>
+    </div>
 }
 else
 {
-    <div class="trip-list">
-        @foreach (var trip in Model.Trips)
+    <div class="board">
+        @for (var i = 0; i < Model.Trips.Count; i++)
         {
+            var trip = Model.Trips[i];
             var full = trip.AvailableSeats == 0;
-            <a class="trip-card @(full ? "full" : null)" href="@(full ? null : $"/trip/{trip.TripId}")">
-                <div class="trip-time">@Fmt.Time(trip.DepartureTime)</div>
-                <div class="trip-meta">
-                    <div>@L["{0} للكرسي", Fmt.Money(trip.Price)]</div>
-                    <div class="small @(full ? "text-danger" : "text-success")">
-                        @(full ? L["كامل"] : L["{0} كرسي فاضي من {1}", trip.AvailableSeats, trip.Capacity])
-                    </div>
+            var low = !full && trip.AvailableSeats <= 3;
+            var taken = trip.Capacity == 0 ? 0 : (trip.Capacity - trip.AvailableSeats) * 100 / trip.Capacity;
+
+            <a class="board-row @(full ? "is-full" : null)" style="--i:@i" href="@(full ? null : $"/trip/{trip.TripId}")" aria-disabled="@(full ? "true" : null)">
+                <div class="board-time">
+                    <span class="time">@Fmt.Time(trip.DepartureTime)</span>
+                    <span class="route-mini">@from <svg class="i i-flip"><use href="#i-arrow" /></svg> @to</span>
                 </div>
-                <div class="trip-cta">@(full ? "—" : L["احجز"])</div>
+
+                <div class="board-seats">
+                    <div class="meter" aria-hidden="true"><span style="width:@taken%"></span></div>
+                    <span class="seats-label @(full ? "text-danger" : low ? "text-warning-strong" : null)">
+                        @(full ? L["كامل"] : low ? L["آخر {0} كراسي", trip.AvailableSeats] : L["{0} كرسي فاضي من {1}", trip.AvailableSeats, trip.Capacity])
+                    </span>
+                </div>
+
+                <div class="board-price">
+                    <span class="price">@Fmt.Money(trip.Price)</span>
+                    <span class="muted small">@L["للكرسي"]</span>
+                </div>
+
+                <span class="board-cta">
+                    @if (full)
+                    {
+                        <span>—</span>
+                    }
+                    else
+                    {
+                        <span>@L["احجز"]</span>
+                        <svg class="i i-flip"><use href="#i-arrow" /></svg>
+                    }
+                </span>
             </a>
         }
     </div>
 }
 
-<p class="small text-secondary mt-4">
+<p class="hint">
+    <svg class="i"><use href="#i-ticket" /></svg>
     @L["حجزت قبل كده؟ افتح اللينك اللي ظهرلك بعد الحجز عشان تشوف تذكرتك."]
 </p>

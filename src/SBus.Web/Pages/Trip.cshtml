@@ -7,11 +7,22 @@
     ViewData["Title"] = L["اختار كرسيك"].Value;
 }
 
-<a href="/?direction=@trip.Direction&date=@Fmt.IsoDate(trip.ServiceDate)" class="small">@L["← رجوع للرحلات"]</a>
+<a href="/?direction=@trip.Direction&date=@Fmt.IsoDate(trip.ServiceDate)" class="back-link">
+    <svg class="i i-flip"><use href="#i-back" /></svg>@L["رجوع للرحلات"]
+</a>
 
-<section class="trip-head my-3">
-    <div class="h5 mb-1">@Fmt.Direction(trip.Direction)</div>
-    <div class="text-secondary">@Fmt.Date(trip.ServiceDate) · @L["الساعة {0}", Fmt.Time(trip.DepartureTime)] · @L["{0} للكرسي", Fmt.Money(trip.Price)]</div>
+<partial name="_Steps" model="1" />
+
+<section class="trip-summary">
+    <div>
+        <span class="eyebrow">@Fmt.Direction(trip.Direction)</span>
+        <h1>@Fmt.Time(trip.DepartureTime)</h1>
+    </div>
+    <dl class="facts">
+        <div><dt><svg class="i"><use href="#i-calendar" /></svg>@L["التاريخ"]</dt><dd>@Fmt.Date(trip.ServiceDate)</dd></div>
+        <div><dt><svg class="i"><use href="#i-wallet" /></svg>@L["سعر الكرسي"]</dt><dd>@Fmt.Money(trip.Price)</dd></div>
+        <div><dt><svg class="i"><use href="#i-seat" /></svg>@L["فاضي"]</dt><dd>@trip.SeatMap.Available / @trip.SeatMap.Capacity</dd></div>
+    </dl>
 </section>
 
 <partial name="_ErrorSummary" />
@@ -26,57 +37,71 @@ else if (trip.SeatMap.Available == 0)
 }
 else
 {
-    <form method="post" class="booking-form" id="booking-form" data-price="@trip.Price" data-max="@SBusConstants.MaxSeatsPerBooking" data-currency="@Fmt.Currency" data-currency-first="@(Languages.IsEnglish ? "true" : "false")">
-        <div class="row g-4">
-            <div class="col-md-6">
-                <h2 class="h6">@L["1. اختار الكرسي (لحد {0} كراسي)", SBusConstants.MaxSeatsPerBooking]</h2>
-                <partial name="_SeatMap" model="new SeatMapView(trip.SeatMap, true, Model.Input.SeatNumbers)" />
-            </div>
+    <form method="post" id="booking-form" class="booking-layout" data-price="@trip.Price" data-max="@SBusConstants.MaxSeatsPerBooking" data-currency="@Fmt.Currency" data-currency-first="@(Languages.IsEnglish ? "true" : "false")">
+        <section class="panel">
+            <header class="panel-head">
+                <h2><span class="num">1</span>@L["اختار الكرسي"]</h2>
+                <span class="muted small">@L["لحد {0} كراسي", SBusConstants.MaxSeatsPerBooking]</span>
+            </header>
+            <partial name="_SeatMap" model="new SeatMapView(trip.SeatMap, true, Model.Input.SeatNumbers)" />
+        </section>
 
-            <div class="col-md-6">
-                <h2 class="h6">@L["2. بياناتك"]</h2>
+        <section class="panel">
+            <header class="panel-head">
+                <h2><span class="num">2</span>@L["بياناتك"]</h2>
+            </header>
 
-                <div class="mb-3">
-                    <label class="form-label" for="name">@L["الاسم"]</label>
+            <div class="field">
+                <label for="name">@L["الاسم"]</label>
+                <div class="input-icon">
+                    <svg class="i"><use href="#i-user" /></svg>
                     <input class="form-control" id="name" asp-for="Input.PassengerName" autocomplete="name" required maxlength="100" />
                 </div>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label" for="phone">@L["رقم الموبايل"]</label>
+            <div class="field">
+                <label for="phone">@L["رقم الموبايل"]</label>
+                <div class="input-icon">
+                    <svg class="i"><use href="#i-phone" /></svg>
                     <input class="form-control" id="phone" asp-for="Input.PhoneNumber" type="tel" inputmode="tel" autocomplete="tel" placeholder="01xxxxxxxxx" required dir="ltr" />
                 </div>
+            </div>
 
-                <div class="row g-2 mb-3">
-                    <div class="col-6">
-                        <label class="form-label" for="pickup">@L["هتركب من"]</label>
-                        <select class="form-select" id="pickup" asp-for="Input.PickupStopId">
-                            @foreach (var stop in trip.Stops.Take(trip.Stops.Count - 1))
-                            {
-                                <option value="@stop.StopId">@stop.StopName (~@Fmt.Time(trip.DepartureTime.AddMinutes(stop.MinutesFromStart)))</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label" for="dropoff">@L["هتنزل في"]</label>
-                        <select class="form-select" id="dropoff" asp-for="Input.DropoffStopId">
-                            @foreach (var stop in trip.Stops.Skip(1))
-                            {
-                                <option value="@stop.StopId">@stop.StopName</option>
-                            }
-                        </select>
-                    </div>
+            <div class="field-pair">
+                <div class="field">
+                    <label for="pickup">@L["هتركب من"]</label>
+                    <select class="form-select" id="pickup" asp-for="Input.PickupStopId">
+                        @foreach (var stop in trip.Stops.Take(trip.Stops.Count - 1))
+                        {
+                            <option value="@stop.StopId">@stop.StopName · @Fmt.Time(trip.DepartureTime.AddMinutes(stop.MinutesFromStart))</option>
+                        }
+                    </select>
                 </div>
-
-                <div class="summary-box mb-3">
-                    <div>@L["الكراسي:"] <strong data-summary-seats>—</strong></div>
-                    <div>@L["الإجمالي:"] <strong data-summary-total>—</strong></div>
+                <div class="field">
+                    <label for="dropoff">@L["هتنزل في"]</label>
+                    <select class="form-select" id="dropoff" asp-for="Input.DropoffStopId">
+                        @foreach (var stop in trip.Stops.Skip(1))
+                        {
+                            <option value="@stop.StopId">@stop.StopName</option>
+                        }
+                    </select>
                 </div>
+            </div>
 
-                <button type="submit" class="btn btn-primary btn-lg w-100">@L["احجز الكرسي"]</button>
-                <p class="small text-secondary mt-2 mb-0">
+            <div class="checkout">
+                <div class="checkout-lines">
+                    <div><span class="muted">@L["الكراسي:"]</span> <strong data-summary-seats>—</strong></div>
+                    <div class="total"><span class="muted">@L["الإجمالي:"]</span> <strong data-summary-total>—</strong></div>
+                </div>
+                <button type="submit" class="btn btn-signal btn-lg w-100">
+                    @L["احجز الكرسي"]
+                    <svg class="i i-flip"><use href="#i-arrow" /></svg>
+                </button>
+                <p class="fine-print">
+                    <svg class="i"><use href="#i-clock" /></svg>
                     @L["الكرسي هيتحجزلك مؤقتًا لحد ما تحوّل بإنستا باي وترفع صورة التحويل."]
                 </p>
             </div>
-        </div>
+        </section>
     </form>
 }

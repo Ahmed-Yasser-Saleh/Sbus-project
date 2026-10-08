@@ -4,14 +4,14 @@
     ViewData["Title"] = L["السواقين"].Value;
 }
 
-<a href="/Office/Settings" class="small">@L["← الإعدادات"]</a>
-<h1 class="h5 my-3">@L["السواقين"]</h1>
+<a href="/Office/Settings" class="back-link">@L["← الإعدادات"]</a>
+<h1 class="page-title">@L["السواقين"]</h1>
 
 <partial name="_ErrorSummary" />
 
 <div class="row g-4">
     <div class="col-md-7">
-        <table class="table table-sm align-middle">
+        <table class="table data-table align-middle">
             <thead><tr><th>@L["الاسم"]</th><th>@L["الموبايل"]</th><th>@L["الحالة"]</th><th></th></tr></thead>
             <tbody>
                 @foreach (var d in Model.Drivers)
@@ -28,7 +28,7 @@
     </div>
     <div class="col-md-5">
         <h2 class="h6">@(Model.Id is null ? L["سواق جديد"] : L["تعديل السواق"])</h2>
-        <form method="post">
+        <form method="post" class="panel">
             <input type="hidden" asp-for="Id" />
             <div class="mb-2">
                 <label class="form-label" for="name">@L["الاسم"]</label>

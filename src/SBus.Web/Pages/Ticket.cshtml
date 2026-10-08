@@ -5,6 +5,20 @@
     ViewData["Title"] = L["تذكرتك"].Value;
     var ticketUrl = $"{Request.Scheme}://{Request.Host}/t/{t.PublicToken}";
     var officePhone = $"<a href=\"tel:{t.OfficePhone}\" dir=\"ltr\">{t.OfficePhone}</a>";
+    var step = t.Status switch
+    {
+        BookingStatus.HoldPendingPayment or BookingStatus.AwaitingConfirmation => 3,
+        BookingStatus.Confirmed => 4,
+        _ => 0,
+    };
+    var statusTone = t.Status switch
+    {
+        BookingStatus.Confirmed => "ok",
+        BookingStatus.HoldPendingPayment => "wait",
+        BookingStatus.AwaitingConfirmation => "info",
+        BookingStatus.Rejected => "bad",
+        _ => "off",
+    };
 }
 
 @section Head {
@@ -16,123 +30,160 @@
     }
 }
 
+@if (step > 0)
+{
+    <partial name="_Steps" model="step" />
+}
+
 <partial name="_ErrorSummary" />
 
-<section class="ticket">
-    <div class="ticket-status @Fmt.StatusCss(t.Status)">@Fmt.Status(t.Status)</div>
+<article class="pass tone-@statusTone">
+    <header class="pass-head">
+        <span class="pass-brand"><svg class="i"><use href="#i-bus" /></svg> S Bus</span>
+        <span class="status-pill">@Fmt.Status(t.Status)</span>
+    </header>
 
-    <div class="ticket-body">
-        <div class="ticket-route">@Fmt.Direction(t.Direction)</div>
-        <div class="ticket-when">@Fmt.Date(t.ServiceDate) · @L["الساعة {0}", Fmt.Time(t.DepartureTime)]</div>
-
-        <dl class="ticket-grid">
-            <dt>@L["الكرسي"]</dt>
-            <dd class="ticket-seats">@Fmt.Seats(t.Seats)</dd>
-
-            <dt>@L["الاسم"]</dt>
-            <dd>@t.PassengerName</dd>
-
-            <dt>@L["الركوب"]</dt>
-            <dd>
-                @t.PickupStopName
-                @if (t.EstimatedPickupTime is TimeOnly pickupTime)
-                {
-                    <span class="text-secondary small">@L["(الأتوبيس عندك حوالي {0})", Fmt.Time(pickupTime)]</span>
-                }
-            </dd>
-
-            <dt>@L["النزول"]</dt>
-            <dd>@t.DropoffStopName</dd>
-
-            <dt>@L["المبلغ"]</dt>
-            <dd>@Fmt.Money(t.Amount)</dd>
-
-            @if (t.DriverName is not null)
-            {
-                <dt>@L["السواق"]</dt>
-                <dd>@t.DriverName · <a href="tel:@t.DriverPhoneNumber" dir="ltr">@t.DriverPhoneNumber</a></dd>
-            }
-        </dl>
+    <div class="pass-route">
+        <div class="pass-stop">
+            <span class="label">@L["الركوب"]</span>
+            <strong>@t.PickupStopName</strong>
+            <span class="time">@Fmt.Time(t.EstimatedPickupTime ?? t.DepartureTime)</span>
+        </div>
+        <div class="pass-line" aria-hidden="true">
+            <span></span><svg class="i"><use href="#i-bus" /></svg><span></span>
+        </div>
+        <div class="pass-stop end">
+            <span class="label">@L["النزول"]</span>
+            <strong>@t.DropoffStopName</strong>
+            <span class="muted small">@Fmt.Direction(t.Direction)</span>
+        </div>
     </div>
-</section>
+
+    <dl class="pass-grid">
+        <div><dt>@L["التاريخ"]</dt><dd>@Fmt.Date(t.ServiceDate)</dd></div>
+        <div><dt>@L["ميعاد التحرك"]</dt><dd>@Fmt.Time(t.DepartureTime)</dd></div>
+        <div><dt>@L["الكرسي"]</dt><dd class="seat-no">@Fmt.Seats(t.Seats)</dd></div>
+        <div><dt>@L["الاسم"]</dt><dd>@t.PassengerName</dd></div>
+        <div><dt>@L["المبلغ"]</dt><dd>@Fmt.Money(t.Amount)</dd></div>
+        @if (t.DriverName is not null)
+        {
+            <div><dt>@L["السواق"]</dt><dd>@t.DriverName · <a href="tel:@t.DriverPhoneNumber" dir="ltr">@t.DriverPhoneNumber</a></dd></div>
+        }
+    </dl>
+
+    @if (t.Status == BookingStatus.Confirmed)
+    {
+        <div class="pass-tear" aria-hidden="true"></div>
+        <footer class="pass-foot">
+            <svg class="i"><use href="#i-clock" /></svg>
+            @L["حجزك متأكد. انزل لمحطتك قبل الميعاد بربع ساعة، ولو اتأخر الأتوبيس كلم السواق."]
+        </footer>
+    }
+</article>
 
 @switch (t.Status)
 {
     case BookingStatus.HoldPendingPayment:
-        <section class="pay-box">
-            <h2 class="h6">@L["عشان تأكد الحجز"]</h2>
-            <ol class="mb-3">
-                <li>@L["حوّل {0} بإنستا باي على {1}", Fmt.Money(t.Amount), t.InstaPayAddress]</li>
-                <li>@L["صوّر شاشة التحويل وارفعها هنا"]</li>
+        <section class="panel pay">
+            <header class="panel-head">
+                <h2><svg class="i"><use href="#i-wallet" /></svg>@L["عشان تأكد الحجز"]</h2>
+                @if (t.HoldExpiresAtUtc is DateTimeOffset expires)
+                {
+                    <span class="countdown" data-countdown="@expires.ToUnixTimeMilliseconds()" data-minutes-label="@L["دقيقة"]" data-expired-label="@L["خلصت"]">
+                        <svg class="i"><use href="#i-clock" /></svg><strong data-countdown-text>—</strong>
+                    </span>
+                }
+            </header>
+
+            <ol class="pay-steps">
+                <li>
+                    <span class="pay-num">1</span>
+                    <div>
+                        <div>@L["حوّل {0} بإنستا باي على {1}", Fmt.Money(t.Amount), t.InstaPayAddress]</div>
+                        <div class="copy-chip">
+                            <code dir="ltr" id="instapay">@t.InstaPayAddress</code>
+                            <button type="button" class="btn-ghost" data-copy-text="#instapay" data-copied-label="@L["اتنسخ"]">
+                                <svg class="i"><use href="#i-copy" /></svg><span>@L["انسخ"]</span>
+                            </button>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <span class="pay-num">2</span>
+                    <div>@L["صوّر شاشة التحويل وارفعها هنا"]</div>
+                </li>
             </ol>
 
-            @if (t.HoldExpiresAtUtc is DateTimeOffset expires)
-            {
-                <div class="countdown mb-3" data-countdown="@expires.ToUnixTimeMilliseconds()" data-minutes-label="@L["دقيقة"]" data-expired-label="@L["خلصت"]">
-                    @L["الكرسي محجوزلك لمدة"] <strong data-countdown-text>—</strong>
-                </div>
-            }
-
             <form method="post" asp-page-handler="Receipt" enctype="multipart/form-data">
-                <input class="form-control mb-2" type="file" name="receipt" accept="image/jpeg,image/png,image/webp,application/pdf" required />
-                <button type="submit" class="btn btn-primary w-100">@L["ارفع صورة التحويل"]</button>
+                <label class="dropzone">
+                    <input type="file" name="receipt" accept="image/jpeg,image/png,image/webp,application/pdf" required data-file-label="#file-name" />
+                    <svg class="i i-lg"><use href="#i-upload" /></svg>
+                    <span id="file-name">@L["اختار صورة التحويل"]</span>
+                    <small class="muted">JPG · PNG · WEBP · PDF</small>
+                </label>
+                <button type="submit" class="btn btn-signal btn-lg w-100">@L["ارفع صورة التحويل"]</button>
             </form>
+
+            <p class="fine-print">@L["الكرسي محجوزلك لمدة"] <strong data-countdown-mirror>—</strong></p>
         </section>
         break;
 
     case BookingStatus.AwaitingConfirmation:
-        <div class="alert alert-info">
-            @L["وصلتنا صورة التحويل، والمكتب بيراجعها. الصفحة دي هتتحدث لوحدها، وأول ما الحجز يتأكد هيظهرلك رقم السواق."]
-        </div>
-        break;
-
-    case BookingStatus.Confirmed:
-        <div class="alert alert-success">
-            @L["حجزك متأكد. انزل لمحطتك قبل الميعاد بربع ساعة، ولو اتأخر الأتوبيس كلم السواق."]
+        <div class="notice tone-info">
+            <svg class="i"><use href="#i-clock" /></svg>
+            <p>@L["وصلتنا صورة التحويل، والمكتب بيراجعها. الصفحة دي هتتحدث لوحدها، وأول ما الحجز يتأكد هيظهرلك رقم السواق."]</p>
         </div>
         break;
 
     case BookingStatus.Rejected:
-        <div class="alert alert-danger">
-            @L["المكتب رفض التحويل:"] <strong>@t.RejectionReason</strong>
-            <br />@Html.Raw(L["لو حوّلت فعلًا كلم المكتب على {0}.", officePhone].Value)
+        <div class="notice tone-bad">
+            <p>
+                @L["المكتب رفض التحويل:"] <strong>@t.RejectionReason</strong><br />
+                @Html.Raw(L["لو حوّلت فعلًا كلم المكتب على {0}.", officePhone].Value)
+            </p>
         </div>
         break;
 
     case BookingStatus.Expired:
-        <div class="alert alert-secondary">
-            @L["مدة حجز الكرسي خلصت قبل ما صورة التحويل توصل."]
-            @Html.Raw(L["لو حوّلت فعلًا كلم المكتب على {0}.", officePhone].Value)
-            <br /><a href="/">@L["احجز من جديد"]</a>
+        <div class="notice tone-off">
+            <p>
+                @L["مدة حجز الكرسي خلصت قبل ما صورة التحويل توصل."]
+                @Html.Raw(L["لو حوّلت فعلًا كلم المكتب على {0}.", officePhone].Value)
+            </p>
+            <a class="btn btn-primary" href="/">@L["احجز من جديد"]</a>
         </div>
         break;
 
     case BookingStatus.Cancelled:
-        <div class="alert alert-secondary">
-            @L["الحجز ده اتلغى."]
-            @if (t.Source == BookingSource.Online)
-            {
-                <span>@L["لو كنت دفعت، المكتب هيتواصل معاك لرجوع الفلوس."]</span>
-            }
+        <div class="notice tone-off">
+            <p>
+                @L["الحجز ده اتلغى."]
+                @if (t.Source == BookingSource.Online)
+                {
+                    <span>@L["لو كنت دفعت، المكتب هيتواصل معاك لرجوع الفلوس."]</span>
+                }
+            </p>
         </div>
         break;
 }
 
-<section class="save-link">
-    <div class="small text-secondary mb-1">@L["احفظ اللينك ده. هو الطريقة الوحيدة تشوف بيها تذكرتك أو تلغيها."]</div>
-    <div class="input-group">
+<section class="panel save-link">
+    <p class="muted small mb-2">@L["احفظ اللينك ده. هو الطريقة الوحيدة تشوف بيها تذكرتك أو تلغيها."]</p>
+    <div class="copy-field">
         <input class="form-control" value="@ticketUrl" readonly dir="ltr" id="ticket-url" />
-        <button class="btn btn-outline-secondary" type="button" data-copy="#ticket-url" data-copied-label="@L["اتنسخ"]">@L["انسخ"]</button>
+        <button class="btn btn-outline-dark" type="button" data-copy="#ticket-url" data-copied-label="@L["اتنسخ"]">
+            <svg class="i"><use href="#i-copy" /></svg><span>@L["انسخ"]</span>
+        </button>
     </div>
 </section>
 
 @if (t.CanCancel)
 {
-    <form method="post" asp-page-handler="Cancel" class="mt-4" data-confirm="@L["متأكد إنك عايز تلغي الحجز؟"]">
-        <button type="submit" class="btn btn-outline-danger btn-sm">@L["الغي الحجز"]</button>
+    <form method="post" asp-page-handler="Cancel" class="cancel-row" data-confirm="@L["متأكد إنك عايز تلغي الحجز؟"]">
+        <button type="submit" class="btn-link-danger">@L["الغي الحجز"]</button>
         @if (t.Status != BookingStatus.HoldPendingPayment)
         {
-            <div class="small text-secondary mt-1">@L["الإلغاء متاح لحد {0}. الفلوس بترجع عن طريق المكتب.", Fmt.LocalDateTime(t.CancellationDeadlineUtc)]</div>
+            <span class="muted small">@L["الإلغاء متاح لحد {0}. الفلوس بترجع عن طريق المكتب.", Fmt.LocalDateTime(t.CancellationDeadlineUtc)]</span>
         }
     </form>
 }

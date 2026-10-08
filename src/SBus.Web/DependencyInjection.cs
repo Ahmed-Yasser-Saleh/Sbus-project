@@ -1,7 +1,9 @@
 using System.Globalization;
 using System.Threading.RateLimiting;
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Localization;
 
@@ -39,7 +41,7 @@ public static class DependencyInjection
         services.AddAuthorizationBuilder()
             .AddPolicy(OfficePolicy, policy => policy.RequireRole(Roles.Office));
 
-        services.ConfigureApplicationCookie(options =>
+        services.PostConfigure<CookieAuthenticationOptions>(IdentityConstants.ApplicationScheme, options =>
         {
             options.LoginPath = "/Office/Login";
             options.AccessDeniedPath = "/Office/Login";

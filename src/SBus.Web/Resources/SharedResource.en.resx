@@ -279,6 +279,26 @@
   <data name="وقت كل محطة لازم يكون أكبر من المحطة اللي قبلها." xml:space="preserve"><value>Each stop's time must be later than the stop before it.</value></data>
   <data name="يركب من" xml:space="preserve"><value>Gets on at</value></data>
   <data name="ينزل في" xml:space="preserve"><value>Gets off at</value></data>
+  <data name="{0} حجز" xml:space="preserve"><value>{0} bookings</value></data>
+  <data name="{0} رحلة" xml:space="preserve"><value>{0} trips</value></data>
+  <data name="آخر {0} كراسي" xml:space="preserve"><value>Last {0} seats</value></data>
+  <data name="اختار الكرسي" xml:space="preserve"><value>Pick a seat</value></data>
+  <data name="اختار صورة التحويل" xml:space="preserve"><value>Choose the transfer screenshot</value></data>
+  <data name="الامتلاء" xml:space="preserve"><value>Occupancy</value></data>
+  <data name="التاريخ" xml:space="preserve"><value>Date</value></data>
+  <data name="الدفع والتأكيد" xml:space="preserve"><value>Pay and confirm</value></data>
+  <data name="السويس" xml:space="preserve"><value>Suez</value></data>
+  <data name="القاهرة" xml:space="preserve"><value>Cairo</value></data>
+  <data name="بياناتك" xml:space="preserve"><value>Your details</value></data>
+  <data name="تحويلات مستنية مراجعة" xml:space="preserve"><value>Transfers to review</value></data>
+  <data name="حجز أونلاين" xml:space="preserve"><value>Book online</value></data>
+  <data name="خطوات الحجز" xml:space="preserve"><value>Booking steps</value></data>
+  <data name="رجوع للرحلات" xml:space="preserve"><value>Back to trips</value></data>
+  <data name="كراسي فاضية" xml:space="preserve"><value>Free seats</value></data>
+  <data name="كراسي متأكدة" xml:space="preserve"><value>Confirmed seats</value></data>
+  <data name="لحد {0} كراسي" xml:space="preserve"><value>Up to {0} seats</value></data>
+  <data name="للكرسي" xml:space="preserve"><value>per seat</value></data>
+  <data name="ميعاد التحرك" xml:space="preserve"><value>Departure</value></data>
   <data name="← الإعدادات" xml:space="preserve"><value>← Settings</value></data>
   <data name="← رجوع للرحلات" xml:space="preserve"><value>← Back to trips</value></data>
   <data name="← رحلات اليوم" xml:space="preserve"><value>← Today's trips</value></data>

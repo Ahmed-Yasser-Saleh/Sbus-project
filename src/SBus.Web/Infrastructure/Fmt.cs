@@ -17,6 +17,8 @@ public static class Fmt
 
     public static string ShortDate(DateOnly date) => date.ToString("ddd d/M", Display);
 
+    public static string DayName(DateOnly date) => date.ToString("ddd", Display);
+
     public static string Time(TimeOnly time) => time.ToString("h:mm tt", Display);
 
     public static string LocalDateTime(DateTimeOffset utc) => CairoTime.ToLocal(utc).ToString("ddd d/M h:mm tt", Display);

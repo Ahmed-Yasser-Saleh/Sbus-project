@@ -1,13 +1,24 @@
 <!DOCTYPE html>
+@{
+    var page = ViewContext.RouteData.Values["page"]?.ToString() ?? string.Empty;
+    var isOfficeArea = page.StartsWith("/Office", StringComparison.Ordinal);
+    var isOffice = isOfficeArea && User.Identity?.IsAuthenticated == true;
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+    var otherLanguage = Languages.IsEnglish ? Languages.Arabic : Languages.English;
+
+    string Active(string prefix, bool exact = false) =>
+        (exact ? page == prefix : page.StartsWith(prefix, StringComparison.Ordinal)) ? "active" : string.Empty;
+}
 <html lang="@Languages.Current" dir="@Languages.Direction">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b2e40" />
     <title>@(ViewData["Title"] is string title ? title + " · S Bus" : "S Bus")</title>
     @await RenderSectionAsync("Head", required: false)
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@400;500;600;700&display=swap" rel="stylesheet" />
     @if (Languages.IsEnglish)
     {
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -18,39 +29,51 @@
     }
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body>
-    @{
-        var isOffice = ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Office", StringComparison.Ordinal) == true
-            && User.Identity?.IsAuthenticated == true;
-        var returnUrl = Context.Request.Path + Context.Request.QueryString;
-        var otherLanguage = Languages.IsEnglish ? Languages.Arabic : Languages.English;
-    }
-    <header class="site-header">
-        <nav class="container d-flex align-items-center justify-content-between flex-wrap gap-2 py-2">
-            <a class="brand" href="@(isOffice ? "/Office" : "/")">S Bus <span class="brand-sub">@L["القاهرة ⇄ السويس"]</span></a>
-            <div class="d-flex flex-wrap gap-3 align-items-center office-nav">
+<body class="@(isOfficeArea ? "area-office" : "area-public")">
+    <partial name="_Icons" />
+
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <a class="brand" href="@(isOffice ? "/Office" : "/")">
+                <span class="brand-mark"><svg class="i"><use href="#i-bus" /></svg></span>
+                <span class="brand-text">
+                    <strong>S Bus</strong>
+                    <small>@L["القاهرة ⇄ السويس"]</small>
+                </span>
+            </a>
+
+            <div class="topbar-actions">
                 @if (isOffice)
                 {
-                    <a href="/Office">@L["الرحلات"]</a>
-                    <a href="/Office/Payments">@L["مراجعة الدفع"]</a>
-                    <a href="/Office/Settings">@L["الإعدادات"]</a>
                     <form method="post" asp-page="/Office/Logout" class="d-inline">
-                        <button type="submit" class="btn btn-link p-0 link-light">@L["خروج"]</button>
+                        <button type="submit" class="topbar-link">@L["خروج"]</button>
                     </form>
                 }
                 <a class="lang-switch" href="/Language?lang=@otherLanguage&returnUrl=@Uri.EscapeDataString(returnUrl)" lang="@otherLanguage">
+                    <svg class="i"><use href="#i-globe" /></svg>
                     @(Languages.IsEnglish ? "عربي" : "English")
                 </a>
             </div>
-        </nav>
+        </div>
+
+        @if (isOffice)
+        {
+            <nav class="container office-tabs" aria-label="Office">
+                <a class="@Active("/Office/Index", exact: true) @Active("/Office/Trip")" href="/Office">@L["الرحلات"]</a>
+                <a class="@Active("/Office/Payments")" href="/Office/Payments">@L["مراجعة الدفع"]</a>
+                <a class="@Active("/Office/Settings")" href="/Office/Settings">@L["الإعدادات"]</a>
+            </nav>
+        }
     </header>
 
-    <main class="container py-3">
+    <main class="container page">
         @RenderBody()
     </main>
 
-    <footer class="container small text-secondary py-4">
-        S Bus · @L["نسخة تجريبية"]
+    <footer class="container site-footer">
+        <span>S Bus</span>
+        <span class="dot"></span>
+        <span>@L["نسخة تجريبية"]</span>
     </footer>
 
     <script src="~/js/site.js" asp-append-version="true"></script>

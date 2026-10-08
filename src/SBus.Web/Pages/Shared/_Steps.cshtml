@@ -1,0 +1,23 @@
+@model int
+@{
+    var steps = new[] { L["اختار الكرسي"].Value, L["بياناتك"].Value, L["الدفع والتأكيد"].Value };
+}
+<ol class="steps" aria-label="@L["خطوات الحجز"]">
+    @for (var i = 0; i < steps.Length; i++)
+    {
+        var state = i + 1 < Model ? "done" : i + 1 == Model ? "current" : null;
+        <li class="@state" aria-current="@(state == "current" ? "step" : null)">
+            <span class="step-dot">
+                @if (state == "done")
+                {
+                    <svg class="i"><use href="#i-check" /></svg>
+                }
+                else
+                {
+                    @(i + 1)
+                }
+            </span>
+            <span class="step-label">@steps[i]</span>
+        </li>
+    }
+</ol>

@@ -23,6 +23,8 @@
         refresh();
     }
 
+    const mirrors = document.querySelectorAll('[data-countdown-mirror]');
+
     document.querySelectorAll('[data-countdown]').forEach(el => {
         const deadline = parseInt(el.dataset.countdown, 10);
         const out = el.querySelector('[data-countdown-text]');
@@ -31,7 +33,9 @@
             const left = Math.max(0, Math.floor((deadline - Date.now()) / 1000));
             const m = Math.floor(left / 60);
             const s = String(left % 60).padStart(2, '0');
-            out.textContent = left > 0 ? `${m}:${s} ${el.dataset.minutesLabel}` : el.dataset.expiredLabel;
+            const text = left > 0 ? `${m}:${s} ${el.dataset.minutesLabel}` : el.dataset.expiredLabel;
+            out.textContent = text;
+            mirrors.forEach(mirror => { mirror.textContent = text; });
             el.classList.toggle('expired', left === 0);
             if (left > 0) setTimeout(tick, 1000);
         };
@@ -39,18 +43,45 @@
         tick();
     });
 
+    const flashCopied = btn => {
+        const label = btn.querySelector('span') || btn;
+        const original = label.textContent;
+        label.textContent = btn.dataset.copiedLabel;
+        setTimeout(() => { label.textContent = original; }, 1500);
+    };
+
+    const copy = async (text, fallbackInput) => {
+        try {
+            await navigator.clipboard.writeText(text);
+        } catch {
+            if (fallbackInput) {
+                fallbackInput.select();
+                document.execCommand('copy');
+            }
+        }
+    };
+
     document.querySelectorAll('[data-copy]').forEach(btn => {
         btn.addEventListener('click', async () => {
             const input = document.querySelector(btn.dataset.copy);
-            try {
-                await navigator.clipboard.writeText(input.value);
-            } catch {
-                input.select();
-                document.execCommand('copy');
-            }
-            const original = btn.textContent;
-            btn.textContent = btn.dataset.copiedLabel;
-            setTimeout(() => { btn.textContent = original; }, 1500);
+            await copy(input.value, input);
+            flashCopied(btn);
+        });
+    });
+
+    document.querySelectorAll('[data-copy-text]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            await copy(document.querySelector(btn.dataset.copyText).textContent.trim());
+            flashCopied(btn);
+        });
+    });
+
+    document.querySelectorAll('input[type=file][data-file-label]').forEach(input => {
+        input.addEventListener('change', () => {
+            const label = document.querySelector(input.dataset.fileLabel);
+            const file = input.files && input.files[0];
+            if (file && label) label.textContent = file.name;
+            input.closest('.dropzone')?.classList.toggle('has-file', !!file);
         });
     });
 
