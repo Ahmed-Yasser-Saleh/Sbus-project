@@ -2,7 +2,7 @@
 
 A booking site for the Cairo ⇄ Suez minibus line. Passengers pick a trip and a seat, pay with InstaPay and upload the transfer screenshot; the office confirms the payment and prints the passenger manifest.
 
-Decisions are recorded in [docs/DECISIONS.md](docs/DECISIONS.md) and the build plan in [docs/PLAN.md](docs/PLAN.md) (both in Arabic).
+Decisions are recorded in [docs/DECISIONS.md](docs/DECISIONS.md) and the build plan in [docs/PLAN.md](docs/PLAN.md).
 
 ## Stack
 
