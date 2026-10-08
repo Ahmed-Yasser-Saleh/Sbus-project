@@ -1,0 +1,55 @@
+@page
+@model SBus.Web.Pages.Office.Settings.DriversModel
+@{
+    ViewData["Title"] = L["السواقين"].Value;
+}
+
+<a href="/Office/Settings" class="small">@L["← الإعدادات"]</a>
+<h1 class="h5 my-3">@L["السواقين"]</h1>
+
+<partial name="_ErrorSummary" />
+
+<div class="row g-4">
+    <div class="col-md-7">
+        <table class="table table-sm align-middle">
+            <thead><tr><th>@L["الاسم"]</th><th>@L["الموبايل"]</th><th>@L["الحالة"]</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var d in Model.Drivers)
+                {
+                    <tr class="@(d.IsActive ? null : "text-secondary")">
+                        <td>@d.Name</td>
+                        <td dir="ltr">@d.PhoneNumber</td>
+                        <td>@(d.IsActive ? L["شغال"] : L["متوقف"])</td>
+                        <td><a class="btn btn-sm btn-outline-secondary" href="?id=@d.DriverId">@L["تعديل"]</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-5">
+        <h2 class="h6">@(Model.Id is null ? L["سواق جديد"] : L["تعديل السواق"])</h2>
+        <form method="post">
+            <input type="hidden" asp-for="Id" />
+            <div class="mb-2">
+                <label class="form-label" for="name">@L["الاسم"]</label>
+                <input class="form-control" id="name" asp-for="Name" required maxlength="100" />
+            </div>
+            <div class="mb-2">
+                <label class="form-label" for="phone">@L["الموبايل (بيظهر للراكب بعد تأكيد الحجز)"]</label>
+                <input class="form-control" id="phone" asp-for="PhoneNumber" type="tel" dir="ltr" required />
+            </div>
+            @if (Model.Id is not null)
+            {
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="active" asp-for="IsActive" />
+                    <label class="form-check-label" for="active">@L["شغال"]</label>
+                </div>
+            }
+            <button type="submit" class="btn btn-primary">@L["حفظ"]</button>
+            @if (Model.Id is not null)
+            {
+                <a class="btn btn-link" href="?">@L["إلغاء"]</a>
+            }
+        </form>
+    </div>
+</div>

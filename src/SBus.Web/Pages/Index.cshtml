@@ -1,0 +1,57 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = L["احجز كرسيك"].Value;
+}
+
+<section class="hero mb-3">
+    <h1 class="h4 mb-1">@L["احجز كرسيك في ميني باص S Bus"]</h1>
+    <p class="text-secondary mb-0">@L["اختار الاتجاه واليوم، وبعدين اختار الكرسي اللي يريحك."]</p>
+</section>
+
+<div class="direction-toggle mb-3" role="tablist">
+    @foreach (var direction in new[] { Direction.CairoToSuez, Direction.SuezToCairo })
+    {
+        <a class="@(Model.Direction == direction ? "active" : null)"
+           href="?direction=@direction&date=@Fmt.IsoDate(Model.Date!.Value)">@Fmt.Direction(direction)</a>
+    }
+</div>
+
+<div class="day-strip mb-3">
+    @foreach (var day in Model.Days)
+    {
+        <a class="day @(day == Model.Date ? "active" : null)" href="?direction=@Model.Direction&date=@Fmt.IsoDate(day)">
+            @(day == Model.Days[0] ? L["النهارده"] : day == Model.Days[1] ? L["بكرة"] : Fmt.ShortDate(day))
+        </a>
+    }
+</div>
+
+<h2 class="h6 text-secondary mb-2">@Fmt.Direction(Model.Direction) · @Fmt.Date(Model.Date!.Value)</h2>
+
+@if (Model.Trips.Count == 0)
+{
+    <div class="empty-state">@L["مفيش رحلات متاحة في اليوم ده."]</div>
+}
+else
+{
+    <div class="trip-list">
+        @foreach (var trip in Model.Trips)
+        {
+            var full = trip.AvailableSeats == 0;
+            <a class="trip-card @(full ? "full" : null)" href="@(full ? null : $"/trip/{trip.TripId}")">
+                <div class="trip-time">@Fmt.Time(trip.DepartureTime)</div>
+                <div class="trip-meta">
+                    <div>@L["{0} للكرسي", Fmt.Money(trip.Price)]</div>
+                    <div class="small @(full ? "text-danger" : "text-success")">
+                        @(full ? L["كامل"] : L["{0} كرسي فاضي من {1}", trip.AvailableSeats, trip.Capacity])
+                    </div>
+                </div>
+                <div class="trip-cta">@(full ? "—" : L["احجز"])</div>
+            </a>
+        }
+    </div>
+}
+
+<p class="small text-secondary mt-4">
+    @L["حجزت قبل كده؟ افتح اللينك اللي ظهرلك بعد الحجز عشان تشوف تذكرتك."]
+</p>

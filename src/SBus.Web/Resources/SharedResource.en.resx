@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="(الأتوبيس عندك حوالي {0})" xml:space="preserve"><value>(the bus reaches you around {0})</value></data>
+  <data name="(النهارده)" xml:space="preserve"><value>(today)</value></data>
+  <data name="1. اختار الكرسي (لحد {0} كراسي)" xml:space="preserve"><value>1. Pick your seat (up to {0} seats)</value></data>
+  <data name="2. بياناتك" xml:space="preserve"><value>2. Your details</value></data>
+  <data name="{0} ({1} كرسي)" xml:space="preserve"><value>{0} ({1} seats)</value></data>
+  <data name="{0} كرسي" xml:space="preserve"><value>{0} seats</value></data>
+  <data name="{0} كرسي فاضي من {1}" xml:space="preserve"><value>{0} of {1} seats free</value></data>
+  <data name="{0} للكرسي" xml:space="preserve"><value>{0} per seat</value></data>
+  <data name="أتوبيس {0}" xml:space="preserve"><value>Bus {0}</value></data>
+  <data name="أتوبيس جديد" xml:space="preserve"><value>New bus</value></data>
+  <data name="أقصى عدد صفوف {0}." xml:space="preserve"><value>The maximum number of rows is {0}.</value></data>
+  <data name="أقصى عدد كراسي {0}." xml:space="preserve"><value>The maximum number of seats is {0}.</value></data>
+  <data name="أقصى عدد كراسي في الحجز الواحد {0}." xml:space="preserve"><value>You can book up to {0} seats at a time.</value></data>
+  <data name="أماكن الركوب والنزول" xml:space="preserve"><value>Pick-up and drop-off points</value></data>
+  <data name="أول محطة هي مكان الانطلاق، فوقتها لازم يكون 0 دقيقة." xml:space="preserve"><value>The first stop is where the bus starts, so its time must be 0 minutes.</value></data>
+  <data name="إلغاء" xml:space="preserve"><value>Cancel</value></data>
+  <data name="اتحجز. لينك التذكرة للراكب: {0}" xml:space="preserve"><value>Booked. Ticket link for the passenger: {0}</value></data>
+  <data name="اتحفظ ({0} كرسي)." xml:space="preserve"><value>Saved ({0} seats).</value></data>
+  <data name="اتحفظ." xml:space="preserve"><value>Saved.</value></data>
+  <data name="اتحفظ. الرحلات للأيام الجاية هتظهر خلال ساعة، أو أول ما تعيد تشغيل الموقع." xml:space="preserve"><value>Saved. Trips for the coming days will appear within an hour, or as soon as the site restarts.</value></data>
+  <data name="اتحفظ، واتعدلت {0} رحلة جاية." xml:space="preserve"><value>Saved, and {0} upcoming trips were updated.</value></data>
+  <data name="اتحفظ، واتعدلت {0} رحلة جاية. فيه {1} رحلة فيها حجوزات فضلت زي ما هي، عدّلها من كشف الرحلة لو محتاج." xml:space="preserve"><value>Saved, and {0} upcoming trips were updated. {1} trips that already have bookings were left as they were; change them from the trip manifest if needed.</value></data>
+  <data name="اترفع {0}" xml:space="preserve"><value>Uploaded {0}</value></data>
+  <data name="اتنسخ" xml:space="preserve"><value>Copied</value></data>
+  <data name="احجز" xml:space="preserve"><value>Book</value></data>
+  <data name="احجز (متأكد على طول)" xml:space="preserve"><value>Book (confirmed right away)</value></data>
+  <data name="احجز الكرسي" xml:space="preserve"><value>Book the seat</value></data>
+  <data name="احجز كرسيك" xml:space="preserve"><value>Book your seat</value></data>
+  <data name="احجز كرسيك في ميني باص S Bus" xml:space="preserve"><value>Book your seat on an S Bus minibus</value></data>
+  <data name="احجز من جديد" xml:space="preserve"><value>Book again</value></data>
+  <data name="احفظ اللينك ده. هو الطريقة الوحيدة تشوف بيها تذكرتك أو تلغيها." xml:space="preserve"><value>Save this link. It is the only way to see or cancel your ticket.</value></data>
+  <data name="اختار الأتوبيس." xml:space="preserve"><value>Choose the bus.</value></data>
+  <data name="اختار الاتجاه واليوم، وبعدين اختار الكرسي اللي يريحك." xml:space="preserve"><value>Choose the direction and the day, then pick the seat you like.</value></data>
+  <data name="اختار الاتجاه." xml:space="preserve"><value>Choose the direction.</value></data>
+  <data name="اختار الرحلة." xml:space="preserve"><value>Choose the trip.</value></data>
+  <data name="اختار السواق." xml:space="preserve"><value>Choose the driver.</value></data>
+  <data name="اختار المحطة." xml:space="preserve"><value>Choose the stop.</value></data>
+  <data name="اختار شكل الكراسي." xml:space="preserve"><value>Choose the seat layout.</value></data>
+  <data name="اختار صورة التحويل الأول." xml:space="preserve"><value>Choose the transfer screenshot first.</value></data>
+  <data name="اختار كرسي واحد على الأقل." xml:space="preserve"><value>Pick at least one seat.</value></data>
+  <data name="اختار كرسيك" xml:space="preserve"><value>Pick your seat</value></data>
+  <data name="اختار مكان الركوب ومكان النزول." xml:space="preserve"><value>Choose where you get on and where you get off.</value></data>
+  <data name="اختار مكان الركوب." xml:space="preserve"><value>Choose where you get on.</value></data>
+  <data name="اختار مكان النزول." xml:space="preserve"><value>Choose where you get off.</value></data>
+  <data name="اختيارك" xml:space="preserve"><value>Your pick</value></data>
+  <data name="ارفض" xml:space="preserve"><value>Reject</value></data>
+  <data name="ارفع صورة التحويل" xml:space="preserve"><value>Upload the transfer screenshot</value></data>
+  <data name="ارفع صورة التحويل." xml:space="preserve"><value>Upload the transfer screenshot.</value></data>
+  <data name="اسم الراكب طويل جدًا." xml:space="preserve"><value>The passenger name is too long.</value></data>
+  <data name="اسم السواق طويل جدًا." xml:space="preserve"><value>The driver name is too long.</value></data>
+  <data name="اسم السواق مطلوب." xml:space="preserve"><value>The driver name is required.</value></data>
+  <data name="اسم المحطة لازم يكون أقل من {0} حرف." xml:space="preserve"><value>The stop name must be under {0} characters.</value></data>
+  <data name="اسم المحطة مطلوب." xml:space="preserve"><value>The stop name is required.</value></data>
+  <data name="اسم شكل الكراسي مطلوب." xml:space="preserve"><value>The seat layout name is required.</value></data>
+  <data name="اطبع الكشف للسواق" xml:space="preserve"><value>Print the manifest for the driver</value></data>
+  <data name="اعمل شكل كراسي الأول." xml:space="preserve"><value>Create a seat layout first.</value></data>
+  <data name="افتح الملف (PDF)" xml:space="preserve"><value>Open the file (PDF)</value></data>
+  <data name="اكتب اسم الراكب." xml:space="preserve"><value>Enter the passenger name.</value></data>
+  <data name="اكتب الإيميل والباسورد." xml:space="preserve"><value>Enter the email and the password.</value></data>
+  <data name="اكتب رقم الموبايل." xml:space="preserve"><value>Enter the mobile number.</value></data>
+  <data name="اكتب سبب الرفض عشان يظهر للراكب." xml:space="preserve"><value>Enter the rejection reason; the passenger will see it.</value></data>
+  <data name="اكتب شكل الكراسي." xml:space="preserve"><value>Enter the seat layout.</value></data>
+  <data name="اكتب كل صف من الكراسي في سطر، من قدام لورا، ومن الشمال لليمين زي ما بتبص على الأتوبيس من ورا. اكتب رقم الكرسي زي ما هو مكتوب عليه، و _ للممر أو المكان الفاضي، و D لمكان السواق." xml:space="preserve"><value>Write each row of seats on its own line, front to back, left to right as you look at the bus from behind. Use the number printed on each seat, _ for the aisle or an empty spot, and D for the driver.</value></data>
+  <data name="الأتوبيس" xml:space="preserve"><value>Bus</value></data>
+  <data name="الأتوبيس ده متوقف." xml:space="preserve"><value>This bus is inactive.</value></data>
+  <data name="الأتوبيس مش موجود." xml:space="preserve"><value>The bus does not exist.</value></data>
+  <data name="الأتوبيس والسواق اتحدثوا للرحلة دي." xml:space="preserve"><value>The bus and driver were updated for this trip.</value></data>
+  <data name="الأتوبيسات" xml:space="preserve"><value>Buses</value></data>
+  <data name="الإجمالي:" xml:space="preserve"><value>Total:</value></data>
+  <data name="الإعدادات" xml:space="preserve"><value>Settings</value></data>
+  <data name="الإلغاء متاح لحد {0}. الفلوس بترجع عن طريق المكتب." xml:space="preserve"><value>You can cancel until {0}. Refunds are handled by the office.</value></data>
+  <data name="الإلغاء من الموقع متاح لحد {0} ساعة قبل الرحلة. كلم المكتب." xml:space="preserve"><value>Online cancellation closes {0} hours before the trip. Please call the office.</value></data>
+  <data name="الإيميل" xml:space="preserve"><value>Email</value></data>
+  <data name="الإيميل أو الباسورد غلط." xml:space="preserve"><value>Wrong email or password.</value></data>
+  <data name="الاتجاه" xml:space="preserve"><value>Direction</value></data>
+  <data name="الاتجاه غير صحيح." xml:space="preserve"><value>Invalid direction.</value></data>
+  <data name="الاسم" xml:space="preserve"><value>Name</value></data>
+  <data name="الاسم طويل جدًا." xml:space="preserve"><value>The name is too long.</value></data>
+  <data name="الاسم لازم يكون أقل من {0} حرف." xml:space="preserve"><value>The name must be under {0} characters.</value></data>
+  <data name="الاسم والموبايل" xml:space="preserve"><value>Name and mobile</value></data>
+  <data name="الباسورد" xml:space="preserve"><value>Password</value></data>
+  <data name="التحويل اترفض والكراسي فضيت." xml:space="preserve"><value>The transfer was rejected and the seats are free again.</value></data>
+  <data name="التعديل بيطبق على الرحلات الجاية اللي لسه مفيهاش حجوزات. الرحلات اللي فيها حجوزات بتفضل زي ما هي عشان الركاب حجزوا على ميعادها." xml:space="preserve"><value>Changes apply to upcoming trips that have no bookings yet. Trips with bookings stay as they are, because passengers booked them at that time.</value></data>
+  <data name="الحالة" xml:space="preserve"><value>Status</value></data>
+  <data name="الحجز اتأكد." xml:space="preserve"><value>The booking is confirmed.</value></data>
+  <data name="الحجز اتلغى والكراسي فضيت." xml:space="preserve"><value>The booking was cancelled and the seats are free again.</value></data>
+  <data name="الحجز اتلغى والكرسي بقى فاضي." xml:space="preserve"><value>The booking was cancelled and the seat is free again.</value></data>
+  <data name="الحجز ده اتلغى." xml:space="preserve"><value>This booking was cancelled.</value></data>
+  <data name="الحجز ده مقفول ومينفعش يترفعله تحويل." xml:space="preserve"><value>This booking is closed and can no longer receive a transfer.</value></data>
+  <data name="الحجز متأكد خلاص." xml:space="preserve"><value>The booking is already confirmed.</value></data>
+  <data name="الحجز مش موجود." xml:space="preserve"><value>The booking does not exist.</value></data>
+  <data name="الخانة &quot;{0}&quot; في الصف {1} مش مفهومة. استخدم رقم الكرسي، أو _ لمكان فاضي، أو D للسواق." xml:space="preserve"><value>The cell "{0}" in row {1} is not understood. Use a seat number, _ for an empty spot, or D for the driver.</value></data>
+  <data name="الخط" xml:space="preserve"><value>Route</value></data>
+  <data name="الخط اتحفظ." xml:space="preserve"><value>The route was saved.</value></data>
+  <data name="الخط لازم يكون فيه محطتين على الأقل." xml:space="preserve"><value>The route needs at least two stops.</value></data>
+  <data name="الخط لازم يكون فيه محطتين على الأقل: مكان الانطلاق ومكان الوصول." xml:space="preserve"><value>The route needs at least two stops: the start and the end.</value></data>
+  <data name="الرحلات" xml:space="preserve"><value>Trips</value></data>
+  <data name="الرحلة دي اتحركت خلاص." xml:space="preserve"><value>This trip has already left.</value></data>
+  <data name="الرحلة دي اتحركت خلاص، ومينفعش تتحجز." xml:space="preserve"><value>This trip has already left and can no longer be booked.</value></data>
+  <data name="الرحلة دي كاملة. جرب ميعاد تاني." xml:space="preserve"><value>This trip is full. Try another time.</value></data>
+  <data name="الرحلة دي مش متاحة للحجز أونلاين. كلم المكتب." xml:space="preserve"><value>This trip is not available for online booking. Please call the office.</value></data>
+  <data name="الرحلة لازم تكون تابعة لميعاد." xml:space="preserve"><value>A trip must belong to a schedule.</value></data>
+  <data name="الرحلة مش موجودة." xml:space="preserve"><value>The trip does not exist.</value></data>
+  <data name="الركوب" xml:space="preserve"><value>Pick-up</value></data>
+  <data name="الساعة" xml:space="preserve"><value>Time</value></data>
+  <data name="الساعة {0}" xml:space="preserve"><value>at {0}</value></data>
+  <data name="الساعة والسعر والأتوبيس والسواق" xml:space="preserve"><value>Time, price, bus and driver</value></data>
+  <data name="السعر" xml:space="preserve"><value>Price</value></data>
+  <data name="السعر لازم يكون أكبر من صفر." xml:space="preserve"><value>The price must be greater than zero.</value></data>
+  <data name="السواق" xml:space="preserve"><value>Driver</value></data>
+  <data name="السواق {0}" xml:space="preserve"><value>Driver {0}</value></data>
+  <data name="السواق ده متوقف." xml:space="preserve"><value>This driver is inactive.</value></data>
+  <data name="السواق مش موجود." xml:space="preserve"><value>The driver does not exist.</value></data>
+  <data name="السواقين" xml:space="preserve"><value>Drivers</value></data>
+  <data name="الشكل مينفعش يتعدل بعد ما يتحفظ، عشان الحجوزات القديمة مربوطة بأرقام كراسيه. لو الكراسي اتغيرت اعمل شكل جديد وغيّره للأتوبيس." xml:space="preserve"><value>A layout cannot be edited after it is saved, because existing bookings refer to its seat numbers. If the seats change, create a new layout and assign it to the bus.</value></data>
+  <data name="الصف {0} فيه أكتر من {1} خانات." xml:space="preserve"><value>Row {0} has more than {1} cells.</value></data>
+  <data name="الغي" xml:space="preserve"><value>Cancel</value></data>
+  <data name="الغي الحجز" xml:space="preserve"><value>Cancel the booking</value></data>
+  <data name="القاهرة ⇄ السويس" xml:space="preserve"><value>Cairo ⇄ Suez</value></data>
+  <data name="الكراسي" xml:space="preserve"><value>Seats</value></data>
+  <data name="الكراسي دي اتحجزت لحد تاني: {0}. اختار كراسي تانية." xml:space="preserve"><value>These seats were just taken by someone else: {0}. Please pick other seats.</value></data>
+  <data name="الكراسي دي مش موجودة في الأتوبيس: {0}." xml:space="preserve"><value>These seats do not exist on the bus: {0}.</value></data>
+  <data name="الكراسي:" xml:space="preserve"><value>Seats:</value></data>
+  <data name="الكرسي" xml:space="preserve"><value>Seat</value></data>
+  <data name="الكرسي رقم {0} متكرر." xml:space="preserve"><value>Seat {0} appears more than once.</value></data>
+  <data name="الكرسي محجوزلك لمدة" xml:space="preserve"><value>Your seat is held for</value></data>
+  <data name="الكرسي هيتحجزلك مؤقتًا لحد ما تحوّل بإنستا باي وترفع صورة التحويل." xml:space="preserve"><value>The seat is held for you until you pay with InstaPay and upload the transfer screenshot.</value></data>
+  <data name="الكشف" xml:space="preserve"><value>Manifest</value></data>
+  <data name="اللوحة" xml:space="preserve"><value>Plate</value></data>
+  <data name="اللوحة وشكل الكراسي" xml:space="preserve"><value>Plate number and seat layout</value></data>
+  <data name="المبلغ" xml:space="preserve"><value>Amount</value></data>
+  <data name="المبلغ وصل · أكّد الحجز" xml:space="preserve"><value>Money received · confirm booking</value></data>
+  <data name="المحطات" xml:space="preserve"><value>Stops</value></data>
+  <data name="المحطة" xml:space="preserve"><value>Stop</value></data>
+  <data name="المحطة مش موجودة." xml:space="preserve"><value>The stop does not exist.</value></data>
+  <data name="المصدر" xml:space="preserve"><value>Source</value></data>
+  <data name="المطلوب:" xml:space="preserve"><value>Due:</value></data>
+  <data name="المكتب رفض التحويل:" xml:space="preserve"><value>The office rejected the transfer:</value></data>
+  <data name="الملف لازم يكون صورة (JPG أو PNG أو WEBP) أو PDF." xml:space="preserve"><value>The file must be an image (JPG, PNG or WEBP) or a PDF.</value></data>
+  <data name="المواعيد" xml:space="preserve"><value>Schedules</value></data>
+  <data name="المواعيد الثابتة" xml:space="preserve"><value>Fixed schedules</value></data>
+  <data name="الموبايل" xml:space="preserve"><value>Mobile</value></data>
+  <data name="الموبايل (بيظهر للراكب بعد تأكيد الحجز)" xml:space="preserve"><value>Mobile (shown to the passenger after the booking is confirmed)</value></data>
+  <data name="الميعاد مش موجود." xml:space="preserve"><value>The schedule does not exist.</value></data>
+  <data name="النزول" xml:space="preserve"><value>Drop-off</value></data>
+  <data name="النهارده" xml:space="preserve"><value>Today</value></data>
+  <data name="الوقت لازم يكون بين 0 و 1440 دقيقة." xml:space="preserve"><value>The time must be between 0 and 1440 minutes.</value></data>
+  <data name="اليوم اللي بعده" xml:space="preserve"><value>Next day</value></data>
+  <data name="اليوم اللي قبله" xml:space="preserve"><value>Previous day</value></data>
+  <data name="انسخ" xml:space="preserve"><value>Copy</value></data>
+  <data name="بعد كام دقيقة" xml:space="preserve"><value>Minutes from start</value></data>
+  <data name="بكرة" xml:space="preserve"><value>Tomorrow</value></data>
+  <data name="بيراجع" xml:space="preserve"><value>In review</value></data>
+  <data name="تذكرتك" xml:space="preserve"><value>Your ticket</value></data>
+  <data name="ترتيب المحطات" xml:space="preserve"><value>Stop order</value></data>
+  <data name="ترتيب المحطات ووقتها في كل اتجاه" xml:space="preserve"><value>Stop order and timing in each direction</value></data>
+  <data name="ترتيب وأرقام الكراسي في الميني باص" xml:space="preserve"><value>Seat arrangement and numbers in the minibus</value></data>
+  <data name="تعديل" xml:space="preserve"><value>Edit</value></data>
+  <data name="تعديل الأتوبيس" xml:space="preserve"><value>Edit bus</value></data>
+  <data name="تعديل السواق" xml:space="preserve"><value>Edit driver</value></data>
+  <data name="تعديل المحطة" xml:space="preserve"><value>Edit stop</value></data>
+  <data name="تعديل الميعاد" xml:space="preserve"><value>Edit schedule</value></data>
+  <data name="تغيير الأتوبيس أو السواق للرحلة دي بس" xml:space="preserve"><value>Change the bus or driver for this trip only</value></data>
+  <data name="تلغي حجز {0}؟" xml:space="preserve"><value>Cancel the booking of {0}?</value></data>
+  <data name="حجز لراكب بيتصل" xml:space="preserve"><value>Book for a caller</value></data>
+  <data name="حجزت قبل كده؟ افتح اللينك اللي ظهرلك بعد الحجز عشان تشوف تذكرتك." xml:space="preserve"><value>Already booked? Open the link you got after booking to see your ticket.</value></data>
+  <data name="حجزك متأكد. انزل لمحطتك قبل الميعاد بربع ساعة، ولو اتأخر الأتوبيس كلم السواق." xml:space="preserve"><value>Your booking is confirmed. Be at your stop 15 minutes early, and call the driver if the bus is late.</value></data>
+  <data name="حجم الملف أكبر من المسموح." xml:space="preserve"><value>The file is larger than allowed.</value></data>
+  <data name="حجم الملف لازم يكون أقل من {0} ميجا." xml:space="preserve"><value>The file must be under {0} MB.</value></data>
+  <data name="حد حجز نفس الكرسي في نفس اللحظة. اختار كرسي تاني." xml:space="preserve"><value>Someone booked the same seat at the same moment. Please pick another seat.</value></data>
+  <data name="حصل خطأ واحنا بنفذ طلبك. جرب تاني بعد شوية، ولو المشكلة فضلت كلم المكتب." xml:space="preserve"><value>Something went wrong while handling your request. Try again in a moment, and call the office if it keeps happening.</value></data>
+  <data name="حصلت مشكلة" xml:space="preserve"><value>Something went wrong</value></data>
+  <data name="حفظ" xml:space="preserve"><value>Save</value></data>
+  <data name="حفظ الخط" xml:space="preserve"><value>Save route</value></data>
+  <data name="حوّل {0} بإنستا باي على {1}" xml:space="preserve"><value>Send {0} with InstaPay to {1}</value></data>
+  <data name="خروج" xml:space="preserve"><value>Sign out</value></data>
+  <data name="خلصت" xml:space="preserve"><value>expired</value></data>
+  <data name="دخول" xml:space="preserve"><value>Sign in</value></data>
+  <data name="دخول المكتب" xml:space="preserve"><value>Office sign-in</value></data>
+  <data name="دقيقة" xml:space="preserve"><value>min</value></data>
+  <data name="رتّب المحطات من أول مكان الأتوبيس بيتحرك منه لحد آخر محطة. اكتب جنب كل محطة بعد كام دقيقة من التحرك بيوصلها، والوقت ده بيظهر للراكب في التذكرة. سيب الأسطر الفاضية زي ما هي." xml:space="preserve"><value>List the stops from where the bus starts to the last stop. Next to each stop, enter how many minutes after departure the bus reaches it; passengers see this time on their ticket. Leave unused rows empty.</value></data>
+  <data name="رحلات اليوم" xml:space="preserve"><value>Today's trips</value></data>
+  <data name="رقم السواق طويل جدًا." xml:space="preserve"><value>The driver's number is too long.</value></data>
+  <data name="رقم السواق مطلوب." xml:space="preserve"><value>The driver's number is required.</value></data>
+  <data name="رقم الكرسي غير صحيح." xml:space="preserve"><value>Invalid seat number.</value></data>
+  <data name="رقم اللوحة" xml:space="preserve"><value>Plate number</value></data>
+  <data name="رقم اللوحة طويل جدًا." xml:space="preserve"><value>The plate number is too long.</value></data>
+  <data name="رقم اللوحة مطلوب." xml:space="preserve"><value>The plate number is required.</value></data>
+  <data name="رقم الموبايل" xml:space="preserve"><value>Mobile number</value></data>
+  <data name="رقم الموبايل طويل جدًا." xml:space="preserve"><value>The mobile number is too long.</value></data>
+  <data name="رقم الموبايل لازم يكون 11 رقم ويبدأ بـ 010 أو 011 أو 012 أو 015." xml:space="preserve"><value>The mobile number must be 11 digits starting with 010, 011, 012 or 015.</value></data>
+  <data name="سبب الرفض (هيظهر للراكب)" xml:space="preserve"><value>Rejection reason (shown to the passenger)</value></data>
+  <data name="سبب الرفض لازم يكون أقل من {0} حرف." xml:space="preserve"><value>The rejection reason must be under {0} characters.</value></data>
+  <data name="سعر الكرسي" xml:space="preserve"><value>Seat price</value></data>
+  <data name="سعر الكرسي غير صحيح." xml:space="preserve"><value>Invalid seat price.</value></data>
+  <data name="سواق جديد" xml:space="preserve"><value>New driver</value></data>
+  <data name="شغال" xml:space="preserve"><value>Active</value></data>
+  <data name="شغال (لو قفلته، الرحلات بتاعته تختفي من الحجز أونلاين، والحجوزات الموجودة تفضل زي ما هي)" xml:space="preserve"><value>Active (if you turn it off, its trips disappear from online booking and existing bookings stay as they are)</value></data>
+  <data name="شغالة" xml:space="preserve"><value>Active</value></data>
+  <data name="شكل الكراسي" xml:space="preserve"><value>Seat layout</value></data>
+  <data name="شكل الكراسي الجديد مافيهوش كراسي محجوزة فعلًا: {0}. الغي الحجوزات دي أو انقلها الأول." xml:space="preserve"><value>The new layout is missing seats that are already booked: {0}. Cancel or move those bookings first.</value></data>
+  <data name="شكل الكراسي مش موجود." xml:space="preserve"><value>The seat layout does not exist.</value></data>
+  <data name="شكل جديد" xml:space="preserve"><value>New layout</value></data>
+  <data name="صورة التحويل" xml:space="preserve"><value>Transfer screenshot</value></data>
+  <data name="صورة التحويل اترفعت قبل كده، والمكتب بيراجعها." xml:space="preserve"><value>The transfer screenshot was already uploaded and the office is reviewing it.</value></data>
+  <data name="صورة التحويل مش موجودة." xml:space="preserve"><value>The transfer screenshot does not exist.</value></data>
+  <data name="صوّر شاشة التحويل وارفعها هنا" xml:space="preserve"><value>Take a screenshot of the transfer and upload it here</value></data>
+  <data name="عشان تأكد الحجز" xml:space="preserve"><value>To confirm your booking</value></data>
+  <data name="فاضي" xml:space="preserve"><value>Free</value></data>
+  <data name="فيه {0} تحويل مستني مراجعة ←" xml:space="preserve"><value>{0} transfers waiting for review →</value></data>
+  <data name="فيه أتوبيس بنفس رقم اللوحة." xml:space="preserve"><value>A bus with this plate number already exists.</value></data>
+  <data name="فيه شكل كراسي بنفس الاسم." xml:space="preserve"><value>A seat layout with this name already exists.</value></data>
+  <data name="فيه محطة بنفس الاسم." xml:space="preserve"><value>A stop with this name already exists.</value></data>
+  <data name="فيه محطة في الخط مش موجودة أو متوقفة." xml:space="preserve"><value>A stop on the route does not exist or is inactive.</value></data>
+  <data name="فيه ميعاد بنفس الاتجاه والساعة." xml:space="preserve"><value>A schedule with the same direction and time already exists.</value></data>
+  <data name="قدام" xml:space="preserve"><value>Front</value></data>
+  <data name="كامل" xml:space="preserve"><value>Full</value></data>
+  <data name="كشف الرحلة" xml:space="preserve"><value>Trip manifest</value></data>
+  <data name="كشف الركاب (مترتب بمكان الركوب)" xml:space="preserve"><value>Passenger manifest (ordered by pick-up)</value></data>
+  <data name="كل سطر في الخط لازم يكون ليه محطة." xml:space="preserve"><value>Every row on the route needs a stop.</value></data>
+  <data name="كود الحجز مطلوب." xml:space="preserve"><value>The booking code is required.</value></data>
+  <data name="كود الطلب:" xml:space="preserve"><value>Request ID:</value></data>
+  <data name="لازم يكون فيه أتوبيس شغال وسواق شغال الأول." xml:space="preserve"><value>You need an active bus and an active driver first.</value></data>
+  <data name="لازم يكون فيه كرسي واحد على الأقل." xml:space="preserve"><value>There must be at least one seat.</value></data>
+  <data name="لسه مفيش حجوزات." xml:space="preserve"><value>No bookings yet.</value></data>
+  <data name="لو حوّلت فعلًا كلم المكتب على {0}." xml:space="preserve"><value>If you already paid, call the office on {0}.</value></data>
+  <data name="لو كنت دفعت، المكتب هيتواصل معاك لرجوع الفلوس." xml:space="preserve"><value>If you had paid, the office will contact you about the refund.</value></data>
+  <data name="متأكد" xml:space="preserve"><value>Confirmed</value></data>
+  <data name="متأكد إنك عايز تلغي الحجز؟" xml:space="preserve"><value>Are you sure you want to cancel the booking?</value></data>
+  <data name="متأكد: {0} كرسي · فاضي: {1} من {2}" xml:space="preserve"><value>Confirmed: {0} seats · Free: {1} of {2}</value></data>
+  <data name="متوقف" xml:space="preserve"><value>Inactive</value></data>
+  <data name="متوقفة" xml:space="preserve"><value>Inactive</value></data>
+  <data name="مثلًا: قدام البنك الأهلي" xml:space="preserve"><value>e.g. in front of the National Bank</value></data>
+  <data name="مثلًا: هايس 14 راكب" xml:space="preserve"><value>e.g. HiAce 14 seats</value></data>
+  <data name="محاولات غلط كتير. الحساب اتقفل ربع ساعة." xml:space="preserve"><value>Too many failed attempts. The account is locked for 15 minutes.</value></data>
+  <data name="محاولات كتير في وقت قصير. استنى شوية وجرب تاني." xml:space="preserve"><value>Too many attempts in a short time. Please wait a bit and try again.</value></data>
+  <data name="محجوز" xml:space="preserve"><value>Taken</value></data>
+  <data name="محطة جديدة" xml:space="preserve"><value>New stop</value></data>
+  <data name="مدة حجز الكرسي خلصت قبل رفع التحويل. لو حولت الفلوس كلم المكتب." xml:space="preserve"><value>The seat hold expired before the transfer was uploaded. If you already paid, call the office.</value></data>
+  <data name="مدة حجز الكرسي خلصت قبل ما صورة التحويل توصل." xml:space="preserve"><value>The seat hold expired before the transfer screenshot arrived.</value></data>
+  <data name="مدة حجز الكرسي غير صحيحة." xml:space="preserve"><value>Invalid seat hold duration.</value></data>
+  <data name="مدة حجز الكرسي لسه ما خلصتش." xml:space="preserve"><value>The seat hold has not expired yet.</value></data>
+  <data name="مراجعة التحويلات" xml:space="preserve"><value>Transfer review</value></data>
+  <data name="مراجعة الدفع" xml:space="preserve"><value>Payment review</value></data>
+  <data name="مستني تحويل" xml:space="preserve"><value>Awaiting payment</value></data>
+  <data name="مفيش تحويلات مستنية مراجعة." xml:space="preserve"><value>No transfers waiting for review.</value></data>
+  <data name="مفيش رحلات في اليوم ده. لو المواعيد متسجلة، الرحلات بتتولد لوحدها للأيام الجاية." xml:space="preserve"><value>No trips on this day. If schedules exist, trips are generated automatically for the coming days.</value></data>
+  <data name="مفيش رحلات متاحة في اليوم ده." xml:space="preserve"><value>No trips available on this day.</value></data>
+  <data name="مكان الركوب أو النزول مش على خط الرحلة دي." xml:space="preserve"><value>The pick-up or drop-off point is not on this trip's route.</value></data>
+  <data name="مكان الركوب لازم ييجي قبل مكان النزول في اتجاه الرحلة." xml:space="preserve"><value>The pick-up point must come before the drop-off point in the trip's direction.</value></data>
+  <data name="مكان الركوب ومكان النزول لازم يكونوا مختلفين." xml:space="preserve"><value>Pick-up and drop-off must be different.</value></data>
+  <data name="مكان السواق (D) متكرر أكتر من مرة." xml:space="preserve"><value>The driver's spot (D) appears more than once.</value></data>
+  <data name="ملاحظة" xml:space="preserve"><value>Note</value></data>
+  <data name="ملاحظة للراكب (اختياري)" xml:space="preserve"><value>Note for passengers (optional)</value></data>
+  <data name="ميعاد جديد" xml:space="preserve"><value>New schedule</value></data>
+  <data name="مينفعش الحجز يتحول من '{0}' لـ '{1}'." xml:space="preserve"><value>A booking cannot move from '{0}' to '{1}'.</value></data>
+  <data name="نسخة تجريبية" xml:space="preserve"><value>Demo version</value></data>
+  <data name="نفس الكرسي متكرر في الحجز." xml:space="preserve"><value>The same seat appears twice in the booking.</value></data>
+  <data name="نفس الكرسي متكرر." xml:space="preserve"><value>The same seat appears twice.</value></data>
+  <data name="نفس المحطة متكررة في الخط." xml:space="preserve"><value>The same stop appears twice on the route.</value></data>
+  <data name="هتركب من" xml:space="preserve"><value>Pick-up</value></data>
+  <data name="هتنزل في" xml:space="preserve"><value>Drop-off</value></data>
+  <data name="وصلتنا صورة التحويل. المكتب هيراجعها ويأكدلك الحجز." xml:space="preserve"><value>We received your transfer screenshot. The office will review it and confirm your booking.</value></data>
+  <data name="وصلتنا صورة التحويل، والمكتب بيراجعها. الصفحة دي هتتحدث لوحدها، وأول ما الحجز يتأكد هيظهرلك رقم السواق." xml:space="preserve"><value>We received your transfer screenshot and the office is reviewing it. This page refreshes by itself, and the driver's number appears as soon as the booking is confirmed.</value></data>
+  <data name="وقت كل محطة لازم يكون أكبر من المحطة اللي قبلها." xml:space="preserve"><value>Each stop's time must be later than the stop before it.</value></data>
+  <data name="يركب من" xml:space="preserve"><value>Gets on at</value></data>
+  <data name="ينزل في" xml:space="preserve"><value>Gets off at</value></data>
+  <data name="← الإعدادات" xml:space="preserve"><value>← Settings</value></data>
+  <data name="← رجوع للرحلات" xml:space="preserve"><value>← Back to trips</value></data>
+  <data name="← رحلات اليوم" xml:space="preserve"><value>← Today's trips</value></data>
+</root>

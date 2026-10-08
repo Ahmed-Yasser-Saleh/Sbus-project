@@ -1,0 +1,15 @@
+@page
+@{
+    ViewData["Title"] = L["الإعدادات"].Value;
+}
+
+<h1 class="h5 mb-3">@L["الإعدادات"]</h1>
+
+<div class="settings-grid">
+    <a href="/Office/Settings/Stops"><strong>@L["المحطات"]</strong><span>@L["أماكن الركوب والنزول"]</span></a>
+    <a href="/Office/Settings/Route"><strong>@L["الخط"]</strong><span>@L["ترتيب المحطات ووقتها في كل اتجاه"]</span></a>
+    <a href="/Office/Settings/Layouts"><strong>@L["شكل الكراسي"]</strong><span>@L["ترتيب وأرقام الكراسي في الميني باص"]</span></a>
+    <a href="/Office/Settings/Buses"><strong>@L["الأتوبيسات"]</strong><span>@L["اللوحة وشكل الكراسي"]</span></a>
+    <a href="/Office/Settings/Drivers"><strong>@L["السواقين"]</strong><span>@L["الاسم والموبايل"]</span></a>
+    <a href="/Office/Settings/Schedules"><strong>@L["المواعيد"]</strong><span>@L["الساعة والسعر والأتوبيس والسواق"]</span></a>
+</div>

@@ -1,0 +1,50 @@
+@page
+@model SBus.Web.Pages.Office.PaymentsModel
+@{
+    ViewData["Title"] = L["مراجعة الدفع"].Value;
+}
+
+<h1 class="h5 mb-3">@L["مراجعة التحويلات"]</h1>
+
+<partial name="_ErrorSummary" />
+
+@if (Model.Pending.Count == 0)
+{
+    <div class="empty-state">@L["مفيش تحويلات مستنية مراجعة."]</div>
+}
+
+<div class="row g-3">
+    @foreach (var p in Model.Pending)
+    {
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <a href="/Office/Receipt?bookingId=@p.BookingId" target="_blank" rel="noopener" class="receipt-thumb">
+                    <img src="/Office/Receipt?bookingId=@p.BookingId" alt="@L["صورة التحويل"]" loading="lazy" data-fallback="@L["افتح الملف (PDF)"]" />
+                </a>
+                <div class="card-body">
+                    <div class="fw-semibold">@p.PassengerName</div>
+                    <div class="small" dir="ltr">@p.PhoneNumber</div>
+                    <div class="small text-secondary mt-1">
+                        @Fmt.Direction(p.Direction) · @Fmt.Date(p.ServiceDate) · @Fmt.Time(p.DepartureTime)
+                    </div>
+                    <div class="mt-2">@L["الكراسي:"] <strong>@Fmt.Seats(p.Seats)</strong> · @L["المطلوب:"] <strong>@Fmt.Money(p.Amount)</strong></div>
+                    @if (p.ReceiptSubmittedAtUtc is DateTimeOffset submitted)
+                    {
+                        <div class="small text-secondary">@L["اترفع {0}", Fmt.LocalDateTime(submitted)]</div>
+                    }
+                </div>
+                <div class="card-footer d-grid gap-2">
+                    <form method="post" asp-page-handler="Confirm">
+                        <input type="hidden" name="bookingId" value="@p.BookingId" />
+                        <button type="submit" class="btn btn-success w-100">@L["المبلغ وصل · أكّد الحجز"]</button>
+                    </form>
+                    <form method="post" asp-page-handler="Reject" class="input-group input-group-sm">
+                        <input type="hidden" name="bookingId" value="@p.BookingId" />
+                        <input class="form-control" name="reason" placeholder="@L["سبب الرفض (هيظهر للراكب)"]" maxlength="200" required />
+                        <button type="submit" class="btn btn-outline-danger">@L["ارفض"]</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>

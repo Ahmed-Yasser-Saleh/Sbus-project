@@ -1,0 +1,68 @@
+@page
+@model SBus.Web.Pages.Office.Settings.BusesModel
+@{
+    ViewData["Title"] = L["الأتوبيسات"].Value;
+}
+
+<a href="/Office/Settings" class="small">@L["← الإعدادات"]</a>
+<h1 class="h5 my-3">@L["الأتوبيسات"]</h1>
+
+<partial name="_ErrorSummary" />
+
+<div class="row g-4">
+    <div class="col-md-7">
+        <table class="table table-sm align-middle">
+            <thead><tr><th>@L["اللوحة"]</th><th>@L["شكل الكراسي"]</th><th>@L["الكراسي"]</th><th>@L["الحالة"]</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var b in Model.Buses)
+                {
+                    <tr class="@(b.IsActive ? null : "text-secondary")">
+                        <td>@b.PlateNumber</td>
+                        <td>@b.SeatLayoutName</td>
+                        <td>@b.Capacity</td>
+                        <td>@(b.IsActive ? L["شغال"] : L["متوقف"])</td>
+                        <td><a class="btn btn-sm btn-outline-secondary" href="?id=@b.BusId">@L["تعديل"]</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-5">
+        <h2 class="h6">@(Model.Id is null ? L["أتوبيس جديد"] : L["تعديل الأتوبيس"])</h2>
+        @if (Model.Layouts.Count == 0)
+        {
+            <div class="alert alert-warning"><a href="/Office/Settings/Layouts">@L["اعمل شكل كراسي الأول."]</a></div>
+        }
+        else
+        {
+            <form method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="mb-2">
+                    <label class="form-label" for="plate">@L["رقم اللوحة"]</label>
+                    <input class="form-control" id="plate" asp-for="PlateNumber" required maxlength="100" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label" for="layout">@L["شكل الكراسي"]</label>
+                    <select class="form-select" id="layout" asp-for="SeatLayoutId">
+                        @foreach (var l in Model.Layouts)
+                        {
+                            <option value="@l.SeatLayoutId">@L["{0} ({1} كرسي)", l.Name, l.Capacity]</option>
+                        }
+                    </select>
+                </div>
+                @if (Model.Id is not null)
+                {
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="active" asp-for="IsActive" />
+                        <label class="form-check-label" for="active">@L["شغال"]</label>
+                    </div>
+                }
+                <button type="submit" class="btn btn-primary">@L["حفظ"]</button>
+                @if (Model.Id is not null)
+                {
+                    <a class="btn btn-link" href="?">@L["إلغاء"]</a>
+                }
+            </form>
+        }
+    </div>
+</div>

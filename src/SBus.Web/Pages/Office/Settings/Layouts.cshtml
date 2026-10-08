@@ -1,0 +1,44 @@
+@page
+@model SBus.Web.Pages.Office.Settings.LayoutsModel
+@{
+    ViewData["Title"] = L["شكل الكراسي"].Value;
+}
+
+<a href="/Office/Settings" class="small">@L["← الإعدادات"]</a>
+<h1 class="h5 my-3">@L["شكل الكراسي"]</h1>
+
+<partial name="_ErrorSummary" />
+
+<div class="row g-4">
+    <div class="col-md-6">
+        @foreach (var layout in Model.Layouts)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="fw-semibold">@layout.Name <span class="text-secondary small">· @L["{0} كرسي", layout.Capacity]</span></div>
+                    <pre class="grid-preview mt-2 mb-0" dir="ltr">@layout.Grid</pre>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="col-md-6">
+        <h2 class="h6">@L["شكل جديد"]</h2>
+        <p class="small text-secondary">
+            @L["اكتب كل صف من الكراسي في سطر، من قدام لورا، ومن الشمال لليمين زي ما بتبص على الأتوبيس من ورا. اكتب رقم الكرسي زي ما هو مكتوب عليه، و _ للممر أو المكان الفاضي، و D لمكان السواق."]
+        </p>
+        <form method="post">
+            <div class="mb-2">
+                <label class="form-label" for="name">@L["الاسم"]</label>
+                <input class="form-control" id="name" asp-for="Name" required maxlength="100" placeholder="@L["مثلًا: هايس 14 راكب"]" />
+            </div>
+            <div class="mb-2">
+                <label class="form-label" for="grid">@L["الكراسي"]</label>
+                <textarea class="form-control grid-input" id="grid" asp-for="Grid" rows="8" dir="ltr" required placeholder="D _ 1 2&#10;3 4 _ 5&#10;6 7 _ 8"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">@L["حفظ"]</button>
+        </form>
+        <p class="small text-secondary mt-2">
+            @L["الشكل مينفعش يتعدل بعد ما يتحفظ، عشان الحجوزات القديمة مربوطة بأرقام كراسيه. لو الكراسي اتغيرت اعمل شكل جديد وغيّره للأتوبيس."]
+        </p>
+    </div>
+</div>

@@ -1,0 +1,138 @@
+@page "/t/{token}"
+@model TicketModel
+@{
+    var t = Model.Ticket!;
+    ViewData["Title"] = L["تذكرتك"].Value;
+    var ticketUrl = $"{Request.Scheme}://{Request.Host}/t/{t.PublicToken}";
+    var officePhone = $"<a href=\"tel:{t.OfficePhone}\" dir=\"ltr\">{t.OfficePhone}</a>";
+}
+
+@section Head {
+    <meta name="robots" content="noindex" />
+    <meta name="referrer" content="no-referrer" />
+    @if (t.Status == BookingStatus.AwaitingConfirmation)
+    {
+        <meta http-equiv="refresh" content="60" />
+    }
+}
+
+<partial name="_ErrorSummary" />
+
+<section class="ticket">
+    <div class="ticket-status @Fmt.StatusCss(t.Status)">@Fmt.Status(t.Status)</div>
+
+    <div class="ticket-body">
+        <div class="ticket-route">@Fmt.Direction(t.Direction)</div>
+        <div class="ticket-when">@Fmt.Date(t.ServiceDate) · @L["الساعة {0}", Fmt.Time(t.DepartureTime)]</div>
+
+        <dl class="ticket-grid">
+            <dt>@L["الكرسي"]</dt>
+            <dd class="ticket-seats">@Fmt.Seats(t.Seats)</dd>
+
+            <dt>@L["الاسم"]</dt>
+            <dd>@t.PassengerName</dd>
+
+            <dt>@L["الركوب"]</dt>
+            <dd>
+                @t.PickupStopName
+                @if (t.EstimatedPickupTime is TimeOnly pickupTime)
+                {
+                    <span class="text-secondary small">@L["(الأتوبيس عندك حوالي {0})", Fmt.Time(pickupTime)]</span>
+                }
+            </dd>
+
+            <dt>@L["النزول"]</dt>
+            <dd>@t.DropoffStopName</dd>
+
+            <dt>@L["المبلغ"]</dt>
+            <dd>@Fmt.Money(t.Amount)</dd>
+
+            @if (t.DriverName is not null)
+            {
+                <dt>@L["السواق"]</dt>
+                <dd>@t.DriverName · <a href="tel:@t.DriverPhoneNumber" dir="ltr">@t.DriverPhoneNumber</a></dd>
+            }
+        </dl>
+    </div>
+</section>
+
+@switch (t.Status)
+{
+    case BookingStatus.HoldPendingPayment:
+        <section class="pay-box">
+            <h2 class="h6">@L["عشان تأكد الحجز"]</h2>
+            <ol class="mb-3">
+                <li>@L["حوّل {0} بإنستا باي على {1}", Fmt.Money(t.Amount), t.InstaPayAddress]</li>
+                <li>@L["صوّر شاشة التحويل وارفعها هنا"]</li>
+            </ol>
+
+            @if (t.HoldExpiresAtUtc is DateTimeOffset expires)
+            {
+                <div class="countdown mb-3" data-countdown="@expires.ToUnixTimeMilliseconds()" data-minutes-label="@L["دقيقة"]" data-expired-label="@L["خلصت"]">
+                    @L["الكرسي محجوزلك لمدة"] <strong data-countdown-text>—</strong>
+                </div>
+            }
+
+            <form method="post" asp-page-handler="Receipt" enctype="multipart/form-data">
+                <input class="form-control mb-2" type="file" name="receipt" accept="image/jpeg,image/png,image/webp,application/pdf" required />
+                <button type="submit" class="btn btn-primary w-100">@L["ارفع صورة التحويل"]</button>
+            </form>
+        </section>
+        break;
+
+    case BookingStatus.AwaitingConfirmation:
+        <div class="alert alert-info">
+            @L["وصلتنا صورة التحويل، والمكتب بيراجعها. الصفحة دي هتتحدث لوحدها، وأول ما الحجز يتأكد هيظهرلك رقم السواق."]
+        </div>
+        break;
+
+    case BookingStatus.Confirmed:
+        <div class="alert alert-success">
+            @L["حجزك متأكد. انزل لمحطتك قبل الميعاد بربع ساعة، ولو اتأخر الأتوبيس كلم السواق."]
+        </div>
+        break;
+
+    case BookingStatus.Rejected:
+        <div class="alert alert-danger">
+            @L["المكتب رفض التحويل:"] <strong>@t.RejectionReason</strong>
+            <br />@Html.Raw(L["لو حوّلت فعلًا كلم المكتب على {0}.", officePhone].Value)
+        </div>
+        break;
+
+    case BookingStatus.Expired:
+        <div class="alert alert-secondary">
+            @L["مدة حجز الكرسي خلصت قبل ما صورة التحويل توصل."]
+            @Html.Raw(L["لو حوّلت فعلًا كلم المكتب على {0}.", officePhone].Value)
+            <br /><a href="/">@L["احجز من جديد"]</a>
+        </div>
+        break;
+
+    case BookingStatus.Cancelled:
+        <div class="alert alert-secondary">
+            @L["الحجز ده اتلغى."]
+            @if (t.Source == BookingSource.Online)
+            {
+                <span>@L["لو كنت دفعت، المكتب هيتواصل معاك لرجوع الفلوس."]</span>
+            }
+        </div>
+        break;
+}
+
+<section class="save-link">
+    <div class="small text-secondary mb-1">@L["احفظ اللينك ده. هو الطريقة الوحيدة تشوف بيها تذكرتك أو تلغيها."]</div>
+    <div class="input-group">
+        <input class="form-control" value="@ticketUrl" readonly dir="ltr" id="ticket-url" />
+        <button class="btn btn-outline-secondary" type="button" data-copy="#ticket-url" data-copied-label="@L["اتنسخ"]">@L["انسخ"]</button>
+    </div>
+</section>
+
+@if (t.CanCancel)
+{
+    <form method="post" asp-page-handler="Cancel" class="mt-4" data-confirm="@L["متأكد إنك عايز تلغي الحجز؟"]">
+        <button type="submit" class="btn btn-outline-danger btn-sm">@L["الغي الحجز"]</button>
+        @if (t.Status != BookingStatus.HoldPendingPayment)
+        {
+            <div class="small text-secondary mt-1">@L["الإلغاء متاح لحد {0}. الفلوس بترجع عن طريق المكتب.", Fmt.LocalDateTime(t.CancellationDeadlineUtc)]</div>
+        }
+    </form>
+}

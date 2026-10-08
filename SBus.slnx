@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SBus.Application/SBus.Application.csproj" />
+    <Project Path="src/SBus.Domain/SBus.Domain.csproj" />
+    <Project Path="src/SBus.Infrastructure/SBus.Infrastructure.csproj" />
+    <Project Path="src/SBus.Web/SBus.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SBus.Application.SubcutaneousTests/SBus.Application.SubcutaneousTests.csproj" />
+    <Project Path="tests/SBus.Application.UnitTests/SBus.Application.UnitTests.csproj" />
+    <Project Path="tests/SBus.Domain.UnitTests/SBus.Domain.UnitTests.csproj" />
+    <Project Path="tests/SBus.Tests.Common/SBus.Tests.Common.csproj" />
+  </Folder>
+</Solution>

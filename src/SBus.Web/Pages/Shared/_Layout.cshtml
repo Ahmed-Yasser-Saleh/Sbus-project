@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="@Languages.Current" dir="@Languages.Direction">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] is string title ? title + " · S Bus" : "S Bus")</title>
+    @await RenderSectionAsync("Head", required: false)
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
+    @if (Languages.IsEnglish)
+    {
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
+    }
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    @{
+        var isOffice = ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Office", StringComparison.Ordinal) == true
+            && User.Identity?.IsAuthenticated == true;
+        var returnUrl = Context.Request.Path + Context.Request.QueryString;
+        var otherLanguage = Languages.IsEnglish ? Languages.Arabic : Languages.English;
+    }
+    <header class="site-header">
+        <nav class="container d-flex align-items-center justify-content-between flex-wrap gap-2 py-2">
+            <a class="brand" href="@(isOffice ? "/Office" : "/")">S Bus <span class="brand-sub">@L["القاهرة ⇄ السويس"]</span></a>
+            <div class="d-flex flex-wrap gap-3 align-items-center office-nav">
+                @if (isOffice)
+                {
+                    <a href="/Office">@L["الرحلات"]</a>
+                    <a href="/Office/Payments">@L["مراجعة الدفع"]</a>
+                    <a href="/Office/Settings">@L["الإعدادات"]</a>
+                    <form method="post" asp-page="/Office/Logout" class="d-inline">
+                        <button type="submit" class="btn btn-link p-0 link-light">@L["خروج"]</button>
+                    </form>
+                }
+                <a class="lang-switch" href="/Language?lang=@otherLanguage&returnUrl=@Uri.EscapeDataString(returnUrl)" lang="@otherLanguage">
+                    @(Languages.IsEnglish ? "عربي" : "English")
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container py-3">
+        @RenderBody()
+    </main>
+
+    <footer class="container small text-secondary py-4">
+        S Bus · @L["نسخة تجريبية"]
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

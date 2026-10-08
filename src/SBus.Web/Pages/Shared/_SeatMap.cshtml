@@ -1,0 +1,45 @@
+@model SBus.Web.Pages.Shared.SeatMapView
+<div class="bus">
+    <div class="bus-front">@L["قدام"]</div>
+    <div class="seat-grid" style="grid-template-columns: repeat(@Model.Map.Columns, minmax(0, 1fr));">
+        @for (var row = 1; row <= Model.Map.Rows; row++)
+        {
+            for (var column = 1; column <= Model.Map.Columns; column++)
+            {
+                var cell = Model.Map.At(row, column);
+
+                if (cell is null)
+                {
+                    <div class="seat-gap"></div>
+                }
+                else if (cell.Kind == SeatCellKind.Driver)
+                {
+                    <div class="seat seat-driver" title="@L["السواق"]">@L["السواق"]</div>
+                }
+                else if (cell.IsTaken)
+                {
+                    <div class="seat seat-taken" title="@L["محجوز"]">@cell.SeatNumber</div>
+                }
+                else if (Model.Selectable)
+                {
+                    <label class="seat seat-free">
+                        <input type="checkbox" name="@Model.InputName" value="@cell.SeatNumber" @(Model.Selected.Contains(cell.SeatNumber!.Value) ? "checked" : null) />
+                        <span>@cell.SeatNumber</span>
+                    </label>
+                }
+                else
+                {
+                    <div class="seat seat-free-static">@cell.SeatNumber</div>
+                }
+            }
+        }
+    </div>
+</div>
+<div class="seat-legend small">
+    <span><i class="legend free"></i> @L["فاضي"]</span>
+    @if (Model.Selectable)
+    {
+        <span><i class="legend picked"></i> @L["اختيارك"]</span>
+    }
+    <span><i class="legend taken"></i> @L["محجوز"]</span>
+</div>

@@ -1,0 +1,66 @@
+@page
+@model SBus.Web.Pages.Office.IndexModel
+@{
+    ViewData["Title"] = L["رحلات اليوم"].Value;
+    var date = Model.Date!.Value;
+}
+
+@if (Model.PendingPayments > 0)
+{
+    <a class="alert alert-info d-block text-decoration-none" href="/Office/Payments">
+        @L["فيه {0} تحويل مستني مراجعة ←", Model.PendingPayments]
+    </a>
+}
+
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+    <h1 class="h5 mb-0">@Fmt.Date(date) @(date == Model.Today ? L["(النهارده)"].Value : null)</h1>
+    <div class="btn-group" role="group">
+        <a class="btn btn-outline-secondary btn-sm" href="?date=@Fmt.IsoDate(date.AddDays(-1))">@L["اليوم اللي قبله"]</a>
+        <a class="btn btn-outline-secondary btn-sm" href="?date=@Fmt.IsoDate(Model.Today)">@L["النهارده"]</a>
+        <a class="btn btn-outline-secondary btn-sm" href="?date=@Fmt.IsoDate(date.AddDays(1))">@L["اليوم اللي بعده"]</a>
+    </div>
+</div>
+
+@if (Model.Trips.Count == 0)
+{
+    <div class="empty-state">@L["مفيش رحلات في اليوم ده. لو المواعيد متسجلة، الرحلات بتتولد لوحدها للأيام الجاية."]</div>
+}
+else
+{
+    @foreach (var group in Model.Trips.GroupBy(t => t.Direction))
+    {
+        <h2 class="h6 mt-3 text-secondary">@Fmt.Direction(group.Key)</h2>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead>
+                    <tr>
+                        <th>@L["الساعة"]</th>
+                        <th>@L["الأتوبيس"]</th>
+                        <th>@L["السواق"]</th>
+                        <th>@L["متأكد"]</th>
+                        <th>@L["بيراجع"]</th>
+                        <th>@L["مستني تحويل"]</th>
+                        <th>@L["فاضي"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var trip in group)
+                    {
+                        var free = trip.Capacity - trip.ConfirmedSeats - trip.AwaitingSeats - trip.HeldSeats;
+                        <tr>
+                            <td class="fw-semibold">@Fmt.Time(trip.DepartureTime)</td>
+                            <td>@trip.BusPlateNumber</td>
+                            <td>@trip.DriverName</td>
+                            <td>@trip.ConfirmedSeats</td>
+                            <td>@trip.AwaitingSeats</td>
+                            <td>@trip.HeldSeats</td>
+                            <td>@free / @trip.Capacity</td>
+                            <td><a class="btn btn-sm btn-primary" href="/Office/Trip/@trip.TripId">@L["الكشف"]</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}

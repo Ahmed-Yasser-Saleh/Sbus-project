@@ -1,0 +1,13 @@
+@page
+@model ErrorModel
+@{
+    ViewData["Title"] = L["حصلت مشكلة"].Value;
+}
+
+<h1 class="h4">@L["حصلت مشكلة"]</h1>
+<p>@L["حصل خطأ واحنا بنفذ طلبك. جرب تاني بعد شوية، ولو المشكلة فضلت كلم المكتب."]</p>
+
+@if (Model.ShowRequestId)
+{
+    <p class="small text-secondary">@L["كود الطلب:"] <code>@Model.RequestId</code></p>
+}

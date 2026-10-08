@@ -1,0 +1,26 @@
+@{
+    var errors = ViewData.ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).Distinct().ToList();
+    var success = TempData.TakeSuccess(L);
+}
+@if (errors.Count > 0)
+{
+    <div class="alert alert-danger" role="alert">
+        @if (errors.Count == 1)
+        {
+            @errors[0]
+        }
+        else
+        {
+            <ul class="mb-0">
+                @foreach (var error in errors)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        }
+    </div>
+}
+@if (success is not null)
+{
+    <div class="alert alert-success" role="status">@success</div>
+}

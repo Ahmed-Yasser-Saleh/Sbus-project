@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<IsTestProject>false</IsTestProject>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="NSubstitute" />
+		<PackageReference Include="xunit" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\SBus.Application\SBus.Application.csproj" />
+		<ProjectReference Include="..\..\src\SBus.Domain\SBus.Domain.csproj" />
+		<ProjectReference Include="..\..\src\SBus.Infrastructure\SBus.Infrastructure.csproj" />
+	</ItemGroup>
+</Project>

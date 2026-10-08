@@ -1,0 +1,106 @@
+@page
+@model SBus.Web.Pages.Office.Settings.SchedulesModel
+@{
+    ViewData["Title"] = L["المواعيد"].Value;
+}
+
+<a href="/Office/Settings" class="small">@L["← الإعدادات"]</a>
+<h1 class="h5 my-3">@L["المواعيد الثابتة"]</h1>
+
+<partial name="_ErrorSummary" />
+
+<div class="row g-4">
+    <div class="col-md-7">
+        @foreach (var group in Model.Schedules.GroupBy(s => s.Direction))
+        {
+            <h2 class="h6 text-secondary">@Fmt.Direction(group.Key)</h2>
+            <table class="table table-sm align-middle">
+                <thead><tr><th>@L["الساعة"]</th><th>@L["السعر"]</th><th>@L["الأتوبيس"]</th><th>@L["السواق"]</th><th>@L["الحالة"]</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var s in group)
+                    {
+                        <tr class="@(s.IsActive ? null : "text-secondary")">
+                            <td class="fw-semibold">@Fmt.Time(s.DepartureTime)</td>
+                            <td>@Fmt.Money(s.Price)</td>
+                            <td>@s.BusPlateNumber</td>
+                            <td>@s.DriverName</td>
+                            <td>@(s.IsActive ? L["شغال"] : L["متوقف"])</td>
+                            <td><a class="btn btn-sm btn-outline-secondary" href="?id=@s.ScheduleId">@L["تعديل"]</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+    <div class="col-md-5">
+        <h2 class="h6">@(Model.Id is null ? L["ميعاد جديد"] : L["تعديل الميعاد"])</h2>
+        @if (Model.Buses.Count == 0 || Model.Drivers.Count == 0)
+        {
+            <div class="alert alert-warning">@L["لازم يكون فيه أتوبيس شغال وسواق شغال الأول."]</div>
+        }
+        else
+        {
+            <form method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="mb-2">
+                    <label class="form-label" for="direction">@L["الاتجاه"]</label>
+                    @if (Model.Id is null)
+                    {
+                        <select class="form-select" id="direction" asp-for="Direction">
+                            <option value="@Direction.CairoToSuez">@Fmt.Direction(Direction.CairoToSuez)</option>
+                            <option value="@Direction.SuezToCairo">@Fmt.Direction(Direction.SuezToCairo)</option>
+                        </select>
+                    }
+                    else
+                    {
+                        <input class="form-control" value="@Fmt.Direction(Model.Direction)" disabled />
+                        <input type="hidden" asp-for="Direction" />
+                    }
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label class="form-label" for="time">@L["الساعة"]</label>
+                        <input class="form-control" id="time" type="time" name="DepartureTime" value="@Model.DepartureTime.ToString("HH:mm")" required />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label" for="price">@L["سعر الكرسي"]</label>
+                        <input class="form-control" id="price" type="number" min="1" step="0.5" name="Price" value="@(Model.Price > 0 ? Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture) : null)" required />
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label" for="bus">@L["الأتوبيس"]</label>
+                    <select class="form-select" id="bus" asp-for="BusId">
+                        @foreach (var b in Model.Buses)
+                        {
+                            <option value="@b.BusId">@L["{0} ({1} كرسي)", b.PlateNumber, b.Capacity]</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label" for="driver">@L["السواق"]</label>
+                    <select class="form-select" id="driver" asp-for="DriverId">
+                        @foreach (var d in Model.Drivers)
+                        {
+                            <option value="@d.DriverId">@d.Name</option>
+                        }
+                    </select>
+                </div>
+                @if (Model.Id is not null)
+                {
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="active" asp-for="IsActive" />
+                        <label class="form-check-label" for="active">@L["شغال (لو قفلته، الرحلات بتاعته تختفي من الحجز أونلاين، والحجوزات الموجودة تفضل زي ما هي)"]</label>
+                    </div>
+                }
+                <button type="submit" class="btn btn-primary">@L["حفظ"]</button>
+                @if (Model.Id is not null)
+                {
+                    <a class="btn btn-link" href="?">@L["إلغاء"]</a>
+                }
+            </form>
+            <p class="small text-secondary mt-2">
+                @L["التعديل بيطبق على الرحلات الجاية اللي لسه مفيهاش حجوزات. الرحلات اللي فيها حجوزات بتفضل زي ما هي عشان الركاب حجزوا على ميعادها."]
+            </p>
+        }
+    </div>
+</div>

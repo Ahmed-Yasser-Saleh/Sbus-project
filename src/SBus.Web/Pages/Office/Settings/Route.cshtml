@@ -1,0 +1,47 @@
+@page
+@model SBus.Web.Pages.Office.Settings.RouteModel
+@{
+    ViewData["Title"] = L["الخط"].Value;
+}
+
+<a href="/Office/Settings" class="small">@L["← الإعدادات"]</a>
+<h1 class="h5 my-3">@L["ترتيب المحطات"]</h1>
+
+<div class="direction-toggle mb-3">
+    @foreach (var direction in new[] { Direction.CairoToSuez, Direction.SuezToCairo })
+    {
+        <a class="@(Model.Direction == direction ? "active" : null)" href="?direction=@direction">@Fmt.Direction(direction)</a>
+    }
+</div>
+
+<partial name="_ErrorSummary" />
+
+<p class="small text-secondary">
+    @L["رتّب المحطات من أول مكان الأتوبيس بيتحرك منه لحد آخر محطة. اكتب جنب كل محطة بعد كام دقيقة من التحرك بيوصلها، والوقت ده بيظهر للراكب في التذكرة. سيب الأسطر الفاضية زي ما هي."]
+</p>
+
+<form method="post">
+    <input type="hidden" asp-for="Direction" />
+    <table class="table table-sm align-middle route-table">
+        <thead><tr><th>#</th><th>@L["المحطة"]</th><th>@L["بعد كام دقيقة"]</th></tr></thead>
+        <tbody>
+            @for (var i = 0; i < Model.Rows.Count; i++)
+            {
+                <tr>
+                    <td>@(i + 1)</td>
+                    <td>
+                        <select class="form-select form-select-sm" name="Rows[@i].StopId">
+                            <option value="">—</option>
+                            @foreach (var stop in Model.Stops)
+                            {
+                                <option value="@stop.StopId" selected="@(Model.Rows[i].StopId == stop.StopId)">@stop.Name</option>
+                            }
+                        </select>
+                    </td>
+                    <td><input class="form-control form-control-sm" type="number" min="0" max="1440" name="Rows[@i].MinutesFromStart" value="@Model.Rows[i].MinutesFromStart" /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-primary">@L["حفظ الخط"]</button>
+</form>
