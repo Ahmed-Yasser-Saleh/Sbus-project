@@ -78,8 +78,21 @@ public class ApplicationDbContextInitialiser(
             return;
         }
 
-        if (await _userManager.FindByEmailAsync(_settings.OfficeUserEmail) is not null)
+        if (await _userManager.FindByEmailAsync(_settings.OfficeUserEmail) is { } existing)
         {
+            if (!await _userManager.CheckPasswordAsync(existing, _settings.OfficeUserPassword))
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(existing);
+                var reset = await _userManager.ResetPasswordAsync(existing, token, _settings.OfficeUserPassword);
+
+                if (!reset.Succeeded)
+                {
+                    throw new InvalidOperationException("Office user password update failed: " + string.Join("; ", reset.Errors.Select(e => e.Description)));
+                }
+
+                _logger.LogInformation("Office user password updated from settings");
+            }
+
             return;
         }
 
