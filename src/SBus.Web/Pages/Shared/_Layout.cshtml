@@ -13,7 +13,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0b2e40" />
+    <meta name="theme-color" content="#1a2a55" />
+    <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="~/icons/logo-icon-180x180.png" />
     <title>@(ViewData["Title"] is string title ? title + " · S Bus" : "S Bus")</title>
     @await RenderSectionAsync("Head", required: false)
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -35,11 +37,8 @@
     <header class="topbar">
         <div class="container topbar-inner">
             <a class="brand" href="@(isOffice ? "/Office" : "/")">
-                <span class="brand-mark"><svg class="i"><use href="#i-bus" /></svg></span>
-                <span class="brand-text">
-                    <strong>S Bus</strong>
-                    <small>@L["القاهرة ⇄ السويس"]</small>
-                </span>
+                <img class="brand-wordmark" src="~/img/logo-full.png" alt="SBus" />           
+                <span class="brand-route">@L["القاهرة ⇄ السويس"]</span>
             </a>
 
             <div class="topbar-actions">
