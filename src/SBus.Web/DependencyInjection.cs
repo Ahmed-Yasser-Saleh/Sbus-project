@@ -94,8 +94,6 @@ public static class DependencyInjection
     {
         app.UseRequestLocalization();
 
-        app.UseSerilogRequestLogging();
-
         app.UseRouting();
 
         app.UseRateLimiter();
