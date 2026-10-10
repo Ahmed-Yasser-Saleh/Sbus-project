@@ -1,0 +1,41 @@
+@page
+@model SBus.Web.Pages.Account.LoginModel
+@{ ViewData["Title"] = "Sign in"; }
+<h1>@L["تسجيل الدخول"]</h1>
+@if (Model.EmailConfirmationRequired)
+{
+    <div class="alert alert-warning" role="alert">
+        <p class="mb-2">@L["بريدك الإلكتروني لم يتم تأكيده بعد. افتح رابط التأكيد المرسل إليك قبل تسجيل الدخول."]</p>
+        <a asp-page="/Account/ResendConfirmation">@L["إعادة إرسال التأكيد"]</a>
+    </div>
+}
+@if (Model.RegistrationCompleted)
+{
+    <div class="alert alert-info" role="status">
+        @if (Model.RequiresEmailConfirmation)
+        {
+            <p class="mb-2">@L["تم إنشاء حسابك. يجب تأكيد بريدك الإلكتروني من رابط التأكيد قبل تسجيل الدخول."]</p>
+            <a asp-page="/Account/ResendConfirmation">@L["إعادة إرسال التأكيد"]</a>
+        }
+        else
+        {
+            @L["تم إنشاء حسابك. يمكنك تسجيل الدخول الآن."]
+        }
+    </div>
+}
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <label asp-for="Email">@L["البريد الإلكتروني"]</label>
+    <input asp-for="Email" autocomplete="username" class="form-control" />
+    <label asp-for="Password">@L["كلمة المرور"]</label>
+    <input asp-for="Password" autocomplete="current-password" class="form-control" />
+    <button type="submit" class="btn btn-primary mt-3">@L["تسجيل الدخول"]</button>
+</form>
+@if (Model.GoogleEnabled)
+{
+    <form method="post" asp-page="/Account/ExternalLogin">
+        <button type="submit" class="btn btn-outline-primary mt-3">@L["الدخول باستخدام Google"]</button>
+    </form>
+}
+<p class="mt-3"><a asp-page="/Account/Register">@L["إنشاء حساب"]</a> · <a asp-page="/Account/ForgotPassword">@L["نسيت كلمة المرور؟"]</a></p>
+

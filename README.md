@@ -25,12 +25,12 @@ Decisions are recorded in [docs/DECISIONS.md](docs/DECISIONS.md) and the build p
 2. Run the site:
 
    ```bash
-   dotnet run --project src/SBus.Web --launch-profile http
+   dotnet run --project src/SBus.Web --launch-profile https
    ```
 
-   In Development the first run creates the `sbus` database, applies the migrations, seeds demo data (stops, route, a 14-seat minibus, drivers and 6 daily schedules), creates the office user, and generates trips for the next 7 days.
+   Generate, review and apply migrations yourself before running the site. Database initialization on startup is disabled by default. Configure SMTP and optional Google login using [docs/AUTHENTICATION.md](docs/AUTHENTICATION.md). Explicitly enabling `AppSettings:InitializeDatabaseOnStartup` in Development restores migration/seeding on startup, including demo stops, routes, fleet and schedules.
 
-3. Open `http://localhost:5056` for passengers and `http://localhost:5056/Office` for the office. The office email is `AppSettings:OfficeUserEmail` in `appsettings.Development.json`.
+3. Open `https://localhost:7116` for passengers and `https://localhost:7116/Office` for the office. All accounts use `/Account/Login`. The office email is `AppSettings:OfficeUserEmail` in `appsettings.Development.json`.
 
 ## Tests
 

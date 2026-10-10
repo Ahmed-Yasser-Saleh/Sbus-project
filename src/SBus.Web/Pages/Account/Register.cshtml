@@ -1,0 +1,29 @@
+@page
+@model SBus.Web.Pages.Account.RegisterModel
+@{ ViewData["Title"] = "Create account"; }
+<h1>@L["إنشاء حساب"]</h1>
+<p>@L["استخدم كلمة مرور من 5 حروف على الأقل."]</p>
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <div class="mb-3">
+        <label asp-for="Email">@L["البريد الإلكتروني"]</label>
+        <input asp-for="Email" type="email" autocomplete="username" class="form-control" required maxlength="@SBus.Application.Common.Validation.PublicEmailAddress.MaxLength"
+               pattern="@SBus.Application.Common.Validation.PublicEmailAddress.Pattern" />
+        <span asp-validation-for="Email" class="text-danger d-block mt-1"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Password">@L["كلمة المرور"]</label>
+        <input asp-for="Password" type="password" autocomplete="new-password" class="form-control" required
+               minlength="@SBus.Application.Features.Accounts.Commands.RegisterTraveler.RegisterTravelerCommandValidator.PasswordMinLength"
+               maxlength="@SBus.Application.Features.Accounts.Commands.RegisterTraveler.RegisterTravelerCommandValidator.PasswordMaxLength" />
+        <span asp-validation-for="Password" class="text-danger d-block mt-1"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="ConfirmPassword">@L["تأكيد كلمة المرور"]</label>
+        <input asp-for="ConfirmPassword" type="password" autocomplete="new-password" class="form-control" required
+               maxlength="@SBus.Application.Features.Accounts.Commands.RegisterTraveler.RegisterTravelerCommandValidator.PasswordMaxLength" />
+        <span asp-validation-for="ConfirmPassword" class="text-danger d-block mt-1"></span>
+    </div>
+    <button class="btn btn-primary">@L["إنشاء حساب"]</button>
+</form>
+

@@ -1,10 +1,8 @@
 using MediatR;
-
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-
 using Npgsql;
-
 using SBus.Application.Common.Exceptions;
 using SBus.Application.Common.Interfaces;
 using SBus.Domain.Bookings;
@@ -16,6 +14,8 @@ using SBus.Domain.Schedules;
 using SBus.Domain.Stops;
 using SBus.Domain.Trips;
 using SBus.Infrastructure.Identity;
+
+using IdentityRoles = SBus.Infrastructure.Identity.Roles;
 
 namespace SBus.Infrastructure.Data;
 
@@ -48,6 +48,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IMediator medi
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.Entity<AppUser>().HasIndex(u => u.NormalizedEmail)
+            .HasDatabaseName("EmailIndex").IsUnique();
+        builder.Entity<IdentityRole>().HasData(
+            new IdentityRole { Id = "sbus-traveler", Name = IdentityRoles.Traveler, NormalizedName = "TRAVELER", ConcurrencyStamp = "sbus-traveler-v1" },
+            new IdentityRole { Id = "sbus-company-owner", Name = IdentityRoles.CompanyOwner, NormalizedName = "COMPANYOWNER", ConcurrencyStamp = "sbus-company-owner-v1" },
+            new IdentityRole { Id = "sbus-company-employee", Name = IdentityRoles.CompanyEmployee, NormalizedName = "COMPANYEMPLOYEE", ConcurrencyStamp = "sbus-company-employee-v1" });
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 

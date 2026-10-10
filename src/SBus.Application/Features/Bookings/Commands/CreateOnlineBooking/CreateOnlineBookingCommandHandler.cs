@@ -18,7 +18,8 @@ public class CreateOnlineBookingCommandHandler(
     ILogger<CreateOnlineBookingCommandHandler> logger,
     IAppDbContext context,
     TimeProvider timeProvider,
-    IOptions<BookingOptions> options)
+    IOptions<BookingOptions> options,
+    IUser user)
     : IRequestHandler<CreateOnlineBookingCommand, Result<BookingCreatedDto>>
 {
     private readonly ILogger<CreateOnlineBookingCommandHandler> _logger = logger;
@@ -53,6 +54,11 @@ public class CreateOnlineBookingCommandHandler(
         if (booking.IsError)
         {
             return booking.Errors;
+        }
+
+        if (user.Id is not null)
+        {
+            booking.Value.AssignTraveler(user.Id);
         }
 
         var saved = await BookingPlacement.SaveAsync(_context, booking.Value, ct);

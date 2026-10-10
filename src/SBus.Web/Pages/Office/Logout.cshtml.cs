@@ -16,6 +16,6 @@ public class LogoutModel(SignInManager<AppUser> signInManager) : PageModel
     {
         await _signInManager.SignOutAsync();
 
-        return Redirect("/Office/Login");
+        return Redirect("/Account/Login");
     }
 }

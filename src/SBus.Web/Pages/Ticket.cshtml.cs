@@ -13,6 +13,7 @@ using SBus.Web.Infrastructure;
 namespace SBus.Web.Pages;
 
 [EnableRateLimiting(RateLimitPolicies.PublicWrites)]
+[ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 public class TicketModel(ISender sender) : PageModel
 {
     private readonly ISender _sender = sender;

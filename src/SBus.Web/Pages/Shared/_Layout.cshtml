@@ -42,11 +42,21 @@
             </a>
 
             <div class="topbar-actions">
-                @if (isOffice)
+                @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <form method="post" asp-page="/Office/Logout" class="d-inline">
+                    @if (User.IsInRole(SBus.Infrastructure.Identity.Roles.Traveler)
+                        && !User.IsInRole(SBus.Infrastructure.Identity.Roles.CompanyOwner)
+                        && !User.IsInRole(SBus.Infrastructure.Identity.Roles.CompanyEmployee))
+                    {
+                        <a asp-page="/MyTickets" class="topbar-link">@L["تذاكري"]</a>
+                    }
+                    <form method="post" asp-page="/Account/Logout" class="d-inline">
                         <button type="submit" class="topbar-link">@L["خروج"]</button>
                     </form>
+                }
+                else
+                {
+                    <a asp-page="/Account/Login" class="topbar-link">@L["تسجيل الدخول"]</a>
                 }
                 <a class="lang-switch" href="/Language?lang=@otherLanguage&returnUrl=@Uri.EscapeDataString(returnUrl)" lang="@otherLanguage">
                     <svg class="i"><use href="#i-globe" /></svg>

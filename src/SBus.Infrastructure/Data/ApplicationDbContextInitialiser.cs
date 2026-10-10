@@ -78,21 +78,8 @@ public class ApplicationDbContextInitialiser(
             return;
         }
 
-        if (await _userManager.FindByEmailAsync(_settings.OfficeUserEmail) is { } existing)
+        if (await _userManager.FindByEmailAsync(_settings.OfficeUserEmail) is not null)
         {
-            if (!await _userManager.CheckPasswordAsync(existing, _settings.OfficeUserPassword))
-            {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(existing);
-                var reset = await _userManager.ResetPasswordAsync(existing, token, _settings.OfficeUserPassword);
-
-                if (!reset.Succeeded)
-                {
-                    throw new InvalidOperationException("Office user password update failed: " + string.Join("; ", reset.Errors.Select(e => e.Description)));
-                }
-
-                _logger.LogInformation("Office user password updated from settings");
-            }
-
             return;
         }
 
@@ -110,9 +97,13 @@ public class ApplicationDbContextInitialiser(
             throw new InvalidOperationException("Office user seeding failed: " + string.Join("; ", created.Errors.Select(e => e.Description)));
         }
 
-        await _userManager.AddToRoleAsync(user, Roles.Office);
+        var assigned = await _userManager.AddToRoleAsync(user, Roles.Office);
+        if (!assigned.Succeeded)
+        {
+            throw new InvalidOperationException("Office role assignment failed.");
+        }
 
-        _logger.LogInformation("Seeded office user {Email}", _settings.OfficeUserEmail);
+        _logger.LogInformation("Seeded office user");
     }
 
     private async Task SeedDemoDataAsync()

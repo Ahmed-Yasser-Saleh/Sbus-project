@@ -1,0 +1,42 @@
+@page
+@model SBus.Web.Pages.MyTicketsModel
+@using SBus.Domain.Bookings
+@{ ViewData["Title"] = "My Tickets"; }
+<h1>@L["تذاكري"]</h1>
+@if (Model.Tickets.Count == 0)
+{
+    <p>@L["لا توجد تذاكر."]</p>
+}
+else
+{
+    <table class="table">
+        <thead><tr><th>@L["الرحلة"]</th><th>@L["الحالة"]</th><th>@L["تاريخ الحجز"]</th></tr></thead>
+        <tbody>
+        @foreach (var ticket in Model.Tickets)
+        {
+            var status = ticket.Status switch
+            {
+                BookingStatus.Confirmed => L["مؤكد"],
+                BookingStatus.HoldPendingPayment or BookingStatus.AwaitingConfirmation => L["قيد الانتظار"],
+                BookingStatus.Cancelled => L["ملغي"],
+                BookingStatus.Rejected => L["مرفوض"],
+                BookingStatus.Expired => L["منتهي"],
+                _ => L["قيد الانتظار"]
+            };
+            <tr>
+                <td><a href="/t/@ticket.PublicToken">@ticket.ServiceDate · @ticket.DepartureTime</a></td>
+                <td>@status</td><td>@ticket.CreatedAtUtc.ToString("yyyy-MM-dd")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+@if (Model.PageNumber > 1)
+{
+    <a asp-route-pageNumber="@(Model.PageNumber - 1)">@L["السابق"]</a>
+}
+@if (Model.Tickets.Count == 20)
+{
+    <a asp-route-pageNumber="@(Model.PageNumber + 1)">@L["التالي"]</a>
+}
+

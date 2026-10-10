@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 
 using SBus.Application.Common.Errors;
 using SBus.Application.Common.Interfaces;
+using SBus.Application.Common.Security;
 using SBus.Application.Common.Settings;
 using SBus.Application.Features.Bookings.Dtos;
 using SBus.Domain.Bookings;
@@ -15,7 +16,8 @@ namespace SBus.Application.Features.Bookings.Queries.GetTicket;
 public class GetTicketQueryHandler(
     IAppDbContext context,
     TimeProvider timeProvider,
-    IOptions<BookingOptions> options)
+    IOptions<BookingOptions> options,
+    IUser user)
     : IRequestHandler<GetTicketQuery, Result<TicketDto>>
 {
     private readonly IAppDbContext _context = context;
@@ -28,6 +30,7 @@ public class GetTicketQueryHandler(
             .AsNoTracking()
             .Include(b => b.Seats)
             .Include(b => b.Trip!.Driver)
+            .Where(BookingOwnership.AccessibleTo(user.IsTraveler ? user.Id : null))
             .FirstOrDefaultAsync(b => b.PublicToken == query.PublicToken, ct);
 
         if (booking is null)

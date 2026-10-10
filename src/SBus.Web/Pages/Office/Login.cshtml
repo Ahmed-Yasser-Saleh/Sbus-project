@@ -1,27 +1,2 @@
 @page
 @model SBus.Web.Pages.Office.LoginModel
-@{
-    ViewData["Title"] = L["دخول المكتب"].Value;
-}
-
-<div class="auth">
-    <div class="auth-card">
-        <img class="auth-wordmark" src="~/img/logo-full.png" alt="SBus" />
-        <h1>@L["دخول المكتب"]</h1>
-
-        <partial name="_ErrorSummary" />
-
-        <form method="post">
-            <div class="field">
-                <label for="email">@L["الإيميل"]</label>
-                <input class="form-control" id="email" asp-for="Email" type="email" autocomplete="username" dir="ltr" required />
-            </div>
-            <div class="field">
-                <label for="password">@L["الباسورد"]</label>
-                <input class="form-control" id="password" asp-for="Password" type="password" autocomplete="current-password" dir="ltr" required />
-            </div>
-            <input type="hidden" asp-for="ReturnUrl" />
-            <button type="submit" class="btn btn-primary btn-lg w-100">@L["دخول"]</button>
-        </form>
-    </div>
-</div>

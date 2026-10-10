@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 
 using SBus.Application.Common.Errors;
 using SBus.Application.Common.Interfaces;
+using SBus.Application.Common.Security;
 using SBus.Application.Common.Settings;
 using SBus.Domain.Common.Results;
 
@@ -15,7 +16,8 @@ public class CancelBookingByPassengerCommandHandler(
     ILogger<CancelBookingByPassengerCommandHandler> logger,
     IAppDbContext context,
     TimeProvider timeProvider,
-    IOptions<BookingOptions> options)
+    IOptions<BookingOptions> options,
+    IUser user)
     : IRequestHandler<CancelBookingByPassengerCommand, Result<Updated>>
 {
     private readonly ILogger<CancelBookingByPassengerCommandHandler> _logger = logger;
@@ -28,6 +30,7 @@ public class CancelBookingByPassengerCommandHandler(
         var booking = await _context.Bookings
             .Include(b => b.Seats)
             .Include(b => b.Trip)
+            .Where(BookingOwnership.AccessibleTo(user.IsTraveler ? user.Id : null))
             .FirstOrDefaultAsync(b => b.PublicToken == command.PublicToken, ct);
 
         if (booking is null)

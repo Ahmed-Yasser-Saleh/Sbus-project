@@ -46,6 +46,29 @@ namespace SBus.Infrastructure.Data.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "sbus-traveler",
+                            ConcurrencyStamp = "sbus-traveler-v1",
+                            Name = "Traveler",
+                            NormalizedName = "TRAVELER"
+                        },
+                        new
+                        {
+                            Id = "sbus-company-owner",
+                            ConcurrencyStamp = "sbus-company-owner-v1",
+                            Name = "CompanyOwner",
+                            NormalizedName = "COMPANYOWNER"
+                        },
+                        new
+                        {
+                            Id = "sbus-company-employee",
+                            ConcurrencyStamp = "sbus-company-employee-v1",
+                            Name = "CompanyEmployee",
+                            NormalizedName = "COMPANYEMPLOYEE"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -238,6 +261,10 @@ namespace SBus.Infrastructure.Data.Migrations
                     b.Property<Guid>("TripId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DropoffStopId");
@@ -250,6 +277,8 @@ namespace SBus.Infrastructure.Data.Migrations
                     b.HasIndex("Status", "HoldExpiresAtUtc");
 
                     b.HasIndex("TripId", "Status");
+
+                    b.HasIndex("UserId", "CreatedAtUtc");
 
                     b.ToTable("Bookings");
                 });
@@ -667,6 +696,7 @@ namespace SBus.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
+                        .IsUnique()
                         .HasDatabaseName("EmailIndex");
 
                     b.HasIndex("NormalizedUserName")
@@ -746,6 +776,11 @@ namespace SBus.Infrastructure.Data.Migrations
                         .HasForeignKey("TripId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("SBus.Infrastructure.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Trip");
                 });

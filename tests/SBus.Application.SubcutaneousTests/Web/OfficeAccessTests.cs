@@ -19,11 +19,11 @@ public class OfficeAccessTests(WebAppFactory factory)
     [InlineData("/Office/Settings/Schedules")]
     public async Task AnonymousVisitor_IsSentToTheOfficeLoginPage(string path)
     {
-        using var client = _factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        using var client = _factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, BaseAddress = new Uri("https://localhost") });
 
         var response = await client.GetAsync(path);
 
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
-        Assert.Equal("/Office/Login", response.Headers.Location?.AbsolutePath);
+        Assert.Equal("/Account/Login", response.Headers.Location?.AbsolutePath);
     }
 }

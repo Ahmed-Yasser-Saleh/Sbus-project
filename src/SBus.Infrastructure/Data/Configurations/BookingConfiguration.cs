@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SBus.Domain.Bookings;
 using SBus.Domain.Common.Constants;
 using SBus.Domain.Stops;
+using SBus.Infrastructure.Identity;
 
 namespace SBus.Infrastructure.Data.Configurations;
 
@@ -12,6 +13,9 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
     public void Configure(EntityTypeBuilder<Booking> builder)
     {
         builder.HasKey(b => b.Id);
+        builder.Property(b => b.UserId).HasMaxLength(450);
+        builder.HasIndex(b => new { b.UserId, b.CreatedAtUtc });
+        builder.HasOne<AppUser>().WithMany().HasForeignKey(b => b.UserId).OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(b => b.PublicToken).HasMaxLength(64).IsRequired();
         builder.HasIndex(b => b.PublicToken).IsUnique();

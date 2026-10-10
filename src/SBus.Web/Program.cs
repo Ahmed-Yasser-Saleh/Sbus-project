@@ -15,17 +15,18 @@ builder.Host.UseSerilog((context, loggerConfig) =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() && builder.Configuration.GetValue("AppSettings:InitializeDatabaseOnStartup", false))
 {
     await app.InitialiseDatabaseAsync();
 }
-else
+
+if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
-    app.UseHttpsRedirection();
 }
 
+app.UseHttpsRedirection();
 app.UseCoreMiddlewares();
 
 app.MapStaticAssets();

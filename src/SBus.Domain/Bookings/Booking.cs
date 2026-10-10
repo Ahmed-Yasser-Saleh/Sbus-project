@@ -10,6 +10,19 @@ public sealed class Booking : AuditableEntity
     public const int RejectionReasonMaxLength = 200;
 
     public Guid TripId { get; private set; }
+    public string? UserId { get; private set; }
+
+    public void AssignTraveler(string userId)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+        if (UserId is not null || Source != BookingSource.Online)
+        {
+            throw new InvalidOperationException("Booking ownership cannot be reassigned.");
+        }
+
+        UserId = userId;
+    }
+
     public Trip? Trip { get; private set; }
     public string PublicToken { get; private set; } = null!;
     public string PassengerName { get; private set; } = null!;

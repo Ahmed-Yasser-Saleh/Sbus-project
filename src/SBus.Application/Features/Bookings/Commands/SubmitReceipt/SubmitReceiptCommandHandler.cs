@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 
 using SBus.Application.Common.Errors;
 using SBus.Application.Common.Interfaces;
+using SBus.Application.Common.Security;
 using SBus.Application.Common.Settings;
 using SBus.Application.Features.Bookings.Common;
 using SBus.Domain.Common.Results;
@@ -17,7 +18,8 @@ public class SubmitReceiptCommandHandler(
     IAppDbContext context,
     IReceiptStorage storage,
     TimeProvider timeProvider,
-    IOptions<BookingOptions> options)
+    IOptions<BookingOptions> options,
+    IUser user)
     : IRequestHandler<SubmitReceiptCommand, Result<Updated>>
 {
     private readonly ILogger<SubmitReceiptCommandHandler> _logger = logger;
@@ -28,7 +30,9 @@ public class SubmitReceiptCommandHandler(
 
     public async Task<Result<Updated>> Handle(SubmitReceiptCommand command, CancellationToken ct)
     {
-        var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.PublicToken == command.PublicToken, ct);
+        var booking = await _context.Bookings
+            .Where(BookingOwnership.AccessibleTo(user.IsTraveler ? user.Id : null))
+            .FirstOrDefaultAsync(b => b.PublicToken == command.PublicToken, ct);
 
         if (booking is null)
         {

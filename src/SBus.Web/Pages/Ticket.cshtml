@@ -3,7 +3,6 @@
 @{
     var t = Model.Ticket!;
     ViewData["Title"] = L["تذكرتك"].Value;
-    var ticketUrl = $"{Request.Scheme}://{Request.Host}/t/{t.PublicToken}";
     var officePhone = $"<a href=\"tel:{t.OfficePhone}\" dir=\"ltr\">{t.OfficePhone}</a>";
     var step = t.Status switch
     {
@@ -166,16 +165,6 @@
         </div>
         break;
 }
-
-<section class="panel save-link">
-    <p class="muted small mb-2">@L["احفظ اللينك ده. هو الطريقة الوحيدة تشوف بيها تذكرتك أو تلغيها."]</p>
-    <div class="copy-field">
-        <input class="form-control" value="@ticketUrl" readonly dir="ltr" id="ticket-url" />
-        <button class="btn btn-outline-dark" type="button" data-copy="#ticket-url" data-copied-label="@L["اتنسخ"]">
-            <svg class="i"><use href="#i-copy" /></svg><span>@L["انسخ"]</span>
-        </button>
-    </div>
-</section>
 
 @if (t.CanCancel)
 {

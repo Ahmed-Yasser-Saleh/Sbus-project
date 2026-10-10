@@ -56,6 +56,9 @@ public class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("Booking:HoldMinutes", "15");
         builder.UseSetting("Booking:PassengerCancellationCutoffHours", "2");
         builder.UseSetting("Booking:BookingWindowDays", "7");
+        builder.UseSetting("Authentication:Email:PublicOrigin", "https://localhost");
+        builder.UseSetting("Authentication:Email:Host", "unused");
+        builder.UseSetting("Authentication:Email:From", "test@example.com");
 
         builder.ConfigureTestServices(services =>
         {

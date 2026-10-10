@@ -1,0 +1,16 @@
+@page
+@model SBus.Web.Pages.Account.ConfirmEmailModel
+@{ ViewData["Title"] = "Confirm email"; }
+<h1>@L["تأكيد البريد الإلكتروني"]</h1>
+@if (Model.Message is not null)
+{
+    <p>@Model.Message</p><a asp-page="/Account/Login">@L["تسجيل الدخول"]</a>
+}
+else
+{
+    <form method="post">
+        <input type="hidden" asp-for="UserId" /><input type="hidden" asp-for="Code" />
+        <button class="btn btn-primary">@L["تأكيد البريد الإلكتروني"]</button>
+    </form>
+}
+

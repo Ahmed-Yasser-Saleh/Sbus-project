@@ -1,9 +1,10 @@
 using MediatR;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.RateLimiting;
-
+using SBus.Application.Common.Interfaces;
+using SBus.Application.Common.Security;
 using SBus.Application.Features.Bookings.Commands.CreateOnlineBooking;
 using SBus.Application.Features.Trips.Dtos;
 using SBus.Application.Features.Trips.Queries.GetTripForBooking;
@@ -12,7 +13,8 @@ using SBus.Web.Infrastructure;
 namespace SBus.Web.Pages;
 
 [EnableRateLimiting(RateLimitPolicies.PublicWrites)]
-public class TripModel(ISender sender) : PageModel
+[Authorize(Policy = AuthPolicies.Traveler)]
+public class TripModel(ISender sender, IUser user) : PageModel
 {
     private readonly ISender _sender = sender;
 
@@ -36,6 +38,11 @@ public class TripModel(ISender sender) : PageModel
 
     public async Task<IActionResult> OnPostAsync(Guid id, CancellationToken ct)
     {
+        if (string.IsNullOrWhiteSpace(user.Id))
+        {
+            return Forbid();
+        }
+
         var result = await _sender.Send(
             new CreateOnlineBookingCommand(id, Input.PassengerName, Input.PhoneNumber, Input.PickupStopId, Input.DropoffStopId, Input.SeatNumbers),
             ct);

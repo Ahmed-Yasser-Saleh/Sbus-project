@@ -302,4 +302,112 @@
   <data name="← الإعدادات" xml:space="preserve"><value>← Settings</value></data>
   <data name="← رجوع للرحلات" xml:space="preserve"><value>← Back to trips</value></data>
   <data name="← رحلات اليوم" xml:space="preserve"><value>← Today's trips</value></data>
+  <data name="منتهي" xml:space="preserve">
+    <value>Expired</value>
+  </data>
+  <data name="قريبًا" xml:space="preserve">
+    <value>Coming soon</value>
+  </data>
+  <data name="خدمات حسابات الشركات قيد الإعداد." xml:space="preserve">
+    <value>Company account services are being prepared.</value>
+  </data>
+  <data name="البريد الإلكتروني" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="تذاكري" xml:space="preserve">
+    <value>My Tickets</value>
+  </data>
+  <data name="الدخول باستخدام Google" xml:space="preserve">
+    <value>Sign in with Google</value>
+  </data>
+  <data name="لا توجد تذاكر." xml:space="preserve">
+    <value>No tickets found.</value>
+  </data>
+  <data name="نسيت كلمة المرور؟" xml:space="preserve">
+    <value>Forgot password?</value>
+  </data>
+  <data name="مرفوض" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="راجع بريدك الإلكتروني" xml:space="preserve">
+    <value>Check your email</value>
+  </data>
+  <data name="مؤكد" xml:space="preserve">
+    <value>Confirmed</value>
+  </data>
+  <data name="لإكمال الدخول، أكد كلمة مرور حسابك الحالي." xml:space="preserve">
+    <value>To continue signing in, verify your existing account password.</value>
+  </data>
+  <data name="التالي" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="غير مصرح بالدخول" xml:space="preserve">
+    <value>Access denied</value>
+  </data>
+  <data name="تسجيل الدخول" xml:space="preserve">
+    <value>Sign in</value>
+  </data>
+  <data name="كلمة المرور" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="إعادة إرسال التأكيد" xml:space="preserve">
+    <value>Resend confirmation</value>
+  </data>
+  <data name="تاريخ الحجز" xml:space="preserve">
+    <value>Booking date</value>
+  </data>
+  <data name="تأكيد البريد الإلكتروني" xml:space="preserve">
+    <value>Confirm email</value>
+  </data>
+  <data name="إنشاء حساب" xml:space="preserve">
+    <value>Create account</value>
+  </data>
+  <data name="ملغي" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="استخدم 12 حرفًا على الأقل، وحرفًا كبيرًا وصغيرًا ورقمًا ورمزًا." xml:space="preserve">
+    <value>Use at least 12 characters, including uppercase and lowercase letters, a number and a symbol.</value>
+  </data>
+  <data name="تغيير كلمة المرور" xml:space="preserve">
+    <value>Change password</value>
+  </data>
+  <data name="تأكيد ربط الحساب" xml:space="preserve">
+    <value>Verify account linking</value>
+  </data>
+  <data name="متابعة" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="السابق" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="إذا كان الطلب صالحًا، ستصلك رسالة بالخطوة التالية. يمكنك محاولة الدخول أو إعادة إرسال التأكيد." xml:space="preserve">
+    <value>If the request is valid, you will receive an email with the next step. You can try signing in or resend confirmation.</value>
+  </data>
+  <data name="تأكيد كلمة المرور" xml:space="preserve">
+    <value>Confirm password</value>
+  </data>
+  <data name="قيد الانتظار" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="الرحلة" xml:space="preserve">
+    <value>Trip</value>
+  </data>
+  <data name="استخدم كلمة مرور من 5 حروف على الأقل." xml:space="preserve">
+    <value>Use a password of at least 5 characters.</value>
+  </data>
+  <data name="تعذّر إنشاء الحساب بهذه البيانات. جرّب تسجيل الدخول أو استعادة كلمة المرور." xml:space="preserve">
+    <value>Unable to create an account with these details. Try signing in or resetting your password.</value>
+  </data>
+  <data name="البريد الإلكتروني مستخدم بالفعل." xml:space="preserve">
+    <value>This email address is already registered.</value>
+  </data>
+  <data name="تم إنشاء حسابك. يجب تأكيد بريدك الإلكتروني من رابط التأكيد قبل تسجيل الدخول." xml:space="preserve">
+    <value>Your account has been created. Confirm your email using the confirmation link before signing in.</value>
+  </data>
+  <data name="تم إنشاء حسابك. يمكنك تسجيل الدخول الآن." xml:space="preserve">
+    <value>Your account has been created. You can sign in now.</value>
+  </data>
+  <data name="بريدك الإلكتروني لم يتم تأكيده بعد. افتح رابط التأكيد المرسل إليك قبل تسجيل الدخول." xml:space="preserve">
+    <value>Your email has not been confirmed yet. Open the confirmation link sent to you before signing in.</value>
+  </data>
 </root>

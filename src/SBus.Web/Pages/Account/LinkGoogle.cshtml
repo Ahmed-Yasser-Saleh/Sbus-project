@@ -1,0 +1,12 @@
+@page
+@model SBus.Web.Pages.Account.LinkGoogleModel
+@{ ViewData["Title"] = "Verify account"; }
+<h1>@L["تأكيد ربط الحساب"]</h1>
+<p>@L["لإكمال الدخول، أكد كلمة مرور حسابك الحالي."]</p>
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <label asp-for="Password">@L["كلمة المرور"]</label>
+    <input asp-for="Password" autocomplete="current-password" class="form-control" />
+    <button class="btn btn-primary mt-3">@L["متابعة"]</button>
+</form>
+
