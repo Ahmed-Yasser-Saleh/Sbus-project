@@ -149,6 +149,7 @@ h1, h2, h3, .eyebrow, .time, .price, .stat-value, .brand { font-family: var(--fo
    Two variants: -light for the navy top bar, default for light surfaces. */
 .brand-wordmark {
     width: 3.5rem;
+    aspect-ratio: 168 / 155;
     flex: none;
     height: auto;
     display: block;
@@ -157,6 +158,7 @@ h1, h2, h3, .eyebrow, .time, .price, .stat-value, .brand { font-family: var(--fo
 /* Coloured version of the wordmark for light surfaces (login screen) */
 .auth-wordmark {
     width: 8.75rem;
+    aspect-ratio: 420 / 387;
     height: auto;
     display: block;
     margin-bottom: .75rem;
