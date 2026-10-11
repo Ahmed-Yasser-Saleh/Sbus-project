@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.RateLimiting;
+using SBus.Application.Features.Accounts.Dtos;
 using SBus.Infrastructure.Identity;
 using SBus.Web.Infrastructure;
 using SBus.Web.Services;
@@ -76,7 +77,14 @@ public class ExternalLoginModel(SignInManager<AppUser> signIn, TravelerAccounts 
             return await FailureAsync();
         }
 
-        return LocalRedirect(Url.IsLocalUrl(ReturnUrl) ? ReturnUrl! : AccountLanding.Path(await signIn.UserManager.GetRolesAsync(result.User)));
+        var roles = await signIn.UserManager.GetRolesAsync(result.User);
+        var destination = Url.IsLocalUrl(ReturnUrl) ? ReturnUrl! : AccountLanding.Path(roles);
+        if (AccountLanding.RequiresProfileCompletion(roles, new TravelerProfileDto(result.User.FullName, result.User.PhoneNumber)))
+        {
+            return RedirectToPage("/Account/CompleteProfile", new { returnUrl = destination });
+        }
+
+        return LocalRedirect(destination);
     }
 
     private async Task<IActionResult> FailureAsync()

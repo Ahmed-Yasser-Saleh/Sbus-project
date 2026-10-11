@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.RateLimiting;
+using SBus.Application.Features.Accounts.Dtos;
 using SBus.Infrastructure.Identity;
 using SBus.Web.Infrastructure;
 using SBus.Web.Services;
@@ -43,7 +44,14 @@ public class LinkGoogleModel(SignInManager<AppUser> signIn, TravelerAccounts acc
             var login = await signIn.ExternalLoginSignInAsync("Google", info.ProviderKey, false, bypassTwoFactor: false);
             if (login.Succeeded)
             {
-                return LocalRedirect(Url.IsLocalUrl(ReturnUrl) ? ReturnUrl! : AccountLanding.Path(await signIn.UserManager.GetRolesAsync(user)));
+                var roles = await signIn.UserManager.GetRolesAsync(user);
+                var destination = Url.IsLocalUrl(ReturnUrl) ? ReturnUrl! : AccountLanding.Path(roles);
+                if (AccountLanding.RequiresProfileCompletion(roles, new TravelerProfileDto(user.FullName, user.PhoneNumber)))
+                {
+                    return RedirectToPage("/Account/CompleteProfile", new { returnUrl = destination });
+                }
+
+                return LocalRedirect(destination);
             }
         }
 

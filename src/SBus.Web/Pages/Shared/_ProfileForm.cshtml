@@ -9,6 +9,6 @@
         <input type="hidden" asp-for="ReturnUrl" />
         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
         <partial name="_TravelerProfileFields" model="new SBus.Application.Features.Accounts.Dtos.TravelerProfileDto(Model.FullName, Model.PhoneNumber)" />
-        <button type="submit" class="btn btn-primary">@L["حفظ البيانات"]</button>
+        <button type="submit" class="btn btn-primary">@L[Model.RouteData.Values["page"] as string == "/Account/CompleteProfile" ? "متابعة" : "حفظ البيانات"]</button>
     </form>
 </div>

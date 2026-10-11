@@ -256,6 +256,25 @@ public class TravelerAccessTests
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/Account/Login")).StatusCode);
     }
 
+    [Theory]
+    [InlineData(Roles.Traveler, "Google Name", null, true)]
+    [InlineData(Roles.Traveler, null, "+201012345678", true)]
+    [InlineData(Roles.Traveler, "Google Name", "+201012345678", false)]
+    [InlineData(Roles.Office, "Google Name", null, false)]
+    [InlineData(Roles.CompanyOwner, "Google Name", null, false)]
+    public void GoogleSignIn_IncompleteTravelerRequiresProfileCompletion(string role, string? name, string? phone, bool expected)
+    {
+        Assert.Equal(expected, AccountLanding.RequiresProfileCompletion(new List<string> { role }, new TravelerProfileDto(name, phone)));
+    }
+
+    [Fact]
+    public void GoogleSignIn_CompanyAndOfficeRolesTakePrecedenceOverProfileCompletion()
+    {
+        var profile = new TravelerProfileDto("Google Name", null);
+        Assert.False(AccountLanding.RequiresProfileCompletion(new List<string> { Roles.Traveler, Roles.Office }, profile));
+        Assert.False(AccountLanding.RequiresProfileCompletion(new List<string> { Roles.Traveler, Roles.CompanyEmployee }, profile));
+    }
+
     [Fact]
     public async Task CompanyRole_CannotInheritTravelerOrOfficePermissions()
     {
@@ -298,6 +317,7 @@ public class TravelerAccessTests
         Assert.Contains("value=\"Google Name\"", html);
         Assert.Contains("data-traveler-phone", html);
         Assert.Contains("data-partial=\"profile-form\"", html);
+        Assert.Contains(path == "/Account/CompleteProfile" ? "متابعة" : "حفظ البيانات", WebUtility.HtmlDecode(html));
     }
 
     [Theory]
@@ -351,6 +371,7 @@ public class TravelerAccessTests
         var fragment = await response.Content.ReadAsStringAsync();
         Assert.Contains("field-validation-error", fragment);
         Assert.DoesNotContain("<html", fragment);
+        Assert.Contains(path == "/Account/CompleteProfile" ? "متابعة" : "حفظ البيانات", WebUtility.HtmlDecode(fragment));
         await profiles.DidNotReceive().UpdateCurrentAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 

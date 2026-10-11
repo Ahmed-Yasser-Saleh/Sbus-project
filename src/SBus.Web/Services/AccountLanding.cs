@@ -1,11 +1,15 @@
 using System.Security.Claims;
 
+using SBus.Application.Features.Accounts.Dtos;
 using SBus.Infrastructure.Identity;
 
 namespace SBus.Web.Services;
 
 public static class AccountLanding
 {
+    public static bool RequiresProfileCompletion(IList<string> roles, TravelerProfileDto profile) =>
+        roles.Contains(Roles.Traveler) && Path(roles) == "/" && !profile.IsComplete;
+
     public static string Path(ClaimsPrincipal principal)
     {
         if (principal.IsInRole(Roles.CompanyOwner) || principal.IsInRole(Roles.CompanyEmployee))
