@@ -1,0 +1,10 @@
+@model string
+<div class="alert alert-warning" role="alert" data-partial-error="@Model" hidden
+     data-load-error="@L["تعذّر تحديث البيانات. المعروض حاليًا هو آخر تحميل ناجح."]"
+     data-post-error="@L["تعذّر تأكيد نتيجة العملية. أعد تحميل البيانات قبل المحاولة مرة أخرى."]"
+     data-retry-label="@L["حاول تاني"]" data-refresh-label="@L["إعادة تحميل البيانات"]">
+    <span data-partial-error-text></span>
+    <button type="button" class="btn btn-outline-dark btn-sm" data-partial-retry="@Model">@L["حاول تاني"]</button>
+</div>
+<span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"
+      data-partial-status="@Model" data-loading-label="@L["جاري تحديث البيانات…"]"></span>

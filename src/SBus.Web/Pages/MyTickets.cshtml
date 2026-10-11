@@ -1,7 +1,7 @@
 @page
 @model SBus.Web.Pages.MyTicketsModel
 @using SBus.Domain.Bookings
-@{ ViewData["Title"] = "My Tickets"; }
+@{ Layout = "_PageFragmentLayout"; ViewData["Title"] = "My Tickets"; }
 <h1>@L["تذاكري"]</h1>
 @if (Model.Tickets.Count == 0)
 {
@@ -33,10 +33,9 @@ else
 }
 @if (Model.PageNumber > 1)
 {
-    <a asp-route-pageNumber="@(Model.PageNumber - 1)">@L["السابق"]</a>
+    <a data-partial="page-content" asp-route-pageNumber="@(Model.PageNumber - 1)">@L["السابق"]</a>
 }
 @if (Model.Tickets.Count == 20)
 {
-    <a asp-route-pageNumber="@(Model.PageNumber + 1)">@L["التالي"]</a>
+    <a data-partial="page-content" asp-route-pageNumber="@(Model.PageNumber + 1)">@L["التالي"]</a>
 }
-

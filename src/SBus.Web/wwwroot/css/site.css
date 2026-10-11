@@ -1025,6 +1025,10 @@ h1, h2, h3, .eyebrow, .time, .price, .stat-value, .brand { font-family: var(--fo
 .auth-card h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.25rem; }
 
 /* Responsive */
+[data-partial-region][aria-busy="true"] { opacity: .6; }
+[data-partial-region] { overflow-anchor: none; }
+[data-partial-updated] .board-row { animation: none; }
+
 @media (max-width: 860px) {
     .hero { grid-template-columns: 1fr; padding: 2rem 1.5rem 4.25rem; }
     .hero-route { justify-self: start; }
@@ -1033,7 +1037,9 @@ h1, h2, h3, .eyebrow, .time, .price, .stat-value, .brand { font-family: var(--fo
 }
 
 @media (max-width: 600px) {
+    .topbar-inner { flex-wrap: wrap; }
     .page { padding-top: 1rem; }
+    .auth-card { padding: 1.5rem; }
     .search-card { margin-inline: .5rem; }
     .board-row { grid-template-columns: 1fr auto; gap: .75rem 1rem; padding: .9rem 1rem; }
     .board-seats { grid-column: 1 / -1; order: 3; }

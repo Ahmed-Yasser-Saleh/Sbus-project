@@ -1,6 +1,7 @@
 @page
 @model SBus.Web.Pages.Office.Settings.RouteModel
 @{
+    Layout = "_PageFragmentLayout";
     ViewData["Title"] = L["الخط"].Value;
 }
 
@@ -10,7 +11,7 @@
 <div class="segmented mb-3">
     @foreach (var direction in new[] { Direction.CairoToSuez, Direction.SuezToCairo })
     {
-        <a class="@(Model.Direction == direction ? "active" : null)" href="?direction=@direction">@Fmt.Direction(direction)</a>
+        <a class="@(Model.Direction == direction ? "active" : null)" data-partial="page-content" href="?direction=@direction">@Fmt.Direction(direction)</a>
     }
 </div>
 
@@ -20,7 +21,7 @@
     @L["رتّب المحطات من أول مكان الأتوبيس بيتحرك منه لحد آخر محطة. اكتب جنب كل محطة بعد كام دقيقة من التحرك بيوصلها، والوقت ده بيظهر للراكب في التذكرة. سيب الأسطر الفاضية زي ما هي."]
 </p>
 
-<form method="post" class="panel">
+<form data-partial="page-content" method="post" class="panel">
     <input type="hidden" asp-for="Direction" />
     <table class="table data-table align-middle route-table">
         <thead><tr><th>#</th><th>@L["المحطة"]</th><th>@L["بعد كام دقيقة"]</th></tr></thead>

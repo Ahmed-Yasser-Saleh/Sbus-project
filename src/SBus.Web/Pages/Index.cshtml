@@ -14,17 +14,20 @@
         <p>@L["اختار الاتجاه واليوم، وبعدين اختار الكرسي اللي يريحك."]</p>
     </div>
     <div class="hero-route" aria-hidden="true">
-        <span class="hero-city">@from</span>
+        <span class="hero-city" data-partial-text="trips-list" data-partial-param="direction"
+              data-partial-values="@System.Text.Json.JsonSerializer.Serialize(new { CairoToSuez = L["القاهرة"].Value, SuezToCairo = L["السويس"].Value })">@from</span>
         <span class="hero-line"><svg class="i"><use href="#i-bus" /></svg></span>
-        <span class="hero-city">@to</span>
+        <span class="hero-city" data-partial-text="trips-list" data-partial-param="direction"
+              data-partial-values="@System.Text.Json.JsonSerializer.Serialize(new { CairoToSuez = L["السويس"].Value, SuezToCairo = L["القاهرة"].Value })">@to</span>
     </div>
 </section>
 
-<section class="search-card" aria-label="@L["الرحلات"]">
+<section class="search-card" aria-label="@L["الرحلات"]" data-partial-controls="trips-list">
     <div class="segmented" role="tablist">
         @foreach (var direction in new[] { Direction.CairoToSuez, Direction.SuezToCairo })
         {
             <a role="tab" aria-selected="@(Model.Direction == direction ? "true" : "false")" class="@(Model.Direction == direction ? "active" : null)"
+               aria-controls="trips-list" data-partial="trips-list" data-partial-param="direction" data-partial-value="@direction"
                href="?direction=@direction&date=@Fmt.IsoDate(date)">@Fmt.Direction(direction)</a>
         }
     </div>
@@ -33,7 +36,9 @@
         @foreach (var day in Model.Days)
         {
             var label = day == Model.Days[0] ? L["النهارده"].Value : day == Model.Days[1] ? L["بكرة"].Value : Fmt.DayName(day);
-            <a role="tab" aria-selected="@(day == Model.Date ? "true" : "false")" class="day @(day == Model.Date ? "active" : null)" href="?direction=@Model.Direction&date=@Fmt.IsoDate(day)">
+            <a role="tab" aria-selected="@(day == Model.Date ? "true" : "false")" aria-current="@(day == Model.Date ? "date" : null)"
+               aria-controls="trips-list" data-partial="trips-list" data-partial-param="date" data-partial-value="@Fmt.IsoDate(day)"
+               class="day @(day == Model.Date ? "active" : null)" href="?direction=@Model.Direction&date=@Fmt.IsoDate(day)">
                 <span class="day-name">@label</span>
                 <span class="day-num">@day.Day</span>
             </a>
@@ -41,61 +46,8 @@
     </div>
 </section>
 
-<div class="section-head">
-    <h2>@Fmt.Date(date)</h2>
-    <span class="muted">@L["{0} رحلة", Model.Trips.Count]</span>
-</div>
-
-@if (Model.Trips.Count == 0)
-{
-    <div class="empty-state">
-        <svg class="i i-lg"><use href="#i-calendar" /></svg>
-        <p>@L["مفيش رحلات متاحة في اليوم ده."]</p>
-    </div>
-}
-else
-{
-    <div class="board">
-        @for (var i = 0; i < Model.Trips.Count; i++)
-        {
-            var trip = Model.Trips[i];
-            var full = trip.AvailableSeats == 0;
-            var low = !full && trip.AvailableSeats <= 3;
-            var taken = trip.Capacity == 0 ? 0 : (trip.Capacity - trip.AvailableSeats) * 100 / trip.Capacity;
-
-            <a class="board-row @(full ? "is-full" : null)" style="--i:@i" href="@(full ? null : $"/trip/{trip.TripId}")" aria-disabled="@(full ? "true" : null)">
-                <div class="board-time">
-                    <span class="time">@Fmt.Time(trip.DepartureTime)</span>
-                    <span class="route-mini">@from <svg class="i i-flip"><use href="#i-arrow" /></svg> @to</span>
-                </div>
-
-                <div class="board-seats">
-                    <div class="meter" aria-hidden="true"><span style="width:@taken%"></span></div>
-                    <span class="seats-label @(full ? "text-danger" : low ? "text-warning-strong" : null)">
-                        @(full ? L["كامل"] : low ? L["آخر {0} كراسي", trip.AvailableSeats] : L["{0} كرسي فاضي من {1}", trip.AvailableSeats, trip.Capacity])
-                    </span>
-                </div>
-
-                <div class="board-price">
-                    <span class="price">@Fmt.Money(trip.Price)</span>
-                    <span class="muted small">@L["للكرسي"]</span>
-                </div>
-
-                <span class="board-cta">
-                    @if (full)
-                    {
-                        <span>—</span>
-                    }
-                    else
-                    {
-                        <span>@L["احجز"]</span>
-                        <svg class="i i-flip"><use href="#i-arrow" /></svg>
-                    }
-                </span>
-            </a>
-        }
-    </div>
-}
+<partial name="_PartialFeedback" model="@("trips-list")" />
+<partial name="_TripsList" model="Model" />
 
 <p class="hint">
     <svg class="i"><use href="#i-ticket" /></svg>

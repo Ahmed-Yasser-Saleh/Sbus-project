@@ -1,0 +1,66 @@
+@model SBus.Web.Pages.IndexModel
+@{
+    var date = Model.Date!.Value;
+    var from = Model.Direction == Direction.CairoToSuez ? L["القاهرة"] : L["السويس"];
+    var to = Model.Direction == Direction.CairoToSuez ? L["السويس"] : L["القاهرة"];
+}
+<div id="trips-list" data-partial-region tabindex="-1"
+     data-partial-url="@Url.Page("/Index", new { direction = Model.Direction, date = Fmt.IsoDate(date) })"
+     data-partial-announcement="@L["{0} رحلة", Model.Trips.Count]">
+<div class="section-head">
+    <h2>@Fmt.Date(date)</h2>
+    <span class="muted">@L["{0} رحلة", Model.Trips.Count]</span>
+</div>
+
+@if (Model.Trips.Count == 0)
+{
+    <div class="empty-state">
+        <svg class="i i-lg"><use href="#i-calendar" /></svg>
+        <p>@L["مفيش رحلات متاحة في اليوم ده."]</p>
+    </div>
+}
+else
+{
+    <div class="board">
+        @for (var i = 0; i < Model.Trips.Count; i++)
+        {
+            var trip = Model.Trips[i];
+            var full = trip.AvailableSeats == 0;
+            var low = !full && trip.AvailableSeats <= 3;
+            var taken = trip.Capacity == 0 ? 0 : (trip.Capacity - trip.AvailableSeats) * 100 / trip.Capacity;
+
+            <a class="board-row @(full ? "is-full" : null)" style="--i:@i" href="@(full ? null : $"/trip/{trip.TripId}")" aria-disabled="@(full ? "true" : null)">
+                <div class="board-time">
+                    <span class="time">@Fmt.Time(trip.DepartureTime)</span>
+                    <span class="route-mini">@from <svg class="i i-flip"><use href="#i-arrow" /></svg> @to</span>
+                </div>
+
+                <div class="board-seats">
+                    <div class="meter" aria-hidden="true"><span style="width:@taken%"></span></div>
+                    <span class="seats-label @(full ? "text-danger" : low ? "text-warning-strong" : null)">
+                        @(full ? L["كامل"] : low ? L["آخر {0} كراسي", trip.AvailableSeats] : L["{0} كرسي فاضي من {1}", trip.AvailableSeats, trip.Capacity])
+                    </span>
+                </div>
+
+                <div class="board-price">
+                    <span class="price">@Fmt.Money(trip.Price)</span>
+                    <span class="muted small">@L["للكرسي"]</span>
+                </div>
+
+                <span class="board-cta">
+                    @if (full)
+                    {
+                        <span>—</span>
+                    }
+                    else
+                    {
+                        <span>@L["احجز"]</span>
+                        <svg class="i i-flip"><use href="#i-arrow" /></svg>
+                    }
+                </span>
+            </a>
+        }
+    </div>
+}
+
+</div>

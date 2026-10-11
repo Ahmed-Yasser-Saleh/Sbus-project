@@ -3,6 +3,7 @@
 @using SBus.Domain.Common.Constants
 @using SBus.Web.Pages.Shared
 @{
+    Layout = "_PageFragmentLayout";
     var trip = Model.Trip!;
     ViewData["Title"] = L["كشف الرحلة"].Value;
     var bookedSeats = trip.Bookings.Where(b => b.Status == BookingStatus.Confirmed).Sum(b => b.Seats.Count);
@@ -68,7 +69,7 @@
                             <td><span class="badge @Fmt.StatusCss(b.Status)">@Fmt.Status(b.Status)</span></td>
                             <td class="no-print muted small">@Fmt.Source(b.Source)</td>
                             <td class="no-print text-end">
-                                <form method="post" asp-page-handler="Cancel" data-confirm="@L["تلغي حجز {0}؟", b.PassengerName]">
+                                <form data-partial="page-content" method="post" asp-page-handler="Cancel" data-confirm="@L["تلغي حجز {0}؟", b.PassengerName]">
                                     <input type="hidden" name="bookingId" value="@b.BookingId" />
                                     <button type="submit" class="btn btn-sm btn-outline-danger">@L["الغي"]</button>
                                 </form>
@@ -84,7 +85,7 @@
 @if (!trip.HasDeparted)
 {
     <div class="office-grid no-print">
-        <form method="post" asp-page-handler="Book" id="booking-form" class="panel" data-price="@trip.Price" data-max="@SBusConstants.MaxSeatsPerBooking" data-currency="@Fmt.Currency" data-currency-first="@(Languages.IsEnglish ? "true" : "false")">
+        <form data-partial="page-content" method="post" asp-page-handler="Book" id="booking-form" class="panel" data-price="@trip.Price" data-max="@SBusConstants.MaxSeatsPerBooking" data-currency="@Fmt.Currency" data-currency-first="@(Languages.IsEnglish ? "true" : "false")">
             <header class="panel-head"><h2>@L["حجز لراكب بيتصل"]</h2></header>
             <div class="booking-inner">
                 <partial name="_SeatMap" model="new SeatMapView(trip.SeatMap, true, Model.Input.SeatNumbers)" />
@@ -126,7 +127,7 @@
             </div>
         </form>
 
-        <form method="post" asp-page-handler="Assign" class="panel">
+        <form data-partial="page-content" method="post" asp-page-handler="Assign" class="panel">
             <header class="panel-head"><h2>@L["تغيير الأتوبيس أو السواق للرحلة دي بس"]</h2></header>
             <div class="field">
                 <label for="bus">@L["الأتوبيس"]</label>

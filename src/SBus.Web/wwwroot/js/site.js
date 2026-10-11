@@ -1,5 +1,5 @@
-(function () {
-    const form = document.getElementById('booking-form');
+(function initialize(root) {
+    const form = root.querySelector('#booking-form');
 
     if (form) {
         const price = parseFloat(form.dataset.price || '0');
@@ -23,13 +23,14 @@
         refresh();
     }
 
-    const mirrors = document.querySelectorAll('[data-countdown-mirror]');
+    const mirrors = root.querySelectorAll('[data-countdown-mirror]');
 
-    document.querySelectorAll('[data-countdown]').forEach(el => {
+    root.querySelectorAll('[data-countdown]').forEach(el => {
         const deadline = parseInt(el.dataset.countdown, 10);
         const out = el.querySelector('[data-countdown-text]');
 
         const tick = () => {
+            if (!el.isConnected) return;
             const left = Math.max(0, Math.floor((deadline - Date.now()) / 1000));
             const m = Math.floor(left / 60);
             const s = String(left % 60).padStart(2, '0');
@@ -61,7 +62,7 @@
         }
     };
 
-    document.querySelectorAll('[data-copy]').forEach(btn => {
+    root.querySelectorAll('[data-copy]').forEach(btn => {
         btn.addEventListener('click', async () => {
             const input = document.querySelector(btn.dataset.copy);
             await copy(input.value, input);
@@ -69,14 +70,14 @@
         });
     });
 
-    document.querySelectorAll('[data-copy-text]').forEach(btn => {
+    root.querySelectorAll('[data-copy-text]').forEach(btn => {
         btn.addEventListener('click', async () => {
             await copy(document.querySelector(btn.dataset.copyText).textContent.trim());
             flashCopied(btn);
         });
     });
 
-    document.querySelectorAll('input[type=file][data-file-label]').forEach(input => {
+    root.querySelectorAll('input[type=file][data-file-label]').forEach(input => {
         input.addEventListener('change', () => {
             const label = document.querySelector(input.dataset.fileLabel);
             const file = input.files && input.files[0];
@@ -85,19 +86,22 @@
         });
     });
 
-    document.querySelectorAll('form[data-confirm]').forEach(f => {
+    root.querySelectorAll('form[data-confirm]').forEach(f => {
         f.addEventListener('submit', e => {
             if (!confirm(f.dataset.confirm)) e.preventDefault();
         });
     });
 
-    document.querySelectorAll('[data-print]').forEach(btn => btn.addEventListener('click', () => window.print()));
+    root.querySelectorAll('[data-print]').forEach(btn => btn.addEventListener('click', () => window.print()));
 
-    document.querySelectorAll('img[data-fallback]').forEach(img => {
+    root.querySelectorAll('img[data-fallback]').forEach(img => {
         img.addEventListener('error', () => {
             const label = document.createElement('span');
             label.textContent = img.dataset.fallback;
             img.replaceWith(label);
         });
     });
-})();
+    if (root === document) {
+        document.addEventListener('sbus:updated', event => initialize(event.detail.region));
+    }
+})(document);

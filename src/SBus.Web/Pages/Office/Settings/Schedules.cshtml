@@ -1,6 +1,7 @@
 @page
 @model SBus.Web.Pages.Office.Settings.SchedulesModel
 @{
+    Layout = "_PageFragmentLayout";
     ViewData["Title"] = L["المواعيد"].Value;
 }
 
@@ -25,7 +26,7 @@
                             <td>@s.BusPlateNumber</td>
                             <td>@s.DriverName</td>
                             <td>@(s.IsActive ? L["شغال"] : L["متوقف"])</td>
-                            <td><a class="btn btn-sm btn-outline-secondary" href="?id=@s.ScheduleId">@L["تعديل"]</a></td>
+                            <td><a class="btn btn-sm btn-outline-secondary" data-partial="page-content" href="?id=@s.ScheduleId">@L["تعديل"]</a></td>
                         </tr>
                     }
                 </tbody>
@@ -40,7 +41,7 @@
         }
         else
         {
-            <form method="post" class="panel">
+            <form data-partial="page-content" method="post" class="panel">
                 <input type="hidden" asp-for="Id" />
                 <div class="mb-2">
                     <label class="form-label" for="direction">@L["الاتجاه"]</label>
@@ -95,7 +96,7 @@
                 <button type="submit" class="btn btn-primary">@L["حفظ"]</button>
                 @if (Model.Id is not null)
                 {
-                    <a class="btn btn-link" href="?">@L["إلغاء"]</a>
+                    <a class="btn btn-link" data-partial="page-content" href="?">@L["إلغاء"]</a>
                 }
             </form>
             <p class="small text-secondary mt-2">

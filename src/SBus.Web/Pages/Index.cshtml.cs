@@ -9,6 +9,7 @@ using SBus.Application.Common.Time;
 using SBus.Application.Features.Trips.Dtos;
 using SBus.Application.Features.Trips.Queries.GetAvailableTrips;
 using SBus.Domain.Routes;
+using SBus.Web.Infrastructure;
 
 namespace SBus.Web.Pages;
 
@@ -28,7 +29,7 @@ public class IndexModel(ISender sender, TimeProvider timeProvider, IOptions<Book
 
     public List<TripSummaryDto> Trips { get; private set; } = [];
 
-    public async Task OnGetAsync(CancellationToken ct)
+    public async Task<IActionResult> OnGetAsync(CancellationToken ct)
     {
         var today = CairoTime.Today(_timeProvider.GetUtcNow());
 
@@ -47,5 +48,7 @@ public class IndexModel(ISender sender, TimeProvider timeProvider, IOptions<Book
         var result = await _sender.Send(new GetAvailableTripsQuery(Direction, Date.Value), ct);
 
         Trips = result.IsSuccess ? result.Value : [];
+
+        return PartialRequests.Prepare(HttpContext, "trips-list") ? Partial("_TripsList", this) : Page();
     }
 }

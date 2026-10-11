@@ -42,6 +42,7 @@
             </a>
 
             <div class="topbar-actions">
+                <a asp-page="/Index" class="topbar-link">@L["الرئيسية"]</a>
                 @if (User.Identity?.IsAuthenticated == true)
                 {
                     @if (User.IsInRole(SBus.Infrastructure.Identity.Roles.Traveler)
@@ -86,6 +87,7 @@
     </footer>
 
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/partial-navigation.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,6 +1,20 @@
 @page
-@{ ViewData["Title"] = "Check your email"; }
-<h1>@L["راجع بريدك الإلكتروني"]</h1>
-<p>@L["إذا كان الطلب صالحًا، ستصلك رسالة بالخطوة التالية. يمكنك محاولة الدخول أو إعادة إرسال التأكيد."]</p>
-<a asp-page="/Account/Login">@L["تسجيل الدخول"]</a>
+@inject Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Identity.DataProtectionTokenProviderOptions> TokenOptions
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Check your email";
+    ViewData["AuthHeading"] = L["راجع بريدك الإلكتروني"].Value;
+    var isPasswordReset = Request.Query["purpose"] == "reset-password";
+}
+@if (isPasswordReset)
+{
+    <p>@L["إذا كان هناك حساب بهذا البريد الإلكتروني، ستصلك رسالة بها رابط لإعادة تعيين كلمة المرور."]</p>
+    <p>@L["راجع صندوق الوارد ومجلد الرسائل غير المرغوب فيها."] @L["الرابط صالح لمدة {0} ساعة.", TokenOptions.Value.TokenLifespan.TotalHours]</p>
+    <a asp-page="/Account/Login" class="btn btn-primary btn-lg w-100">@L["العودة لتسجيل الدخول"]</a>
+}
+else
+{
+    <p>@L["إذا كان الطلب صالحًا، ستصلك رسالة بالخطوة التالية. يمكنك محاولة الدخول أو إعادة إرسال التأكيد."]</p>
+    <a asp-page="/Account/Login">@L["تسجيل الدخول"]</a>
+}
 

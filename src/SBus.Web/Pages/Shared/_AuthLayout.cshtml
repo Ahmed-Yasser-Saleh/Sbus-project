@@ -1,0 +1,19 @@
+@{
+    Layout = "_Layout";
+}
+
+<div class="auth">
+    <div class="auth-card">
+        <img class="auth-wordmark" src="~/img/logo-full.png" alt="SBus" />
+        <h1>@ViewData["AuthHeading"]</h1>
+        @RenderBody()
+    </div>
+</div>
+
+@section Head {
+    @await RenderSectionAsync("Head", required: false)
+}
+
+@section Scripts {
+    @await RenderSectionAsync("Scripts", required: false)
+}

@@ -41,7 +41,7 @@ public class ForgotPasswordModel(UserManager<AppUser> users, IAccountEmail email
             }
         }
 
-        return RedirectToPage("/Account/CheckEmail");
+        return RedirectToPage("/Account/CheckEmail", new { purpose = "reset-password" });
     }
 }
 

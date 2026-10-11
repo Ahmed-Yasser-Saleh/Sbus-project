@@ -40,7 +40,7 @@
   <data name="احجز (متأكد على طول)" xml:space="preserve"><value>Book (confirmed right away)</value></data>
   <data name="احجز الكرسي" xml:space="preserve"><value>Book the seat</value></data>
   <data name="احجز كرسيك" xml:space="preserve"><value>Book your seat</value></data>
-  <data name="احجز كرسيك في ميني باص S Bus" xml:space="preserve"><value>Book your seat on an S Bus minibus</value></data>
+  <data name="احجز كرسيك في ميني باص S Bus" xml:space="preserve"><value>Book your seat</value></data>
   <data name="احجز من جديد" xml:space="preserve"><value>Book again</value></data>
   <data name="احفظ اللينك ده. هو الطريقة الوحيدة تشوف بيها تذكرتك أو تلغيها." xml:space="preserve"><value>Save this link. It is the only way to see or cancel your ticket.</value></data>
   <data name="اختار الأتوبيس." xml:space="preserve"><value>Choose the bus.</value></data>
@@ -409,5 +409,35 @@
   </data>
   <data name="بريدك الإلكتروني لم يتم تأكيده بعد. افتح رابط التأكيد المرسل إليك قبل تسجيل الدخول." xml:space="preserve">
     <value>Your email has not been confirmed yet. Open the confirmation link sent to you before signing in.</value>
+  </data>
+  <data name="إذا كان هناك حساب بهذا البريد الإلكتروني، ستصلك رسالة بها رابط لإعادة تعيين كلمة المرور." xml:space="preserve">
+    <value>If an account exists for that email, you will receive a link to reset your password.</value>
+  </data>
+  <data name="راجع صندوق الوارد ومجلد الرسائل غير المرغوب فيها." xml:space="preserve">
+    <value>Please check your inbox and your spam folder.</value>
+  </data>
+  <data name="الرابط صالح لمدة {0} ساعة." xml:space="preserve">
+    <value>The link expires in {0} hours.</value>
+  </data>
+  <data name="العودة لتسجيل الدخول" xml:space="preserve">
+    <value>Back to sign in</value>
+  </data>
+  <data name="الرئيسية" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="تعذّر تحديث البيانات. المعروض حاليًا هو آخر تحميل ناجح." xml:space="preserve">
+    <value>Unable to update the data. The last successfully loaded results are still shown.</value>
+  </data>
+  <data name="تعذّر تأكيد نتيجة العملية. أعد تحميل البيانات قبل المحاولة مرة أخرى." xml:space="preserve">
+    <value>Unable to confirm the outcome. Reload the data before trying the action again.</value>
+  </data>
+  <data name="إعادة تحميل البيانات" xml:space="preserve">
+    <value>Reload data</value>
+  </data>
+  <data name="جاري تحديث البيانات…" xml:space="preserve">
+    <value>Updating data…</value>
+  </data>
+  <data name="حاول تاني" xml:space="preserve">
+    <value>Retry</value>
   </data>
 </root>

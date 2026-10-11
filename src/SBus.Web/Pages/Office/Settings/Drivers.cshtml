@@ -1,6 +1,7 @@
 @page
 @model SBus.Web.Pages.Office.Settings.DriversModel
 @{
+    Layout = "_PageFragmentLayout";
     ViewData["Title"] = L["السواقين"].Value;
 }
 
@@ -20,7 +21,7 @@
                         <td>@d.Name</td>
                         <td dir="ltr">@d.PhoneNumber</td>
                         <td>@(d.IsActive ? L["شغال"] : L["متوقف"])</td>
-                        <td><a class="btn btn-sm btn-outline-secondary" href="?id=@d.DriverId">@L["تعديل"]</a></td>
+                        <td><a class="btn btn-sm btn-outline-secondary" data-partial="page-content" href="?id=@d.DriverId">@L["تعديل"]</a></td>
                     </tr>
                 }
             </tbody>
@@ -28,7 +29,7 @@
     </div>
     <div class="col-md-5">
         <h2 class="h6">@(Model.Id is null ? L["سواق جديد"] : L["تعديل السواق"])</h2>
-        <form method="post" class="panel">
+        <form data-partial="page-content" method="post" class="panel">
             <input type="hidden" asp-for="Id" />
             <div class="mb-2">
                 <label class="form-label" for="name">@L["الاسم"]</label>
@@ -48,7 +49,7 @@
             <button type="submit" class="btn btn-primary">@L["حفظ"]</button>
             @if (Model.Id is not null)
             {
-                <a class="btn btn-link" href="?">@L["إلغاء"]</a>
+                <a class="btn btn-link" data-partial="page-content" href="?">@L["إلغاء"]</a>
             }
         </form>
     </div>

@@ -1,0 +1,13 @@
+@{
+    var isPartial = PartialRequests.Prepare(Context, "page-content");
+    Layout = isPartial ? null : "_Layout";
+}
+@if (!isPartial)
+{
+    <partial name="_PartialFeedback" model="@("page-content")" />
+}
+<div id="page-content" data-partial-region tabindex="-1"
+     data-partial-url="@(Context.Request.Path + Context.Request.QueryString)"
+     data-partial-announcement="@ViewData["Title"]">
+    @RenderBody()
+</div>
