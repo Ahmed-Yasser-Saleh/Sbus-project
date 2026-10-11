@@ -4,6 +4,7 @@
 <h1>@L["تأكيد ربط الحساب"]</h1>
 <p>@L["لإكمال الدخول، أكد كلمة مرور حسابك الحالي."]</p>
 <form method="post">
+    <input type="hidden" asp-for="ReturnUrl" />
     <div asp-validation-summary="All" class="text-danger"></div>
     <label asp-for="Password">@L["كلمة المرور"]</label>
     <input asp-for="Password" autocomplete="current-password" class="form-control" />

@@ -23,6 +23,9 @@ public class LinkGoogleModel(SignInManager<AppUser> signIn, TravelerAccounts acc
     [StringLength(128)]
     public string Password { get; set; } = string.Empty;
 
+    [BindProperty(SupportsGet = true)]
+    public string? ReturnUrl { get; set; }
+
     public async Task<IActionResult> OnGetAsync() =>
         await signIn.GetExternalLoginInfoAsync() is null ? RedirectToPage("/Account/Login") : Page();
 
@@ -31,7 +34,7 @@ public class LinkGoogleModel(SignInManager<AppUser> signIn, TravelerAccounts acc
         var info = await signIn.GetExternalLoginInfoAsync();
         if (!ModelState.IsValid || info is null)
         {
-            return RedirectToPage("/Account/Login", new { externalError = true });
+            return RedirectToPage("/Account/Login", new { externalError = true, returnUrl = Url.IsLocalUrl(ReturnUrl) ? ReturnUrl : null });
         }
 
         var user = await accounts.LinkGoogleWithPasswordAsync(info, Password);
@@ -40,12 +43,12 @@ public class LinkGoogleModel(SignInManager<AppUser> signIn, TravelerAccounts acc
             var login = await signIn.ExternalLoginSignInAsync("Google", info.ProviderKey, false, bypassTwoFactor: false);
             if (login.Succeeded)
             {
-                return LocalRedirect(AccountLanding.Path(await signIn.UserManager.GetRolesAsync(user)));
+                return LocalRedirect(Url.IsLocalUrl(ReturnUrl) ? ReturnUrl! : AccountLanding.Path(await signIn.UserManager.GetRolesAsync(user)));
             }
         }
 
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-        return RedirectToPage("/Account/Login", new { externalError = true });
+        return RedirectToPage("/Account/Login", new { externalError = true, returnUrl = Url.IsLocalUrl(ReturnUrl) ? ReturnUrl : null });
     }
 }
 

@@ -9,8 +9,9 @@
 }
 else
 {
+    <div class="table-responsive">
     <table class="table">
-        <thead><tr><th>@L["الرحلة"]</th><th>@L["الحالة"]</th><th>@L["تاريخ الحجز"]</th></tr></thead>
+        <thead><tr><th>@L["الرحلة"]</th><th>@L["الاسم"]</th><th>@L["رقم الموبايل"]</th><th>@L["الحالة"]</th><th>@L["تاريخ الحجز"]</th></tr></thead>
         <tbody>
         @foreach (var ticket in Model.Tickets)
         {
@@ -25,11 +26,13 @@ else
             };
             <tr>
                 <td><a href="/t/@ticket.PublicToken">@ticket.ServiceDate · @ticket.DepartureTime</a></td>
+                <td>@ticket.PassengerName</td><td dir="ltr">@ticket.PhoneNumber</td>
                 <td>@status</td><td>@ticket.CreatedAtUtc.ToString("yyyy-MM-dd")</td>
             </tr>
         }
         </tbody>
     </table>
+    </div>
 }
 @if (Model.PageNumber > 1)
 {

@@ -8,4 +8,4 @@ using SBus.Domain.Bookings;
 namespace SBus.Application.Features.Bookings.Queries.GetMyTickets;
 
 public sealed record MyTicketDto(Guid Id, Guid TripId, string PublicToken, BookingStatus Status,
-    DateTimeOffset CreatedAtUtc, DateOnly ServiceDate, TimeOnly DepartureTime);
+    DateTimeOffset CreatedAtUtc, DateOnly ServiceDate, TimeOnly DepartureTime, string PassengerName, string PhoneNumber);

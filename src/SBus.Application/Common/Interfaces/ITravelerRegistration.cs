@@ -5,6 +5,6 @@ namespace SBus.Application.Common.Interfaces;
 
 public interface ITravelerRegistration
 {
-    Task<Result<TravelerRegistrationOutcome>> RegisterAsync(string email, string password, CancellationToken ct);
+    Task<Result<TravelerRegistrationOutcome>> RegisterAsync(string email, string password, string fullName, string phoneNumber, CancellationToken ct);
 }
 

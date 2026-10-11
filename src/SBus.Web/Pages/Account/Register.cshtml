@@ -8,6 +8,7 @@
 <p>@L["استخدم كلمة مرور من 5 حروف على الأقل."]</p>
 <form method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <partial name="_TravelerProfileFields" model="new SBus.Application.Features.Accounts.Dtos.TravelerProfileDto(Model.FullName, Model.PhoneNumber)" />
     <div class="field">
         <label asp-for="Email">@L["البريد الإلكتروني"]</label>
         <input asp-for="Email" type="email" autocomplete="username" class="form-control" required maxlength="@SBus.Application.Common.Validation.PublicEmailAddress.MaxLength"
@@ -30,3 +31,7 @@
     <button class="btn btn-primary btn-lg w-100">@L["إنشاء حساب"]</button>
 </form>
 
+
+@section Scripts {
+    <script src="~/js/traveler-profile.js" asp-append-version="true"></script>
+}

@@ -17,6 +17,9 @@ namespace SBus.Web.Pages.Account;
 public class ExternalLoginModel(SignInManager<AppUser> signIn, TravelerAccounts accounts,
     IAccountEmail email, ILogger<ExternalLoginModel> logger) : PageModel
 {
+    [BindProperty(SupportsGet = true)]
+    public string? ReturnUrl { get; set; }
+
     public IActionResult OnGet() => RedirectToPage("/Account/Login");
 
     public async Task<IActionResult> OnPostAsync()
@@ -26,7 +29,7 @@ public class ExternalLoginModel(SignInManager<AppUser> signIn, TravelerAccounts 
             return NotFound();
         }
 
-        var callback = Url.Page("/Account/ExternalLogin", "Callback")!;
+        var callback = Url.Page("/Account/ExternalLogin", "Callback", new { returnUrl = Url.IsLocalUrl(ReturnUrl) ? ReturnUrl : null })!;
         var properties = signIn.ConfigureExternalAuthenticationProperties("Google", callback);
         properties.SetParameter(GoogleChallengeProperties.PromptParameterKey, "select_account");
         return Challenge(properties, "Google");
@@ -43,7 +46,7 @@ public class ExternalLoginModel(SignInManager<AppUser> signIn, TravelerAccounts 
         var result = await accounts.ResolveGoogleAsync(info);
         if (result.State == ExternalAccountState.PasswordProofRequired)
         {
-            return RedirectToPage("/Account/LinkGoogle");
+            return RedirectToPage("/Account/LinkGoogle", new { returnUrl = Url.IsLocalUrl(ReturnUrl) ? ReturnUrl : null });
         }
 
         if (result.State != ExternalAccountState.Ready || result.User is null)
@@ -73,13 +76,13 @@ public class ExternalLoginModel(SignInManager<AppUser> signIn, TravelerAccounts 
             return await FailureAsync();
         }
 
-        return LocalRedirect(AccountLanding.Path(await signIn.UserManager.GetRolesAsync(result.User)));
+        return LocalRedirect(Url.IsLocalUrl(ReturnUrl) ? ReturnUrl! : AccountLanding.Path(await signIn.UserManager.GetRolesAsync(result.User)));
     }
 
     private async Task<IActionResult> FailureAsync()
     {
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-        return RedirectToPage("/Account/Login", new { externalError = true });
+        return RedirectToPage("/Account/Login", new { externalError = true, returnUrl = Url.IsLocalUrl(ReturnUrl) ? ReturnUrl : null });
     }
 }
 

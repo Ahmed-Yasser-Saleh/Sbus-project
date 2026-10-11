@@ -1,0 +1,36 @@
+@model SBus.Web.Pages.TripModel
+@using SBus.Application.Common.Validation
+@using SBus.Domain.Common.Constants
+<div data-booking-passenger data-profile-name="@Model.Profile!.FullName" data-profile-phone="@Model.Profile!.PhoneNumber"
+     data-name-required="@L[TravelerProfileRules.NameRequired]" data-name-too-long="@L[TravelerProfileRules.NameTooLong]">
+    <input type="hidden" asp-for="Input.EditPassengerDetails" data-passenger-editing />
+    <input type="hidden" asp-for="Input.EditPassengerName" data-passenger-name-editing />
+    <input type="hidden" asp-for="Input.EditPassengerPhone" data-passenger-phone-editing />
+    <div class="field">
+        <label asp-for="Input.PassengerName">@L["الاسم بالكامل"]</label>
+        <div class="passenger-edit-field">
+        <input asp-for="Input.PassengerName" class="form-control" autocomplete="name" required maxlength="@SBusConstants.NameMaxLength"
+               readonly="@(!Model.Input.EditPassengerName)" data-passenger-name aria-describedby="passenger-name-error" />
+            <button type="button" class="passenger-edit-button" data-passenger-edit="name" aria-label="@L["تعديل الاسم"]" title="@L["تعديل الاسم"]" aria-controls="Input_PassengerName">
+                <svg class="i" aria-hidden="true"><use href="#i-pencil" /></svg>
+            </button>
+        </div>
+        <span asp-validation-for="Input.PassengerName" id="passenger-name-error" class="text-danger d-block mt-1" aria-live="polite" data-passenger-name-error></span>
+    </div>
+    <div class="field">
+        <label asp-for="Input.PhoneNumber">@L["رقم الموبايل"]</label>
+        <div class="passenger-edit-field">
+        <input asp-for="Input.PhoneNumber" class="form-control" type="tel" inputmode="tel" autocomplete="tel" required maxlength="30"
+               readonly="@(!Model.Input.EditPassengerPhone)" dir="ltr" placeholder="01xxxxxxxxx" data-traveler-phone
+               data-phone-error="@L[TravelerProfileRules.PhoneInvalid]" aria-describedby="passenger-phone-error" />
+            <button type="button" class="passenger-edit-button" data-passenger-edit="phone" aria-label="@L["تعديل رقم الموبايل"]" title="@L["تعديل رقم الموبايل"]" aria-controls="Input_PhoneNumber">
+                <svg class="i" aria-hidden="true"><use href="#i-pencil" /></svg>
+            </button>
+        </div>
+        <span asp-validation-for="Input.PhoneNumber" id="passenger-phone-error" class="text-danger d-block mt-1" aria-live="polite" data-passenger-phone-error></span>
+    </div>
+    <div class="form-check mb-3" data-passenger-account-option hidden="@(!Model.Input.EditPassengerDetails)">
+        <input asp-for="Input.UpdateAccountDetails" class="form-check-input" disabled="@(!Model.Input.EditPassengerDetails)" data-passenger-update-account />
+        <label asp-for="Input.UpdateAccountDetails" class="form-check-label">@L["حدّث بيانات حسابي كمان"]</label>
+    </div>
+</div>

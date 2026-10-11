@@ -63,6 +63,7 @@
         <div><dt>@L["ميعاد التحرك"]</dt><dd>@Fmt.Time(t.DepartureTime)</dd></div>
         <div><dt>@L["الكرسي"]</dt><dd class="seat-no">@Fmt.Seats(t.Seats)</dd></div>
         <div><dt>@L["الاسم"]</dt><dd>@t.PassengerName</dd></div>
+        <div><dt>@L["رقم الموبايل"]</dt><dd dir="ltr">@t.PhoneNumber</dd></div>
         <div><dt>@L["المبلغ"]</dt><dd>@Fmt.Money(t.Amount)</dd></div>
         @if (t.DriverName is not null)
         {

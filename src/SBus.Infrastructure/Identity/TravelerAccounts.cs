@@ -16,7 +16,7 @@ public sealed class TravelerAccounts(UserManager<AppUser> users, SignInManager<A
     public const string VerifiedEmailClaim = "google:email_verified";
     public const string HostedDomainClaim = "google:hd";
 
-    async Task<Result<TravelerRegistrationOutcome>> ITravelerRegistration.RegisterAsync(string email, string password, CancellationToken ct)
+    async Task<Result<TravelerRegistrationOutcome>> ITravelerRegistration.RegisterAsync(string email, string password, string fullName, string phoneNumber, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
         var candidate = new AppUser { UserName = email.Trim(), Email = email.Trim() };
@@ -32,7 +32,7 @@ public sealed class TravelerAccounts(UserManager<AppUser> users, SignInManager<A
         }
 
         ct.ThrowIfCancellationRequested();
-        var user = await RegisterAsync(email, password);
+        var user = await RegisterAsync(email, password, fullName, phoneNumber);
         if (user is null && await users.FindByEmailAsync(candidate.Email!) is not null)
         {
             return Error.Validation(
@@ -43,10 +43,12 @@ public sealed class TravelerAccounts(UserManager<AppUser> users, SignInManager<A
         return new TravelerRegistrationOutcome(user?.Id);
     }
 
-    public async Task<AppUser?> RegisterAsync(string email, string password)
+    public async Task<AppUser?> RegisterAsync(string email, string password, string fullName, string phoneNumber)
     {
         email = email.Trim();
-        if (!PublicEmailAddress.IsValid(email))
+        if (!PublicEmailAddress.IsValid(email) || string.IsNullOrWhiteSpace(fullName)
+            || fullName.Length > SBus.Domain.Common.Constants.SBusConstants.NameMaxLength
+            || phoneNumber.Length > 30 || TravelerProfileRules.NormalizePhone(phoneNumber) is null)
         {
             return null;
         }
@@ -61,7 +63,13 @@ public sealed class TravelerAccounts(UserManager<AppUser> users, SignInManager<A
             return await transaction.ExecuteAsync(
                 async () =>
             {
-                var user = new AppUser { UserName = email, Email = email };
+                var user = new AppUser
+                {
+                    UserName = email,
+                    Email = email,
+                    FullName = fullName.Trim(),
+                    PhoneNumber = TravelerProfileRules.NormalizePhone(phoneNumber),
+                };
                 if (!(await users.CreateAsync(user, password)).Succeeded)
                 {
                     return null;
@@ -125,6 +133,7 @@ public sealed class TravelerAccounts(UserManager<AppUser> users, SignInManager<A
                     UserName = email,
                     Email = email,
                     EmailConfirmed = GoogleIsEmailAuthority(info),
+                    FullName = GoogleFullName(info),
                 };
                 if (!(await users.CreateAsync(user)).Succeeded
                     || !(await users.AddToRoleAsync(user, Roles.Traveler)).Succeeded
@@ -170,5 +179,16 @@ public sealed class TravelerAccounts(UserManager<AppUser> users, SignInManager<A
         {
             return null;
         }
+    }
+
+    private static string? GoogleFullName(ExternalLoginInfo info)
+    {
+        var name = info.Principal.FindFirstValue(ClaimTypes.Name)?.Trim();
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            name = $"{info.Principal.FindFirstValue(ClaimTypes.GivenName)} {info.Principal.FindFirstValue(ClaimTypes.Surname)}".Trim();
+        }
+
+        return string.IsNullOrWhiteSpace(name) ? null : name[..Math.Min(name.Length, SBus.Domain.Common.Constants.SBusConstants.NameMaxLength)];
     }
 }

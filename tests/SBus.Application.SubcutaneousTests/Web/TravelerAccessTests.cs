@@ -4,6 +4,7 @@ using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -18,6 +19,7 @@ using NSubstitute;
 
 using SBus.Application.Common.Interfaces;
 using SBus.Application.Features.Accounts.Commands.RegisterTraveler;
+using SBus.Application.Features.Accounts.Dtos;
 using SBus.Domain.Common.Results;
 using SBus.Infrastructure.Identity;
 using SBus.Web.Services;
@@ -56,7 +58,7 @@ public class TravelerAccessTests
     {
         var registration = Substitute.For<ITravelerRegistration>();
         var confirmation = Substitute.For<IRegistrationConfirmationSender>();
-        registration.RegisterAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+        registration.RegisterAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<Result<TravelerRegistrationOutcome>>(userId is null
                 ? Error.Validation("Email", "البريد الإلكتروني مستخدم بالفعل.")
                 : new TravelerRegistrationOutcome(userId)));
@@ -72,11 +74,13 @@ public class TravelerAccessTests
             ["Email"] = "person@example.com",
             ["Password"] = "StrongPassword1!",
             ["ConfirmPassword"] = "StrongPassword1!",
+            ["FullName"] = "Mona Ahmed",
+            ["PhoneNumber"] = "01012345678",
             ["Role"] = Roles.CompanyOwner,
         });
         var response = await client.PostAsync("/Account/Register", form);
 
-        await registration.Received(1).RegisterAsync("person@example.com", "StrongPassword1!", Arg.Any<CancellationToken>());
+        await registration.Received(1).RegisterAsync("person@example.com", "StrongPassword1!", "Mona Ahmed", "+201012345678", Arg.Any<CancellationToken>());
         if (userId is not null)
         {
             Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
@@ -127,6 +131,8 @@ public class TravelerAccessTests
             ["Email"] = email,
             ["Password"] = "StrongPassword1!",
             ["ConfirmPassword"] = "StrongPassword1!",
+            ["FullName"] = "Mona Ahmed",
+            ["PhoneNumber"] = "01012345678",
         });
         var response = await client.PostAsync("/Account/Register", form);
 
@@ -147,6 +153,7 @@ public class TravelerAccessTests
         using var form = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["__RequestVerificationToken"] = WebUtility.HtmlDecode(token),
+            ["ReturnUrl"] = "/MyTickets?pageNumber=2",
         });
         var response = await client.PostAsync("/Account/ExternalLogin", form);
 
@@ -156,6 +163,11 @@ public class TravelerAccessTests
         var query = QueryHelpers.ParseQuery(location.Query);
         Assert.Equal("select_account", query["prompt"].ToString());
         Assert.NotEmpty(query["state"].ToString());
+        var options = factory.Services.GetRequiredService<IOptionsMonitor<GoogleOptions>>().Get("Google");
+        var properties = options.StateDataFormat.Unprotect(query["state"].ToString());
+        Assert.NotNull(properties);
+        var callback = new Uri(client.BaseAddress!, properties.RedirectUri!);
+        Assert.Equal("/MyTickets?pageNumber=2", QueryHelpers.ParseQuery(callback.Query)["returnUrl"].ToString());
         Assert.NotEmpty(query["code_challenge"].ToString());
         Assert.Equal("S256", query["code_challenge_method"].ToString());
     }
@@ -254,6 +266,123 @@ public class TravelerAccessTests
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/Account/ComingSoon")).StatusCode);
     }
 
+    [Theory]
+    [InlineData("/MyTickets?pageNumber=2")]
+    [InlineData("/trip/00000000-0000-0000-0000-000000000001")]
+    public async Task IncompleteTraveler_IsRedirectedWithReturnUrl(string path)
+    {
+        var profiles = Substitute.For<ITravelerProfiles>();
+        profiles.GetCurrentAsync(Arg.Any<CancellationToken>()).Returns(new TravelerProfileDto("Google Name", null));
+        await using var factory = new AuthOnlyFactory(profiles: profiles);
+        using var client = Client(factory, Roles.Traveler);
+        client.DefaultRequestHeaders.Add("X-SBus-Region", "page-content");
+        var response = await client.GetAsync(path);
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        var location = new Uri(client.BaseAddress!, response.Headers.Location!);
+        Assert.Equal("/Account/CompleteProfile", location.AbsolutePath);
+        Assert.Equal(path, QueryHelpers.ParseQuery(location.Query)["returnUrl"].ToString());
+    }
+
+    [Theory]
+    [InlineData("/Account/CompleteProfile")]
+    [InlineData("/Account/Profile")]
+    public async Task Profile_PrefillsExistingData_AndAllowsIncompleteTraveler(string path)
+    {
+        var profiles = Substitute.For<ITravelerProfiles>();
+        profiles.GetCurrentAsync(Arg.Any<CancellationToken>()).Returns(new TravelerProfileDto("Google Name", null));
+        await using var factory = new AuthOnlyFactory(profiles: profiles);
+        using var client = Client(factory, Roles.Traveler);
+        var response = await client.GetAsync(path);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var html = await response.Content.ReadAsStringAsync();
+        Assert.Contains("value=\"Google Name\"", html);
+        Assert.Contains("data-traveler-phone", html);
+        Assert.Contains("data-partial=\"profile-form\"", html);
+    }
+
+    [Theory]
+    [InlineData("/MyTickets?pageNumber=2", "/MyTickets?pageNumber=2")]
+    [InlineData("https://evil.example", "/Account/Profile")]
+    [InlineData("//evil.example", "/Account/Profile")]
+    public async Task ProfileSave_NormalizesPhone_AndOnlyRedirectsLocally(string returnUrl, string expected)
+    {
+        var profiles = Substitute.For<ITravelerProfiles>();
+        profiles.GetCurrentAsync(Arg.Any<CancellationToken>()).Returns(new TravelerProfileDto("Google Name", null));
+        profiles.UpdateCurrentAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<Result<Success>>(Result.Success));
+        await using var factory = new AuthOnlyFactory(profiles: profiles);
+        using var client = Client(factory, Roles.Traveler);
+        var html = await client.GetStringAsync("/Account/CompleteProfile");
+        var token = Regex.Match(html, "name=\"__RequestVerificationToken\"[^>]*value=\"([^\"]+)\"").Groups[1].Value;
+        using var form = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["__RequestVerificationToken"] = WebUtility.HtmlDecode(token),
+            ["FullName"] = " Mona Ahmed ",
+            ["PhoneNumber"] = "01012345678",
+            ["ReturnUrl"] = returnUrl,
+        });
+        var response = await client.PostAsync("/Account/CompleteProfile", form);
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Equal(expected, response.Headers.Location!.OriginalString);
+        await profiles.Received(1).UpdateCurrentAsync("Mona Ahmed", "+201012345678", Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData("/Account/CompleteProfile")]
+    [InlineData("/Account/Profile")]
+    public async Task InvalidProfile_ReturnsFieldErrorsAsFragment(string path)
+    {
+        var profiles = Substitute.For<ITravelerProfiles>();
+        profiles.GetCurrentAsync(Arg.Any<CancellationToken>()).Returns(new TravelerProfileDto("Google Name", null));
+        await using var factory = new AuthOnlyFactory(profiles: profiles);
+        using var client = Client(factory, Roles.Traveler);
+        var html = await client.GetStringAsync(path);
+        var token = Regex.Match(html, "name=\"__RequestVerificationToken\"[^>]*value=\"([^\"]+)\"").Groups[1].Value;
+        client.DefaultRequestHeaders.Add("X-SBus-Region", "profile-form");
+        using var form = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["__RequestVerificationToken"] = WebUtility.HtmlDecode(token),
+            ["FullName"] = " ",
+            ["PhoneNumber"] = "12345",
+        });
+        var response = await client.PostAsync(path, form);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("profile-form", response.Headers.GetValues("X-SBus-Region").Single());
+        var fragment = await response.Content.ReadAsStringAsync();
+        Assert.Contains("field-validation-error", fragment);
+        Assert.DoesNotContain("<html", fragment);
+        await profiles.DidNotReceive().UpdateCurrentAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Theory]
+    [InlineData("ar", "rtl", "الاسم بالكامل")]
+    [InlineData("en", "ltr", "Full name")]
+    public async Task Profile_RendersLocalizedFields(string language, string direction, string nameLabel)
+    {
+        var profiles = Substitute.For<ITravelerProfiles>();
+        profiles.GetCurrentAsync(Arg.Any<CancellationToken>()).Returns(new TravelerProfileDto("Mona Ahmed", "+201012345678"));
+        await using var factory = new AuthOnlyFactory(profiles: profiles);
+        using var client = Client(factory, Roles.Traveler);
+        await client.GetAsync($"/Language?lang={language}&returnUrl=/Account/Profile");
+        var html = WebUtility.HtmlDecode(await client.GetStringAsync("/Account/Profile"));
+        Assert.Contains($"dir=\"{direction}\"", html);
+        Assert.Contains(nameLabel, html);
+        Assert.Contains("+201012345678", html);
+    }
+
+    [Theory]
+    [InlineData("/MyTickets?pageNumber=2", "/MyTickets?pageNumber=2")]
+    [InlineData("https://evil.example", "/")]
+    [InlineData("//evil.example", "/")]
+    public async Task AuthenticatedLogin_OnlyFollowsLocalReturnUrls(string returnUrl, string expected)
+    {
+        await using var factory = new AuthOnlyFactory();
+        using var client = Client(factory, Roles.Traveler);
+        var response = await client.GetAsync("/Account/Login?returnUrl=" + Uri.EscapeDataString(returnUrl));
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Equal(expected, response.Headers.Location!.OriginalString);
+    }
+
     private static HttpClient Client(AuthOnlyFactory factory, string? role = null)
     {
         var client = factory.CreateClient(new WebApplicationFactoryClientOptions
@@ -272,7 +401,8 @@ public class TravelerAccessTests
     private sealed class AuthOnlyFactory(
         ITravelerRegistration? registration = null,
         IRegistrationConfirmationSender? confirmation = null,
-        bool requireConfirmation = true) : WebApplicationFactory<Program>
+        bool requireConfirmation = true,
+        ITravelerProfiles? profiles = null) : WebApplicationFactory<Program>
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -287,6 +417,7 @@ public class TravelerAccessTests
             builder.UseSetting("Authentication:Google:ClientSecret", "test-secret");
             builder.ConfigureTestServices(services =>
             {
+                services.AddSingleton(profiles ?? Substitute.For<ITravelerProfiles>());
                 if (registration is not null)
                 {
                     services.AddSingleton(registration);

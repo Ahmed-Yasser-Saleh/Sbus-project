@@ -29,6 +29,9 @@ public class LoginModel(SignInManager<AppUser> signIn, UserManager<AppUser> user
     [StringLength(128)]
     public string Password { get; set; } = string.Empty;
 
+    [BindProperty(SupportsGet = true)]
+    public string? ReturnUrl { get; set; }
+
     public bool GoogleEnabled { get; private set; }
 
     [TempData]
@@ -42,7 +45,7 @@ public class LoginModel(SignInManager<AppUser> signIn, UserManager<AppUser> user
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            return LocalRedirect(AccountLanding.Path(User));
+            return LocalRedirect(Url.IsLocalUrl(ReturnUrl) ? ReturnUrl! : AccountLanding.Path(User));
         }
 
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
@@ -69,7 +72,7 @@ public class LoginModel(SignInManager<AppUser> signIn, UserManager<AppUser> user
             var result = await signIn.PasswordSignInAsync(user, Password, isPersistent: false, lockoutOnFailure: true);
             if (result.Succeeded)
             {
-                return LocalRedirect(AccountLanding.Path(await users.GetRolesAsync(user)));
+                return LocalRedirect(Url.IsLocalUrl(ReturnUrl) ? ReturnUrl! : AccountLanding.Path(await users.GetRolesAsync(user)));
             }
 
             if (result.IsNotAllowed && RequiresEmailConfirmation && !user.EmailConfirmed

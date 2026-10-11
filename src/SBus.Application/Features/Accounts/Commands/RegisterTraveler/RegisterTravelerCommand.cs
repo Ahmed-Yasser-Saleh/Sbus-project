@@ -4,7 +4,7 @@ using SBus.Domain.Common.Results;
 
 namespace SBus.Application.Features.Accounts.Commands.RegisterTraveler;
 
-public sealed record RegisterTravelerCommand(string? Email, string? Password, string? ConfirmPassword)
+public sealed record RegisterTravelerCommand(string? Email, string? Password, string? ConfirmPassword, string? FullName, string? PhoneNumber)
     : IRequest<Result<Success>>
 {
     // Commands contain credentials; prevent accidental disclosure in structured logs.

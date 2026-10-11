@@ -2,8 +2,17 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+using NSubstitute;
 
 using SBus.Application.Common.Errors;
+using SBus.Application.Common.Exceptions;
+using SBus.Application.Common.Interfaces;
+using SBus.Application.Common.Persistence;
+using SBus.Application.Common.Settings;
+using SBus.Application.Features.Accounts.Commands.UpdateTravelerProfile;
 using SBus.Application.Features.Bookings.Commands.CancelBookingByPassenger;
 using SBus.Application.Features.Bookings.Commands.ConfirmPayment;
 using SBus.Application.Features.Bookings.Commands.CreateOfficeBooking;
@@ -11,6 +20,7 @@ using SBus.Application.Features.Bookings.Commands.CreateOnlineBooking;
 using SBus.Application.Features.Bookings.Commands.ExpireOverdueHolds;
 using SBus.Application.Features.Bookings.Commands.RejectPayment;
 using SBus.Application.Features.Bookings.Commands.SubmitReceipt;
+using SBus.Application.Features.Bookings.Queries.GetMyTickets;
 using SBus.Application.Features.Bookings.Queries.GetTicket;
 using SBus.Application.Features.Trips.Queries.GetTripForBooking;
 using SBus.Application.SubcutaneousTests.Common;
@@ -192,7 +202,7 @@ public class BookingFlowTests(WebAppFactory factory)
         var tripId = await NewTripAsync();
         var world = _factory.World;
 
-        var result = await Send(new CreateOnlineBookingCommand(tripId, "Mona", "01012345678", world.LastStopId, world.FirstStopId, [2]));
+        var result = await Send(new CreateOnlineBookingCommand(tripId, world.LastStopId, world.FirstStopId, [2]));
 
         Assert.Equal(ApplicationErrors.PickupAfterDropoff.Code, result.TopError.Code);
     }
@@ -208,6 +218,103 @@ public class BookingFlowTests(WebAppFactory factory)
         Assert.Equal(ApplicationErrors.TripDeparted.Code, result.TopError.Code);
     }
 
+    [DatabaseFact]
+    public async Task OnlineBooking_KeepsSnapshotWhenProfileChanges()
+    {
+        try
+        {
+            Assert.True((await Send(new UpdateTravelerProfileCommand("Mona Ahmed", "01012345678"))).IsSuccess);
+            var created = await Send(Online(await NewTripAsync(), [1]));
+            Assert.True(created.IsSuccess);
+            Assert.True((await Send(new UpdateTravelerProfileCommand("New Name", "01112345678"))).IsSuccess);
+            await using var db = _factory.CreateDbContext();
+            var booking = await db.Bookings.AsNoTracking().SingleAsync(b => b.Id == created.Value.BookingId);
+            Assert.Equal("Mona Ahmed", booking.PassengerName);
+            Assert.Equal("+201012345678", booking.PhoneNumber);
+            Assert.Equal("test-traveler", booking.UserId);
+        }
+        finally
+        {
+            Assert.True((await Send(new UpdateTravelerProfileCommand("Mona Ahmed", "01012345678"))).IsSuccess);
+        }
+    }
+
+    [DatabaseFact]
+    public async Task PassengerOverride_DefaultOnlyChangesBookingAndTicketSnapshots()
+    {
+        var trip = await NewTripAsync();
+        var result = await Send(Online(trip, [1]) with { PassengerName = "Family Member", PhoneNumber = "01112345678" });
+        Assert.True(result.IsSuccess);
+        using var scope = _factory.CreateScope();
+        var profile = await scope.ServiceProvider.GetRequiredService<ITravelerProfiles>().GetCurrentAsync(CancellationToken.None);
+        Assert.Equal("Mona Ahmed", profile!.FullName);
+        Assert.Equal("+201012345678", profile.PhoneNumber);
+        var ticket = await Send(new GetTicketQuery(result.Value.PublicToken));
+        Assert.Equal("Family Member", ticket.Value.PassengerName);
+        Assert.Equal("+201112345678", ticket.Value.PhoneNumber);
+        var myTicket = (await Send(new GetMyTicketsQuery())).Single(t => t.Id == result.Value.BookingId);
+        Assert.Equal(ticket.Value.PassengerName, myTicket.PassengerName);
+        Assert.Equal(ticket.Value.PhoneNumber, myTicket.PhoneNumber);
+    }
+
+    [DatabaseFact]
+    public async Task PassengerOverride_OptInUpdatesProfileAndSnapshotTogether()
+    {
+        try
+        {
+            var result = await Send(Online(await NewTripAsync(), [1]) with
+            {
+                PassengerName = " New Account Name ", PhoneNumber = "01112345678", UpdateAccountDetails = true,
+            });
+            Assert.True(result.IsSuccess);
+            using var scope = _factory.CreateScope();
+            var profile = await scope.ServiceProvider.GetRequiredService<ITravelerProfiles>().GetCurrentAsync(CancellationToken.None);
+            Assert.Equal("New Account Name", profile!.FullName);
+            Assert.Equal("+201112345678", profile.PhoneNumber);
+            var ticket = await Send(new GetTicketQuery(result.Value.PublicToken));
+            Assert.Equal(profile.FullName, ticket.Value.PassengerName);
+            Assert.Equal(profile.PhoneNumber, ticket.Value.PhoneNumber);
+        }
+        finally
+        {
+            await Send(new UpdateTravelerProfileCommand("Mona Ahmed", "01012345678"));
+        }
+    }
+
+    [DatabaseFact]
+    public async Task PassengerOverride_BookingSaveFailureRollsBackProfileUpdate()
+    {
+        var tripId = await NewTripAsync();
+        using var scope = _factory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
+        var rejecting = Substitute.For<IAppDbContext>();
+        rejecting.Trips.Returns(db.Trips);
+        rejecting.Schedules.Returns(db.Schedules);
+        rejecting.RouteStops.Returns(db.RouteStops);
+        rejecting.Bookings.Returns(db.Bookings);
+        rejecting.BookingSeats.Returns(db.BookingSeats);
+        rejecting.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(
+            _ => Task.FromException<int>(
+            new UniqueConstraintException(DbConstraintNames.ActiveSeatPerTrip, new InvalidOperationException("Simulated seat race"))));
+        var handler = new CreateOnlineBookingCommandHandler(
+            scope.ServiceProvider.GetRequiredService<ILogger<CreateOnlineBookingCommandHandler>>(),
+            rejecting, _factory.Clock, scope.ServiceProvider.GetRequiredService<IOptions<BookingOptions>>(),
+            scope.ServiceProvider.GetRequiredService<IUser>(), scope.ServiceProvider.GetRequiredService<ITravelerProfiles>(),
+            scope.ServiceProvider.GetRequiredService<IBookingTransaction>());
+        var result = await handler.Handle(
+            Online(tripId, [1]) with
+            {
+                PassengerName = "Must Roll Back", PhoneNumber = "01112345678", UpdateAccountDetails = true,
+            }, CancellationToken.None);
+        Assert.True(result.IsError);
+        Assert.Equal(ApplicationErrors.SeatsJustTaken.Code, result.TopError.Code);
+        using var verify = _factory.CreateScope();
+        var profile = await verify.ServiceProvider.GetRequiredService<ITravelerProfiles>().GetCurrentAsync(CancellationToken.None);
+        Assert.Equal("Mona Ahmed", profile!.FullName);
+        Assert.Equal("+201012345678", profile.PhoneNumber);
+        Assert.False(await verify.ServiceProvider.GetRequiredService<IAppDbContext>().Bookings.AnyAsync(b => b.TripId == tripId));
+    }
+
     private async Task<Guid> NewTripAsync(TimeSpan? departsIn = null)
     {
         await using var db = _factory.CreateDbContext();
@@ -215,7 +322,7 @@ public class BookingFlowTests(WebAppFactory factory)
     }
 
     private CreateOnlineBookingCommand Online(Guid tripId, List<int> seats) =>
-        new(tripId, "Mona", "01012345678", _factory.World.FirstStopId, _factory.World.LastStopId, seats);
+        new(tripId, _factory.World.FirstStopId, _factory.World.LastStopId, seats);
 
     private CreateOfficeBookingCommand Office(Guid tripId, List<int> seats) =>
         new(tripId, "Karim", "01112345678", _factory.World.MiddleStopId, _factory.World.LastStopId, seats);

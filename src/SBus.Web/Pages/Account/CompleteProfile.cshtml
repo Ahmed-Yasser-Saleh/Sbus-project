@@ -1,0 +1,12 @@
+@page
+@model SBus.Web.Pages.Account.ProfileModel
+@{
+    ViewData["Title"] = L["كمّل بياناتك"].Value;
+}
+<h1>@L["كمّل بياناتك"]</h1>
+<p>@L["اكتب اسمك ورقم موبايلك مرة واحدة عشان تستخدمهم في كل حجز."]</p>
+<partial name="_PartialFeedback" model="@("profile-form")" />
+<partial name="_ProfileForm" model="Model" />
+@section Scripts {
+    <script src="~/js/traveler-profile.js" asp-append-version="true"></script>
+}

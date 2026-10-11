@@ -177,7 +177,6 @@
   <data name="تغيير الأتوبيس أو السواق للرحلة دي بس" xml:space="preserve"><value>Change the bus or driver for this trip only</value></data>
   <data name="تلغي حجز {0}؟" xml:space="preserve"><value>Cancel the booking of {0}?</value></data>
   <data name="حجز لراكب بيتصل" xml:space="preserve"><value>Book for a caller</value></data>
-  <data name="حجزت قبل كده؟ افتح اللينك اللي ظهرلك بعد الحجز عشان تشوف تذكرتك." xml:space="preserve"><value>Already booked? Open the link you got after booking to see your ticket.</value></data>
   <data name="حجزك متأكد. انزل لمحطتك قبل الميعاد بربع ساعة، ولو اتأخر الأتوبيس كلم السواق." xml:space="preserve"><value>Your booking is confirmed. Be at your stop 15 minutes early, and call the driver if the bus is late.</value></data>
   <data name="حجم الملف أكبر من المسموح." xml:space="preserve"><value>The file is larger than allowed.</value></data>
   <data name="حجم الملف لازم يكون أقل من {0} ميجا." xml:space="preserve"><value>The file must be under {0} MB.</value></data>
@@ -440,4 +439,37 @@
   <data name="حاول تاني" xml:space="preserve">
     <value>Retry</value>
   </data>
+  <data name="الاسم بالكامل" xml:space="preserve">
+    <value>Full name</value>
+  </data>
+  <data name="اكتب اسمك بالكامل." xml:space="preserve">
+    <value>Enter your full name.</value>
+  </data>
+  <data name="تعديل بياناتك" xml:space="preserve">
+    <value>Edit profile</value>
+  </data>
+  <data name="كمّل بياناتك" xml:space="preserve">
+    <value>Complete your profile</value>
+  </data>
+  <data name="اكتب اسمك ورقم موبايلك مرة واحدة عشان تستخدمهم في كل حجز." xml:space="preserve">
+    <value>Enter your name and phone once to reuse them for every booking.</value>
+  </data>
+  <data name="تم حفظ بياناتك." xml:space="preserve">
+    <value>Your profile has been saved.</value>
+  </data>
+  <data name="حفظ البيانات" xml:space="preserve">
+    <value>Save profile</value>
+  </data>
+  <data name="تغيير" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="تعذّر حفظ بياناتك. جرّب تاني." xml:space="preserve">
+    <value>Unable to save your profile. Please try again.</value>
+  </data>
+  <data name="كمّل بياناتك قبل الحجز." xml:space="preserve">
+    <value>Complete your profile before booking.</value>
+  </data>
+  <data name="حدّث بيانات حسابي كمان" xml:space="preserve"><value>Also update my account details</value></data>
+  <data name="تعديل الاسم" xml:space="preserve"><value>Edit name</value></data>
+  <data name="تعديل رقم الموبايل" xml:space="preserve"><value>Edit mobile number</value></data>
 </root>

@@ -1,0 +1,13 @@
+@model SBus.Application.Features.Accounts.Dtos.TravelerProfileDto
+@using SBus.Application.Common.Validation
+@using SBus.Domain.Common.Constants
+<div class="field">
+    <label for="FullName">@L["الاسم بالكامل"]</label>
+    <input id="FullName" name="FullName" value="@Model.FullName" autocomplete="name" class="form-control" required maxlength="@SBusConstants.NameMaxLength" pattern=".*\S.*" />
+    @Html.ValidationMessage("FullName", null, new { @class = "text-danger d-block mt-1" })
+</div>
+<div class="field">
+    <label for="PhoneNumber">@L["رقم الموبايل"]</label>
+    <input id="PhoneNumber" name="PhoneNumber" value="@Model.PhoneNumber" type="tel" inputmode="tel" autocomplete="tel" class="form-control" required maxlength="30" pattern="@TravelerProfileRules.PhonePattern" dir="ltr" placeholder="01xxxxxxxxx" data-traveler-phone data-phone-error="@L[TravelerProfileRules.PhoneInvalid]" />
+    @Html.ValidationMessage("PhoneNumber", null, new { @class = "text-danger d-block mt-1" })
+</div>

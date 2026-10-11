@@ -17,6 +17,8 @@ using Microsoft.Extensions.Options;
 
 using NSubstitute;
 
+using SBus.Application.Common.Interfaces;
+using SBus.Application.Features.Accounts.Dtos;
 using SBus.Application.Features.Bookings.Dtos;
 using SBus.Application.Features.Bookings.Queries.GetMyTickets;
 using SBus.Application.Features.Bookings.Queries.GetPendingPayments;
@@ -153,6 +155,9 @@ public class PartialNavigationTests
                     services.Remove(job);
                 }
 
+                var profiles = Substitute.For<ITravelerProfiles>();
+                profiles.GetCurrentAsync(Arg.Any<CancellationToken>()).Returns(new TravelerProfileDto("Mona Ahmed", "+201012345678"));
+                services.AddSingleton(profiles);
                 var sender = Substitute.For<ISender>();
                 sender.Send(Arg.Any<GetAvailableTripsQuery>(), Arg.Any<CancellationToken>()).Returns(call =>
                 {

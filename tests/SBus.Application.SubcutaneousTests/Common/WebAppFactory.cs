@@ -8,8 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
+using NSubstitute;
+
+using SBus.Application.Common.Interfaces;
 using SBus.Infrastructure.BackgroundJobs;
 using SBus.Infrastructure.Data;
+using SBus.Infrastructure.Identity;
 using SBus.Tests.Common;
 
 using Xunit;
@@ -44,6 +48,8 @@ public class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
         await context.Database.MigrateAsync();
 
         World = await TestWorld.CreateAsync(context);
+        context.Users.Add(new AppUser { Id = "test-traveler", UserName = "test-traveler", FullName = "Mona Ahmed", PhoneNumber = "+201012345678" });
+        await context.SaveChangesAsync();
     }
 
     public new Task DisposeAsync() => base.DisposeAsync().AsTask();
@@ -62,6 +68,10 @@ public class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
         builder.ConfigureTestServices(services =>
         {
+            var user = Substitute.For<IUser>();
+            user.Id.Returns("test-traveler");
+            user.IsTraveler.Returns(true);
+            services.AddSingleton(user);
             services.RemoveAll<TimeProvider>();
             services.AddSingleton<TimeProvider>(Clock);
 

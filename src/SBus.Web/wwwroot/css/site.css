@@ -272,6 +272,12 @@ h1, h2, h3, .eyebrow, .time, .price, .stat-value, .brand { font-family: var(--fo
 .field label, .form-label { display: block; font-size: .85rem; font-weight: 600; color: var(--ink-2); margin-bottom: .35rem; }
 .field-pair { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
 
+.passenger-edit-field { display: flex; align-items: center; gap: .5rem; }
+.passenger-edit-field .form-control { flex: 1; min-width: 0; }
+.passenger-edit-button { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 2.5rem; width: 2.5rem; height: 2.5rem; padding: 0; border: 0; border-radius: .6rem; color: var(--muted); background: transparent; }
+.passenger-edit-button:hover { color: var(--navy-700); background: #eef3f8; }
+.passenger-edit-button:focus-visible { outline: 2px solid var(--sky-600); outline-offset: 2px; }
+
 .input-icon { position: relative; }
 .input-icon .i { position: absolute; inset-inline-start: .85rem; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
 .input-icon .form-control { padding-inline-start: 2.6rem; }

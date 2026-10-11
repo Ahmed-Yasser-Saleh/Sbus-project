@@ -25,6 +25,12 @@ public class RegisterModel(ISender sender, IStringLocalizer<SharedResource> loca
     [BindProperty]
     public string? ConfirmPassword { get; set; } = string.Empty;
 
+    [BindProperty]
+    public string? FullName { get; set; }
+
+    [BindProperty]
+    public string? PhoneNumber { get; set; }
+
     public async Task<IActionResult> OnPostAsync(CancellationToken ct)
     {
         if (!ModelState.IsValid)
@@ -32,7 +38,7 @@ public class RegisterModel(ISender sender, IStringLocalizer<SharedResource> loca
             return Page();
         }
 
-        var result = await sender.Send(new RegisterTravelerCommand(Email, Password, ConfirmPassword), ct);
+        var result = await sender.Send(new RegisterTravelerCommand(Email, Password, ConfirmPassword, FullName, PhoneNumber), ct);
         if (result.IsSuccess)
         {
             TempData[nameof(LoginModel.RegistrationCompleted)] = true;

@@ -49,6 +49,7 @@
                         && !User.IsInRole(SBus.Infrastructure.Identity.Roles.CompanyOwner)
                         && !User.IsInRole(SBus.Infrastructure.Identity.Roles.CompanyEmployee))
                     {
+                        <a asp-page="/Account/Profile" class="topbar-link">@L["تعديل بياناتك"]</a>
                         <a asp-page="/MyTickets" class="topbar-link">@L["تذاكري"]</a>
                     }
                     <form method="post" asp-page="/Account/Logout" class="d-inline">

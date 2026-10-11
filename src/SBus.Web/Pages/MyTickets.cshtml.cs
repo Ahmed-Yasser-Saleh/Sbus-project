@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 using SBus.Application.Common.Security;
 using SBus.Application.Features.Bookings.Queries.GetMyTickets;
+using SBus.Web.Infrastructure;
 
 namespace SBus.Web.Pages;
 
 [Authorize(Policy = AuthPolicies.Traveler)]
+[ServiceFilter(typeof(CompleteTravelerProfileFilter))]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 public class MyTicketsModel(ISender sender) : PageModel
 {

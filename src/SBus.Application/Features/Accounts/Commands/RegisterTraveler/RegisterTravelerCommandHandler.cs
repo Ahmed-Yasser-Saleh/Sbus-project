@@ -1,6 +1,7 @@
 using MediatR;
 
 using SBus.Application.Common.Interfaces;
+using SBus.Application.Common.Validation;
 using SBus.Domain.Common.Results;
 
 namespace SBus.Application.Features.Accounts.Commands.RegisterTraveler;
@@ -12,7 +13,7 @@ public sealed class RegisterTravelerCommandHandler(
 {
     public async Task<Result<Success>> Handle(RegisterTravelerCommand request, CancellationToken ct)
     {
-        var result = await registration.RegisterAsync(request.Email!, request.Password!, ct);
+        var result = await registration.RegisterAsync(request.Email!, request.Password!, request.FullName!.Trim(), TravelerProfileRules.NormalizePhone(request.PhoneNumber)!, ct);
         if (result.IsError)
         {
             return result.Errors;

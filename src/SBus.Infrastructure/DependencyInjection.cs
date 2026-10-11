@@ -59,7 +59,9 @@ public static class DependencyInjection
         services.Configure<DataProtectionTokenProviderOptions>(options => options.TokenLifespan = TimeSpan.FromHours(2));
         services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.Zero);
         services.AddScoped<IIdentityTransaction, IdentityTransaction>();
+        services.AddScoped<IBookingTransaction, BookingTransaction>();
         services.AddScoped<TravelerAccounts>();
+        services.AddScoped<ITravelerProfiles, TravelerProfiles>();
         services.AddScoped<ITravelerRegistration>(sp => sp.GetRequiredService<TravelerAccounts>());
 
         services.AddSingleton<IReceiptStorage, LocalReceiptStorage>();

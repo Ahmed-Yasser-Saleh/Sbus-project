@@ -11,6 +11,9 @@ public sealed class RegisterTravelerCommandValidator : AbstractValidator<Registe
 
     public RegisterTravelerCommandValidator()
     {
+        TravelerProfileRules.FullName(RuleFor(x => x.FullName));
+        TravelerProfileRules.PhoneNumber(RuleFor(x => x.PhoneNumber));
+
         RuleFor(x => x.Email)
             .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Email is required.")

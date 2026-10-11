@@ -44,11 +44,13 @@ public class TravelerAccountsTests
         _users.CreateAsync(Arg.Any<AppUser>(), Arg.Any<string>()).Returns(IdentityResult.Success);
         _users.AddToRoleAsync(Arg.Any<AppUser>(), Roles.Traveler).Returns(IdentityResult.Success);
 
-        var user = await _accounts.RegisterAsync(" person@example.com ", "StrongPassword1!");
+        var user = await _accounts.RegisterAsync(" person@example.com ", "StrongPassword1!", " Mona Ahmed ", "01012345678");
 
         Assert.NotNull(user);
         Assert.Equal("person@example.com", user.Email);
         Assert.False(user.EmailConfirmed);
+        Assert.Equal("Mona Ahmed", user.FullName);
+        Assert.Equal("+201012345678", user.PhoneNumber);
         await _users.Received(1).AddToRoleAsync(user, Roles.Traveler);
         await _users.DidNotReceive().AddToRoleAsync(Arg.Any<AppUser>(), Roles.CompanyOwner);
         await _users.DidNotReceive().AddToRoleAsync(Arg.Any<AppUser>(), Roles.CompanyEmployee);
@@ -63,7 +65,7 @@ public class TravelerAccountsTests
         _users.PasswordValidators.Add(validator);
 
         var result = await ((ITravelerRegistration)_accounts)
-            .RegisterAsync("person@example.com", "weakpassword", CancellationToken.None);
+            .RegisterAsync("person@example.com", "weakpassword", "Mona Ahmed", "01012345678", CancellationToken.None);
 
         Assert.True(result.IsError);
         Assert.Equal("Password", result.TopError.Code);
@@ -76,7 +78,7 @@ public class TravelerAccountsTests
     {
         _users.FindByEmailAsync("person@example.com").Returns(new AppUser());
 
-        Assert.Null(await _accounts.RegisterAsync("person@example.com", "StrongPassword1!"));
+        Assert.Null(await _accounts.RegisterAsync("person@example.com", "StrongPassword1!", "Mona Ahmed", "01012345678"));
 
         await _users.DidNotReceive().CreateAsync(Arg.Any<AppUser>(), Arg.Any<string>());
         await _users.DidNotReceive().AddToRoleAsync(Arg.Any<AppUser>(), Arg.Any<string>());
@@ -87,7 +89,7 @@ public class TravelerAccountsTests
     [InlineData("test@gmail..com")]
     public async Task InvalidRegistrationEmail_IsRejectedBeforeIdentityAccess(string email)
     {
-        Assert.Null(await _accounts.RegisterAsync(email, "StrongPassword1!"));
+        Assert.Null(await _accounts.RegisterAsync(email, "StrongPassword1!", "Mona Ahmed", "01012345678"));
         await _users.DidNotReceive().FindByEmailAsync(Arg.Any<string>());
         await _users.DidNotReceive().CreateAsync(Arg.Any<AppUser>(), Arg.Any<string>());
     }
@@ -98,7 +100,7 @@ public class TravelerAccountsTests
         _users.FindByEmailAsync("person@example.com").Returns(new AppUser());
 
         var result = await ((ITravelerRegistration)_accounts)
-            .RegisterAsync(" person@example.com ", "12345", CancellationToken.None);
+            .RegisterAsync(" person@example.com ", "12345", "Mona Ahmed", "01012345678", CancellationToken.None);
 
         Assert.True(result.IsError);
         Assert.Equal("Email", result.TopError.Code);
@@ -114,7 +116,7 @@ public class TravelerAccountsTests
         _users.AddToRoleAsync(Arg.Any<AppUser>(), Roles.Traveler).Returns(IdentityResult.Failed());
 
         var service = new TravelerAccounts(_users, _signIn, transaction);
-        Assert.Null(await service.RegisterAsync("person@example.com", "StrongPassword1!"));
+        Assert.Null(await service.RegisterAsync("person@example.com", "StrongPassword1!", "Mona Ahmed", "01012345678"));
         Assert.False(transaction.Committed);
     }
 
@@ -143,6 +145,8 @@ public class TravelerAccountsTests
 
         Assert.Equal(ExternalAccountState.Ready, result.State);
         Assert.Equal(confirmed, result.User!.EmailConfirmed);
+        Assert.Equal("Mona Ahmed", result.User.FullName);
+        Assert.Null(result.User.PhoneNumber);
         await _users.Received(1).AddToRoleAsync(result.User, Roles.Traveler);
         await _users.Received(1).AddLoginAsync(result.User, info);
     }
@@ -209,6 +213,49 @@ public class TravelerAccountsTests
         await _users.DidNotReceive().CreateAsync(Arg.Any<AppUser>());
     }
 
+    [Theory]
+    [InlineData("+201012345678", true)]
+    [InlineData("+201112345678", false)]
+    public async Task ProfileUpdate_UsesCurrentAccount_AndPreservesLoginIdentifier(string newPhone, bool phoneConfirmed)
+    {
+        var user = new AppUser
+        {
+            Id = "current-traveler",
+            UserName = "person@example.com",
+            Email = "person@example.com",
+            FullName = "Old Name",
+            PhoneNumber = "+201012345678",
+            PhoneNumberConfirmed = true,
+        };
+        var current = Substitute.For<IUser>();
+        current.Id.Returns(user.Id);
+        current.IsTraveler.Returns(true);
+        _users.FindByIdAsync(user.Id).Returns(user);
+        _users.UpdateAsync(user).Returns(IdentityResult.Success);
+        var profiles = new TravelerProfiles(_users, current);
+        var result = await profiles.UpdateCurrentAsync("New Name", newPhone, CancellationToken.None);
+        Assert.True(result.IsSuccess);
+        Assert.Equal("New Name", user.FullName);
+        Assert.Equal(newPhone, user.PhoneNumber);
+        Assert.Equal(phoneConfirmed, user.PhoneNumberConfirmed);
+        Assert.Equal("person@example.com", user.UserName);
+        Assert.Equal("person@example.com", user.Email);
+        await _users.Received(1).UpdateAsync(user);
+    }
+
+    [Fact]
+    public async Task ProfileService_NonTravelerCannotReadOrEditAnAccount()
+    {
+        var current = Substitute.For<IUser>();
+        current.Id.Returns("company-owner");
+        current.IsTraveler.Returns(false);
+        var profiles = new TravelerProfiles(_users, current);
+        Assert.Null(await profiles.GetCurrentAsync(CancellationToken.None));
+        Assert.True((await profiles.UpdateCurrentAsync("Name", "+201012345678", CancellationToken.None)).IsError);
+        await _users.DidNotReceive().FindByIdAsync(Arg.Any<string>());
+        await _users.DidNotReceive().UpdateAsync(Arg.Any<AppUser>());
+    }
+
     private AppUser ExistingTraveler()
     {
         var user = new AppUser { EmailConfirmed = true };
@@ -222,6 +269,7 @@ public class TravelerAccountsTests
             new ClaimsPrincipal(new ClaimsIdentity(
             [
                 new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.Name, "Mona Ahmed"),
                 new Claim(TravelerAccounts.VerifiedEmailClaim, verified),
             ])), provider, "google-subject", "Google");
 

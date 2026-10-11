@@ -2,4 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace SBus.Infrastructure.Identity;
 
-public class AppUser : IdentityUser;
+public class AppUser : IdentityUser
+{
+    public string? FullName { get; set; }
+}

@@ -95,7 +95,7 @@
             syncControls(id, canonical);
             // A validation response keeps the current address; a same-page PRG uses its GET URL.
             if (method === 'GET' || response.redirected) remember(id, canonical, false);
-            const errors = region.querySelector('.alert-danger, .validation-summary-errors');
+            const errors = region.querySelector('.alert-danger, .validation-summary-errors, .field-validation-error');
             const success = region.querySelector('.alert-success');
             if (status) status.textContent = success?.textContent.trim() || incoming.dataset.partialAnnouncement || '';
             document.dispatchEvent(new CustomEvent('sbus:updated', { detail: { region } }));

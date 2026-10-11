@@ -17,14 +17,6 @@ public class CreateOnlineBookingCommandValidatorTests
     }
 
     [Fact]
-    public void InvalidPhone_Fails()
-    {
-        var result = _validator.Validate(Command() with { PhoneNumber = "12345" });
-
-        Assert.Contains(result.Errors, e => e.PropertyName == nameof(CreateOnlineBookingCommand.PhoneNumber));
-    }
-
-    [Fact]
     public void SamePickupAndDropoff_Fails()
     {
         var stop = Guid.CreateVersion7();
@@ -50,10 +42,33 @@ public class CreateOnlineBookingCommandValidatorTests
         Assert.Contains(result.Errors, e => e.PropertyName == nameof(CreateOnlineBookingCommand.SeatNumbers));
     }
 
+    [Theory]
+    [InlineData("Family Member", "01012345678")]
+    [InlineData("Family Member", "+201012345678")]
+    [InlineData(null, null)]
+    [InlineData(" ", " ")]
+    public void PassengerOverrides_ValidOrMissingValuesPass(string? name, string? phone)
+    {
+        Assert.True(_validator.Validate(Command() with { PassengerName = name, PhoneNumber = phone }).IsValid);
+    }
+
+    [Fact]
+    public void PassengerOverrides_UseTheSameLimitsAsProfiles()
+    {
+        var result = _validator.Validate(Command() with { PassengerName = new string('x', 101), PhoneNumber = "12345" });
+        Assert.Contains(result.Errors, e => e.PropertyName == "PassengerName");
+        Assert.Contains(result.Errors, e => e.PropertyName == "PhoneNumber");
+    }
+
+    [Fact]
+    public void BookingCommandLogging_DoesNotExposePassengerDetails()
+    {
+        var command = Command() with { PassengerName = "Family Member", PhoneNumber = "01012345678" };
+        Assert.Equal(nameof(CreateOnlineBookingCommand), command.ToString());
+    }
+
     private static CreateOnlineBookingCommand Command() => new(
         Guid.CreateVersion7(),
-        "Mona",
-        "01012345678",
         Guid.CreateVersion7(),
         Guid.CreateVersion7(),
         [1, 2]);

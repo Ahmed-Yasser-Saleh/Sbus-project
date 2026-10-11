@@ -1,0 +1,85 @@
+@model SBus.Web.Pages.TripModel
+@using SBus.Domain.Common.Constants
+@using SBus.Web.Pages.Shared
+@{
+    var trip = Model.Trip!;
+    var errors = ViewData.ModelState.Where(e => e.Key is not ("Input.PassengerName" or "Input.PhoneNumber"))
+        .SelectMany(e => e.Value!.Errors).Select(e => e.ErrorMessage).Distinct().ToList();
+}
+<div id="booking-content" data-partial-region tabindex="-1" data-partial-url="@(Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString)">
+    @if (errors.Count > 0)
+    {
+        <div class="alert alert-danger" role="alert">
+            <ul class="mb-0">
+                @foreach (var error in errors)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        </div>
+    }
+@if (!trip.IsOpenForBooking)
+{
+    <div class="alert alert-warning">@L["الرحلة دي اتحركت خلاص."]</div>
+}
+else if (trip.SeatMap.Available == 0)
+{
+    <div class="alert alert-warning">@L["الرحلة دي كاملة. جرب ميعاد تاني."]</div>
+}
+else
+{
+    <form method="post" id="booking-form" data-partial="booking-content" class="booking-layout" data-price="@trip.Price" data-max="@SBusConstants.MaxSeatsPerBooking" data-currency="@Fmt.Currency" data-currency-first="@(Languages.IsEnglish ? "true" : "false")">
+        <section class="panel">
+            <header class="panel-head">
+                <h2><span class="num">1</span>@L["اختار الكرسي"]</h2>
+                <span class="muted small">@L["لحد {0} كراسي", SBusConstants.MaxSeatsPerBooking]</span>
+            </header>
+            <partial name="_SeatMap" model="new SeatMapView(trip.SeatMap, true, Model.Input.SeatNumbers)" />
+        </section>
+
+        <section class="panel">
+            <header class="panel-head">
+                <h2><span class="num">2</span>@L["بياناتك"]</h2>
+            </header>
+
+            <partial name="_BookingPassengerDetails" model="Model" />
+
+            <div class="field-pair">
+                <div class="field">
+                    <label for="pickup">@L["هتركب من"]</label>
+                    <select class="form-select" id="pickup" asp-for="Input.PickupStopId">
+                        @foreach (var stop in trip.Stops.Take(trip.Stops.Count - 1))
+                        {
+                            <option value="@stop.StopId">@stop.StopName · @Fmt.Time(trip.DepartureTime.AddMinutes(stop.MinutesFromStart))</option>
+                        }
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="dropoff">@L["هتنزل في"]</label>
+                    <select class="form-select" id="dropoff" asp-for="Input.DropoffStopId">
+                        @foreach (var stop in trip.Stops.Skip(1))
+                        {
+                            <option value="@stop.StopId">@stop.StopName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="checkout">
+                <div class="checkout-lines">
+                    <div><span class="muted">@L["الكراسي:"]</span> <strong data-summary-seats>—</strong></div>
+                    <div class="total"><span class="muted">@L["الإجمالي:"]</span> <strong data-summary-total>—</strong></div>
+                </div>
+                <button type="submit" class="btn btn-signal btn-lg w-100" data-book-seat>
+                    @L["احجز الكرسي"]
+                    <svg class="i i-flip"><use href="#i-arrow" /></svg>
+                </button>
+                <p class="fine-print">
+                    <svg class="i"><use href="#i-clock" /></svg>
+                    @L["الكرسي هيتحجزلك مؤقتًا لحد ما تحوّل بإنستا باي وترفع صورة التحويل."]
+                </p>
+            </div>
+        </section>
+    </form>
+}
+</div>

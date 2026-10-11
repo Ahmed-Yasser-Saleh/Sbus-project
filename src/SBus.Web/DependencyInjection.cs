@@ -118,6 +118,7 @@ public static class DependencyInjection
         services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 6 * 1024 * 1024);
 
         services.AddScoped<IUser, CurrentUser>();
+        services.AddScoped<CompleteTravelerProfileFilter>();
         services.AddHttpContextAccessor();
 
         services.AddAppRateLimiting();

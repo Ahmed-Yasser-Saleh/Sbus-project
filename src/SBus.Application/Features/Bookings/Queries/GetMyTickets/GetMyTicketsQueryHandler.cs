@@ -23,7 +23,7 @@ public sealed class GetMyTicketsQueryHandler(IAppDbContext context, IUser user)
             .OrderByDescending(b => b.CreatedAtUtc).ThenByDescending(b => b.Id)
             .Skip((page - 1) * 20).Take(20)
             .Select(b => new MyTicketDto(b.Id, b.TripId, b.PublicToken, b.Status,
-                b.CreatedAtUtc, b.Trip!.ServiceDate, b.Trip.DepartureTime))
+                b.CreatedAtUtc, b.Trip!.ServiceDate, b.Trip.DepartureTime, b.PassengerName, b.PhoneNumber))
             .ToListAsync(ct);
     }
 }

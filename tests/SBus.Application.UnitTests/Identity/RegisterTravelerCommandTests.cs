@@ -28,11 +28,11 @@ public class RegisterTravelerCommandTests
         await using var provider = Services(registration, sender);
         var mediator = provider.GetRequiredService<ISender>();
 
-        var result = await mediator.Send(new RegisterTravelerCommand(email, password, confirmation));
+        var result = await mediator.Send(new RegisterTravelerCommand(email, password, confirmation, "Mona Ahmed", "01012345678"));
 
         Assert.True(result.IsError);
         Assert.Contains(result.Errors, e => e.Code == field);
-        await registration.DidNotReceive().RegisterAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+        await registration.DidNotReceive().RegisterAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
         await sender.DidNotReceive().SendAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
@@ -43,15 +43,15 @@ public class RegisterTravelerCommandTests
     {
         var registration = Substitute.For<ITravelerRegistration>();
         var sender = Substitute.For<IRegistrationConfirmationSender>();
-        registration.RegisterAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+        registration.RegisterAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<Result<TravelerRegistrationOutcome>>(new TravelerRegistrationOutcome(userId)));
         await using var provider = Services(registration, sender);
 
         var result = await provider.GetRequiredService<ISender>()
-            .Send(new RegisterTravelerCommand("person@example.com", "StrongPassword1!", "StrongPassword1!"));
+            .Send(new RegisterTravelerCommand("person@example.com", "StrongPassword1!", "StrongPassword1!", "Mona Ahmed", "01012345678"));
 
         Assert.Equal(userId is not null, result.IsSuccess);
-        await registration.Received(1).RegisterAsync("person@example.com", "StrongPassword1!", Arg.Any<CancellationToken>());
+        await registration.Received(1).RegisterAsync("person@example.com", "StrongPassword1!", "Mona Ahmed", "+201012345678", Arg.Any<CancellationToken>());
         if (userId is not null)
         {
             await sender.Received(1).SendAsync(userId, Arg.Any<CancellationToken>());
@@ -68,12 +68,12 @@ public class RegisterTravelerCommandTests
     {
         var registration = Substitute.For<ITravelerRegistration>();
         var sender = Substitute.For<IRegistrationConfirmationSender>();
-        registration.RegisterAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+        registration.RegisterAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<Result<TravelerRegistrationOutcome>>(Error.Validation("Password", "Password policy failed.")));
         await using var provider = Services(registration, sender);
 
         var result = await provider.GetRequiredService<ISender>()
-            .Send(new RegisterTravelerCommand("person@example.com", "StrongPassword1!", "StrongPassword1!"));
+            .Send(new RegisterTravelerCommand("person@example.com", "StrongPassword1!", "StrongPassword1!", "Mona Ahmed", "01012345678"));
 
         Assert.True(result.IsError);
         Assert.Equal("Password", result.TopError.Code);
@@ -83,7 +83,7 @@ public class RegisterTravelerCommandTests
     [Fact]
     public void CommandLogging_DoesNotExposeCredentials()
     {
-        var command = new RegisterTravelerCommand("person@example.com", "SecretPassword1!", "SecretPassword1!");
+        var command = new RegisterTravelerCommand("person@example.com", "SecretPassword1!", "SecretPassword1!", "Mona Ahmed", "01012345678");
         Assert.Equal(nameof(RegisterTravelerCommand), command.ToString());
     }
 
@@ -95,7 +95,7 @@ public class RegisterTravelerCommandTests
     {
         var validator = new RegisterTravelerCommandValidator();
         var result = await validator.ValidateAsync(
-            new RegisterTravelerCommand("person@example.com", password, password));
+            new RegisterTravelerCommand("person@example.com", password, password, "Mona Ahmed", "01012345678"));
 
         Assert.True(result.IsValid);
     }

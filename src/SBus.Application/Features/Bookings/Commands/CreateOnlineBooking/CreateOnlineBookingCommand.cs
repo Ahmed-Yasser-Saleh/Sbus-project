@@ -8,8 +8,12 @@ namespace SBus.Application.Features.Bookings.Commands.CreateOnlineBooking;
 
 public sealed record CreateOnlineBookingCommand(
     Guid TripId,
-    string PassengerName,
-    string PhoneNumber,
     Guid PickupStopId,
     Guid DropoffStopId,
-    List<int> SeatNumbers) : IRequest<Result<BookingCreatedDto>>, IBookingRequest;
+    List<int> SeatNumbers,
+    string? PassengerName = null,
+    string? PhoneNumber = null,
+    bool UpdateAccountDetails = false) : IRequest<Result<BookingCreatedDto>>, IBookingRequest
+{
+    public override string ToString() => nameof(CreateOnlineBookingCommand);
+}

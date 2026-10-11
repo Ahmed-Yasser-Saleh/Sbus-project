@@ -1,0 +1,14 @@
+@model SBus.Web.Pages.Account.ProfileModel
+@{ var success = TempData.TakeSuccess(L); }
+<div id="profile-form" data-partial-region tabindex="-1" data-partial-url="@(Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString)">
+    @if (success is not null)
+    {
+        <div class="alert alert-success" role="status">@success</div>
+    }
+    <form method="post" class="panel" data-partial="profile-form">
+        <input type="hidden" asp-for="ReturnUrl" />
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        <partial name="_TravelerProfileFields" model="new SBus.Application.Features.Accounts.Dtos.TravelerProfileDto(Model.FullName, Model.PhoneNumber)" />
+        <button type="submit" class="btn btn-primary">@L["حفظ البيانات"]</button>
+    </form>
+</div>
