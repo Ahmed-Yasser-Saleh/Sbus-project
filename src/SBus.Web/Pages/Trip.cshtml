@@ -16,7 +16,7 @@
 <section class="trip-summary">
     <div>
         <span class="eyebrow">@Fmt.Direction(trip.Direction)</span>
-        <h1>@Fmt.Time(trip.DepartureTime)</h1>
+        <h1 dir="ltr">@Fmt.Time(trip.DepartureTime)</h1>
     </div>
     <dl class="facts">
         <div><dt><svg class="i"><use href="#i-calendar" /></svg>@L["التاريخ"]</dt><dd>@Fmt.Date(trip.ServiceDate)</dd></div>

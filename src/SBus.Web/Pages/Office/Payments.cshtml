@@ -25,7 +25,7 @@
                     <div class="fw-semibold">@p.PassengerName</div>
                     <div class="small" dir="ltr">@p.PhoneNumber</div>
                     <div class="small text-secondary mt-1">
-                        @Fmt.Direction(p.Direction) · @Fmt.Date(p.ServiceDate) · @Fmt.Time(p.DepartureTime)
+                        @Fmt.Direction(p.Direction) · @Fmt.Date(p.ServiceDate) · <span dir="ltr">@Fmt.Time(p.DepartureTime)</span>
                     </div>
                     <div class="mt-2">@L["الكراسي:"] <strong>@Fmt.Seats(p.Seats)</strong> · @L["المطلوب:"] <strong>@Fmt.Money(p.Amount)</strong></div>
                     @if (p.ReceiptSubmittedAtUtc is DateTimeOffset submitted)

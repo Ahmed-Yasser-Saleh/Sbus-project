@@ -9,8 +9,8 @@
 }
 else
 {
-    <div class="table-responsive">
-    <table class="table">
+    <div class="table-responsive tickets-list">
+    <table class="table tickets-table">
         <thead><tr><th>@L["الرحلة"]</th><th>@L["الاسم"]</th><th>@L["رقم الموبايل"]</th><th>@L["الحالة"]</th><th>@L["تاريخ الحجز"]</th></tr></thead>
         <tbody>
         @foreach (var ticket in Model.Tickets)
@@ -25,9 +25,11 @@ else
                 _ => L["قيد الانتظار"]
             };
             <tr>
-                <td><a href="/t/@ticket.PublicToken">@ticket.ServiceDate · @ticket.DepartureTime</a></td>
-                <td>@ticket.PassengerName</td><td dir="ltr">@ticket.PhoneNumber</td>
-                <td>@status</td><td>@ticket.CreatedAtUtc.ToString("yyyy-MM-dd")</td>
+                <td data-label="@L["الرحلة"]"><a href="/t/@ticket.PublicToken"><span dir="ltr">@ticket.ServiceDate · @ticket.DepartureTime</span></a></td>
+                <td data-label="@L["الاسم"]">@ticket.PassengerName</td>
+                <td data-label="@L["رقم الموبايل"]"><span dir="ltr">@ticket.PhoneNumber</span></td>
+                <td data-label="@L["الحالة"]"><span class="badge @Fmt.StatusCss(ticket.Status)">@status</span></td>
+                <td data-label="@L["تاريخ الحجز"]"><span dir="ltr">@ticket.CreatedAtUtc.ToString("yyyy-MM-dd")</span></td>
             </tr>
         }
         </tbody>

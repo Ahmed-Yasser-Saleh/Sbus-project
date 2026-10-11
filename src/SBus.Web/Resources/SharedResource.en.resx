@@ -472,4 +472,5 @@
   <data name="حدّث بيانات حسابي كمان" xml:space="preserve"><value>Also update my account details</value></data>
   <data name="تعديل الاسم" xml:space="preserve"><value>Edit name</value></data>
   <data name="تعديل رقم الموبايل" xml:space="preserve"><value>Edit mobile number</value></data>
+  <data name="القائمة" xml:space="preserve"><value>Menu</value></data>
 </root>

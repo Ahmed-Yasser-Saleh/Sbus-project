@@ -12,21 +12,23 @@
 
 <div class="row g-4">
     <div class="col-md-7">
-        <table class="table data-table align-middle">
-            <thead><tr><th>@L["اللوحة"]</th><th>@L["شكل الكراسي"]</th><th>@L["الكراسي"]</th><th>@L["الحالة"]</th><th></th></tr></thead>
-            <tbody>
-                @foreach (var b in Model.Buses)
-                {
-                    <tr class="@(b.IsActive ? null : "text-secondary")">
-                        <td>@b.PlateNumber</td>
-                        <td>@b.SeatLayoutName</td>
-                        <td>@b.Capacity</td>
-                        <td>@(b.IsActive ? L["شغال"] : L["متوقف"])</td>
-                        <td><a class="btn btn-sm btn-outline-secondary" data-partial="page-content" href="?id=@b.BusId">@L["تعديل"]</a></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <div class="table-responsive" tabindex="0">
+            <table class="table data-table align-middle">
+                <thead><tr><th>@L["اللوحة"]</th><th>@L["شكل الكراسي"]</th><th>@L["الكراسي"]</th><th>@L["الحالة"]</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var b in Model.Buses)
+                    {
+                        <tr class="@(b.IsActive ? null : "text-secondary")">
+                            <td>@b.PlateNumber</td>
+                            <td>@b.SeatLayoutName</td>
+                            <td>@b.Capacity</td>
+                            <td>@(b.IsActive ? L["شغال"] : L["متوقف"])</td>
+                            <td><a class="btn btn-sm btn-outline-secondary" data-partial="page-content" href="?id=@b.BusId">@L["تعديل"]</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="col-md-5">
         <h2 class="h6">@(Model.Id is null ? L["أتوبيس جديد"] : L["تعديل الأتوبيس"])</h2>

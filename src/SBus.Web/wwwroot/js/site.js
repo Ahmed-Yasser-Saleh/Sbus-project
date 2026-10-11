@@ -1,4 +1,21 @@
 (function initialize(root) {
+    root.querySelectorAll('[data-nav-toggle]').forEach(toggle => {
+        toggle.hidden = false;
+        const bar = toggle.closest('.topbar-inner');
+        bar.classList.add('nav-ready');
+        const close = () => toggle.setAttribute('aria-expanded', 'false');
+        toggle.addEventListener('click', () => {
+            toggle.setAttribute('aria-expanded', String(toggle.getAttribute('aria-expanded') !== 'true'));
+        });
+        bar.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+                close();
+                toggle.focus();
+            }
+        });
+        bar.querySelectorAll('a').forEach(link => link.addEventListener('click', close));
+    });
+
     const form = root.querySelector('#booking-form');
 
     if (form) {

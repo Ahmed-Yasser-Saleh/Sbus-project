@@ -15,22 +15,24 @@
         @foreach (var group in Model.Schedules.GroupBy(s => s.Direction))
         {
             <h2 class="h6 text-secondary">@Fmt.Direction(group.Key)</h2>
-            <table class="table data-table align-middle">
-                <thead><tr><th>@L["الساعة"]</th><th>@L["السعر"]</th><th>@L["الأتوبيس"]</th><th>@L["السواق"]</th><th>@L["الحالة"]</th><th></th></tr></thead>
-                <tbody>
-                    @foreach (var s in group)
-                    {
-                        <tr class="@(s.IsActive ? null : "text-secondary")">
-                            <td class="fw-semibold">@Fmt.Time(s.DepartureTime)</td>
-                            <td>@Fmt.Money(s.Price)</td>
-                            <td>@s.BusPlateNumber</td>
-                            <td>@s.DriverName</td>
-                            <td>@(s.IsActive ? L["شغال"] : L["متوقف"])</td>
-                            <td><a class="btn btn-sm btn-outline-secondary" data-partial="page-content" href="?id=@s.ScheduleId">@L["تعديل"]</a></td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <div class="table-responsive" tabindex="0">
+                <table class="table data-table align-middle">
+                    <thead><tr><th>@L["الساعة"]</th><th>@L["السعر"]</th><th>@L["الأتوبيس"]</th><th>@L["السواق"]</th><th>@L["الحالة"]</th><th></th></tr></thead>
+                    <tbody>
+                        @foreach (var s in group)
+                        {
+                            <tr class="@(s.IsActive ? null : "text-secondary")">
+                                <td class="fw-semibold" dir="ltr">@Fmt.Time(s.DepartureTime)</td>
+                                <td>@Fmt.Money(s.Price)</td>
+                                <td>@s.BusPlateNumber</td>
+                                <td>@s.DriverName</td>
+                                <td>@(s.IsActive ? L["شغال"] : L["متوقف"])</td>
+                                <td><a class="btn btn-sm btn-outline-secondary" data-partial="page-content" href="?id=@s.ScheduleId">@L["تعديل"]</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
     </div>
     <div class="col-md-5">

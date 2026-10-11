@@ -23,26 +23,28 @@
 
 <form data-partial="page-content" method="post" class="panel">
     <input type="hidden" asp-for="Direction" />
-    <table class="table data-table align-middle route-table">
-        <thead><tr><th>#</th><th>@L["المحطة"]</th><th>@L["بعد كام دقيقة"]</th></tr></thead>
-        <tbody>
-            @for (var i = 0; i < Model.Rows.Count; i++)
-            {
-                <tr>
-                    <td>@(i + 1)</td>
-                    <td>
-                        <select class="form-select form-select-sm" name="Rows[@i].StopId">
-                            <option value="">—</option>
-                            @foreach (var stop in Model.Stops)
-                            {
-                                <option value="@stop.StopId" selected="@(Model.Rows[i].StopId == stop.StopId)">@stop.Name</option>
-                            }
-                        </select>
-                    </td>
-                    <td><input class="form-control form-control-sm" type="number" min="0" max="1440" name="Rows[@i].MinutesFromStart" value="@Model.Rows[i].MinutesFromStart" /></td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="table-responsive" tabindex="0">
+        <table class="table data-table align-middle route-table">
+            <thead><tr><th>#</th><th>@L["المحطة"]</th><th>@L["بعد كام دقيقة"]</th></tr></thead>
+            <tbody>
+                @for (var i = 0; i < Model.Rows.Count; i++)
+                {
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>
+                            <select class="form-select form-select-sm" name="Rows[@i].StopId">
+                                <option value="">—</option>
+                                @foreach (var stop in Model.Stops)
+                                {
+                                    <option value="@stop.StopId" selected="@(Model.Rows[i].StopId == stop.StopId)">@stop.Name</option>
+                                }
+                            </select>
+                        </td>
+                        <td><input class="form-control form-control-sm" type="number" min="0" max="1440" name="Rows[@i].MinutesFromStart" value="@Model.Rows[i].MinutesFromStart" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
     <button type="submit" class="btn btn-primary">@L["حفظ الخط"]</button>
 </form>

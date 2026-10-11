@@ -31,7 +31,7 @@
     }
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body class="@(isOfficeArea ? "area-office" : "area-public")">
+<body class="@(isOfficeArea ? "area-office" : "area-public") @(page.StartsWith("/Account", StringComparison.Ordinal) ? "area-account" : null)">
     <partial name="_Icons" />
 
     <header class="topbar">
@@ -41,7 +41,10 @@
                 <span class="brand-route">@L["القاهرة ⇄ السويس"]</span>
             </a>
 
-            <div class="topbar-actions">
+            <button type="button" class="nav-toggle" data-nav-toggle aria-controls="site-navigation" aria-expanded="false" aria-label="@L["القائمة"]" hidden>
+                <span aria-hidden="true">☰</span>
+            </button>
+            <nav class="topbar-actions" id="site-navigation" aria-label="@L["القائمة"]">
                 <a asp-page="/Index" class="topbar-link">@L["الرئيسية"]</a>
                 @if (User.Identity?.IsAuthenticated == true)
                 {
@@ -64,7 +67,7 @@
                     <svg class="i"><use href="#i-globe" /></svg>
                     @(Languages.IsEnglish ? "عربي" : "English")
                 </a>
-            </div>
+            </nav>
         </div>
 
         @if (isOffice)

@@ -14,7 +14,7 @@
 <div class="page-head">
     <div>
         <span class="eyebrow">@Fmt.Direction(trip.Direction) · @Fmt.Date(trip.ServiceDate)</span>
-        <h1>@Fmt.Time(trip.DepartureTime)</h1>
+        <h1 dir="ltr">@Fmt.Time(trip.DepartureTime)</h1>
         <div class="muted">
             @L["أتوبيس {0}", trip.BusPlateNumber] · @L["السواق {0}", trip.DriverName] (<span dir="ltr">@trip.DriverPhoneNumber</span>)
         </div>

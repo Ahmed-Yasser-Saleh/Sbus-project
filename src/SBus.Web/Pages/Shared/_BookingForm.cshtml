@@ -50,7 +50,7 @@ else
                     <select class="form-select" id="pickup" asp-for="Input.PickupStopId">
                         @foreach (var stop in trip.Stops.Take(trip.Stops.Count - 1))
                         {
-                            <option value="@stop.StopId">@stop.StopName · @Fmt.Time(trip.DepartureTime.AddMinutes(stop.MinutesFromStart))</option>
+                            <option value="@stop.StopId">@stop.StopName · &#x2066;@Fmt.Time(trip.DepartureTime.AddMinutes(stop.MinutesFromStart))&#x2069;</option>
                         }
                     </select>
                 </div>
