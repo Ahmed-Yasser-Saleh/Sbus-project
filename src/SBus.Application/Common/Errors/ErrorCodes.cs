@@ -2,6 +2,20 @@ namespace SBus.Application.Common.Errors;
 
 public static class ErrorCodes
 {
+    public const string StopNotFound = "STOP_NOT_FOUND";
+    public const string StopNameExists = "STOP_NAME_EXISTS";
+    public const string StopsNotFoundOrInactive = "ROUTE_STOPS_UNAVAILABLE";
+    public const string SeatLayoutNotFound = "SEAT_LAYOUT_NOT_FOUND";
+    public const string SeatLayoutNameExists = "SEAT_LAYOUT_NAME_EXISTS";
+    public const string BusNotFound = "BUS_NOT_FOUND";
+    public const string BusInactive = "BUS_INACTIVE";
+    public const string PlateNumberExists = "BUS_PLATE_NUMBER_EXISTS";
+    public const string DriverNotFound = "DRIVER_NOT_FOUND";
+    public const string DriverInactive = "DRIVER_INACTIVE";
+    public const string ScheduleNotFound = "SCHEDULE_NOT_FOUND";
+    public const string ScheduleExists = "SCHEDULE_EXISTS";
+    public const string ReceiptNotFound = "RECEIPT_NOT_FOUND";
+    public const string LayoutDoesNotCoverBookedSeats = "BUS_LAYOUT_BOOKED_SEATS_CONFLICT";
     public const string ProfileIncomplete = "TRAVELER_PROFILE_INCOMPLETE";
     public const string ProfileUpdateFailed = "PROFILE_UPDATE_FAILED";
     public const string ReceiptTooLarge = "RECEIPT_TOO_LARGE";
@@ -46,6 +60,76 @@ public static class ErrorCodes
 
     public static string ForDomainError(string code, SBus.Domain.Common.Results.ErrorKind kind)
     {
+        if (code == ApplicationErrors.StopNotFound.Code)
+        {
+            return StopNotFound;
+        }
+
+        if (code == ApplicationErrors.StopNameExists.Code)
+        {
+            return StopNameExists;
+        }
+
+        if (code == ApplicationErrors.StopsNotFoundOrInactive.Code)
+        {
+            return StopsNotFoundOrInactive;
+        }
+
+        if (code == ApplicationErrors.SeatLayoutNotFound.Code)
+        {
+            return SeatLayoutNotFound;
+        }
+
+        if (code == ApplicationErrors.SeatLayoutNameExists.Code)
+        {
+            return SeatLayoutNameExists;
+        }
+
+        if (code == ApplicationErrors.BusNotFound.Code)
+        {
+            return BusNotFound;
+        }
+
+        if (code == ApplicationErrors.BusInactive.Code)
+        {
+            return BusInactive;
+        }
+
+        if (code == ApplicationErrors.PlateNumberExists.Code)
+        {
+            return PlateNumberExists;
+        }
+
+        if (code == ApplicationErrors.DriverNotFound.Code)
+        {
+            return DriverNotFound;
+        }
+
+        if (code == ApplicationErrors.DriverInactive.Code)
+        {
+            return DriverInactive;
+        }
+
+        if (code == ApplicationErrors.ScheduleNotFound.Code)
+        {
+            return ScheduleNotFound;
+        }
+
+        if (code == ApplicationErrors.ScheduleExists.Code)
+        {
+            return ScheduleExists;
+        }
+
+        if (code == ApplicationErrors.ReceiptNotFound.Code)
+        {
+            return ReceiptNotFound;
+        }
+
+        if (code == ApplicationErrors.LayoutDoesNotCoverBookedSeats([]).Code)
+        {
+            return LayoutDoesNotCoverBookedSeats;
+        }
+
         if (code == ApplicationErrors.StopsNotOnRoute.Code) { return BookingStopsNotOnRoute; }
         if (code == ApplicationErrors.PickupAfterDropoff.Code) { return BookingStopOrderInvalid; }
         if (code == ApplicationErrors.SeatsNotInLayout([]).Code) { return BookingSeatsNotInLayout; }

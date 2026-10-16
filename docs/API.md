@@ -152,3 +152,7 @@ POST /api/v1/bookings; GET /api/v1/tickets/{token}; POST /api/v1/tickets/{token}
 ### Profile and company status feature
 
 GET/PUT /api/v1/me/profile reuse the existing Traveler profile service and update command. Incomplete profiles may access these endpoints to complete registration. GET /api/v1/company/status preserves the Company Coming Soon placeholder with available=false. Ten API tests passed, covering authorization, validation, save errors and the existing company-role boundary. No schema or Razor changes.
+
+### Office operations feature
+
+Legacy Office JWT endpoints now expose day view, manifest, walk-in booking, trip assignment, office cancellation, paged payment review, confirmation/rejection and private receipt streaming under /api/v1/office. Company roles remain excluded. Requests map route IDs into existing commands and run their shared validators. Payments query paging is optional, so Razor reads retain their existing behavior. Eighteen API tests and a real PostgreSQL HTTP workflow passed, including immediate walk-in confirmation, both payment review outcomes and protected receipts. Assumption: manifest printing belongs to the mobile client, using the existing manifest DTO.

@@ -16,13 +16,14 @@ public class GetPendingPaymentsQueryHandler(IAppDbContext context)
 
     public async Task<Result<List<PendingPaymentDto>>> Handle(GetPendingPaymentsQuery query, CancellationToken ct)
     {
-        var bookings = await _context.Bookings
+        var source = _context.Bookings
             .AsNoTracking()
             .Include(b => b.Seats)
             .Include(b => b.Trip)
             .Where(b => b.Status == BookingStatus.AwaitingConfirmation)
             .OrderBy(b => b.ReceiptSubmittedAtUtc)
-            .ToListAsync(ct);
+            .ThenBy(b => b.Id);
+        var bookings = await (query.Page?.Apply(source) ?? source).ToListAsync(ct);
 
         return bookings
             .Select(b => new PendingPaymentDto(
