@@ -5,4 +5,4 @@ using SBus.Domain.Common.Results;
 
 namespace SBus.Application.Features.Schedules.Queries.GetSchedules;
 
-public sealed record GetSchedulesQuery : IRequest<Result<List<ScheduleDto>>>;
+public sealed record GetSchedulesQuery(SBus.Application.Common.Models.QueryPage? Page = null) : IRequest<Result<List<ScheduleDto>>>;

@@ -5,4 +5,4 @@ using SBus.Domain.Common.Results;
 
 namespace SBus.Application.Features.Drivers.Queries.GetDrivers;
 
-public sealed record GetDriversQuery(bool ActiveOnly = false) : IRequest<Result<List<DriverDto>>>;
+public sealed record GetDriversQuery(bool ActiveOnly = false, SBus.Application.Common.Models.QueryPage? Page = null) : IRequest<Result<List<DriverDto>>>;

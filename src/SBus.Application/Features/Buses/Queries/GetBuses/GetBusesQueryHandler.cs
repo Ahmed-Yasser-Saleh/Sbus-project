@@ -15,10 +15,11 @@ public class GetBusesQueryHandler(IAppDbContext context)
 
     public async Task<Result<List<BusDto>>> Handle(GetBusesQuery query, CancellationToken ct)
     {
-        return await _context.Buses
+        var source = _context.Buses
             .AsNoTracking()
             .Where(b => !query.ActiveOnly || b.IsActive)
             .OrderBy(b => b.PlateNumber)
+            .ThenBy(b => b.Id)
             .Select(b => new BusDto(
                 b.Id,
                 b.PlateNumber,
@@ -26,6 +27,7 @@ public class GetBusesQueryHandler(IAppDbContext context)
                 b.SeatLayout!.Name,
                 b.SeatLayout.Seats.Count(),
                 b.IsActive))
-            .ToListAsync(ct);
+            .AsQueryable();
+        return await (query.Page?.Apply(source) ?? source).ToListAsync(ct);
     }
 }

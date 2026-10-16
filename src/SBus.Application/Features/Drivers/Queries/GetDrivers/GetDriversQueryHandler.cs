@@ -15,11 +15,13 @@ public class GetDriversQueryHandler(IAppDbContext context)
 
     public async Task<Result<List<DriverDto>>> Handle(GetDriversQuery query, CancellationToken ct)
     {
-        return await _context.Drivers
+        var source = _context.Drivers
             .AsNoTracking()
             .Where(d => !query.ActiveOnly || d.IsActive)
             .OrderBy(d => d.Name)
+            .ThenBy(d => d.Id)
             .Select(d => new DriverDto(d.Id, d.Name, d.PhoneNumber, d.IsActive))
-            .ToListAsync(ct);
+            .AsQueryable();
+        return await (query.Page?.Apply(source) ?? source).ToListAsync(ct);
     }
 }

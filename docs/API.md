@@ -156,3 +156,7 @@ GET/PUT /api/v1/me/profile reuse the existing Traveler profile service and updat
 ### Office operations feature
 
 Legacy Office JWT endpoints now expose day view, manifest, walk-in booking, trip assignment, office cancellation, paged payment review, confirmation/rejection and private receipt streaming under /api/v1/office. Company roles remain excluded. Requests map route IDs into existing commands and run their shared validators. Payments query paging is optional, so Razor reads retain their existing behavior. Eighteen API tests and a real PostgreSQL HTTP workflow passed, including immediate walk-in confirmation, both payment review outcomes and protected receipts. Assumption: manifest printing belongs to the mobile client, using the existing manifest DTO.
+
+### Office settings feature
+
+/api/v1/office/stops, buses, drivers and schedules support GET/POST and PUT /{id}; seat-layouts support GET/POST only; routes/{direction} supports GET/PUT. The APIs use the existing settings commands and queries, including active-only filters, immutable layouts, route ordering, schedule propagation and booked-seat protection. List paging runs in PostgreSQL and defaults to 20 (maximum 100); optional Application query paging leaves Razor reads unpaged. Eighty-six API tests and a real PostgreSQL HTTP workflow passed, covering creates/updates, filtering/paging, duplicate names, inactive route stops, permissions and safe errors. No schema, business or Razor behavior changes.

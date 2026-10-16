@@ -15,10 +15,11 @@ public class GetSchedulesQueryHandler(IAppDbContext context)
 
     public async Task<Result<List<ScheduleDto>>> Handle(GetSchedulesQuery query, CancellationToken ct)
     {
-        return await _context.Schedules
+        var source = _context.Schedules
             .AsNoTracking()
             .OrderBy(s => s.Direction)
             .ThenBy(s => s.DepartureTime)
+            .ThenBy(s => s.Id)
             .Select(s => new ScheduleDto(
                 s.Id,
                 s.Direction,
@@ -29,6 +30,7 @@ public class GetSchedulesQueryHandler(IAppDbContext context)
                 s.DriverId,
                 s.Driver!.Name,
                 s.IsActive))
-            .ToListAsync(ct);
+            .AsQueryable();
+        return await (query.Page?.Apply(source) ?? source).ToListAsync(ct);
     }
 }

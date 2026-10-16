@@ -16,11 +16,12 @@ public class GetSeatLayoutsQueryHandler(IAppDbContext context)
 
     public async Task<Result<List<SeatLayoutDto>>> Handle(GetSeatLayoutsQuery query, CancellationToken ct)
     {
-        var layouts = await _context.SeatLayouts
+        var source = _context.SeatLayouts
             .AsNoTracking()
             .Include(l => l.Seats)
             .OrderBy(l => l.Name)
-            .ToListAsync(ct);
+            .ThenBy(l => l.Id);
+        var layouts = await (query.Page?.Apply(source) ?? source).ToListAsync(ct);
 
         return layouts.ToDtos();
     }

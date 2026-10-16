@@ -16,11 +16,12 @@ public class GetStopsQueryHandler(IAppDbContext context)
 
     public async Task<Result<List<StopDto>>> Handle(GetStopsQuery query, CancellationToken ct)
     {
-        var stops = await _context.Stops
+        var source = _context.Stops
             .AsNoTracking()
             .Where(s => !query.ActiveOnly || s.IsActive)
             .OrderBy(s => s.Name)
-            .ToListAsync(ct);
+            .ThenBy(s => s.Id);
+        var stops = await (query.Page?.Apply(source) ?? source).ToListAsync(ct);
 
         return stops.ToDtos();
     }
