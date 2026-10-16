@@ -28,6 +28,7 @@ public class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
     public static readonly DateTimeOffset StartTime = new(2030, 1, 1, 8, 0, 0, TimeSpan.Zero);
 
     public FakeTimeProvider Clock { get; } = new(StartTime);
+    public bool UseHttpUser { get; init; }
 
     public TestWorld World { get; private set; } = null!;
 
@@ -101,7 +102,14 @@ public class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
             var user = Substitute.For<IUser>();
             user.Id.Returns("test-traveler");
             user.IsTraveler.Returns(true);
-            services.AddSingleton(user);
+            if (UseHttpUser)
+            {
+                services.AddScoped<IUser, SBus.Web.Services.CurrentUser>();
+            }
+            else
+            {
+                services.AddSingleton(user);
+            }
             services.RemoveAll<TimeProvider>();
             services.AddSingleton<TimeProvider>(Clock);
 

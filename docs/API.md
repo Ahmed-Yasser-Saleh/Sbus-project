@@ -142,3 +142,9 @@ An earlier test invocation used a generic connection-string builder whose indexe
 ### Trips feature
 
 GET /api/v1/trips returns data, pagination, effective direction/date and booking-window days. Its Application handler reuses GetAvailableTripsQuery, normalizes defaults exactly like the home page, and paginates the results. GET /api/v1/trips/{id} reuses GetTripForBookingQuery and requires the existing Traveler policy plus a complete profile. Full/departed trips remain data states. Ten feature tests passed; no schema or Razor behavior changes.
+
+### Booking and tickets feature
+
+POST /api/v1/bookings; GET /api/v1/tickets/{token}; POST /api/v1/tickets/{token}/receipt (multipart receipt); POST /api/v1/tickets/{token}/cancel; GET /api/v1/me/tickets?page. All delegate to the existing commands/queries. Account-owned tickets remain private; unowned bearer links remain usable anonymously. Receipt expiry is unchanged. My Tickets retains 20 records/page and every booking status.
+
+35 API feature tests, 18 real-database booking tests (including a complete JWT HTTP flow and cross-user ownership checks), and 111 Application unit tests passed. Validation carries stable reason codes separately from legacy Razor field keys, preserving form bindings. No business rules or schema changed.

@@ -22,7 +22,15 @@ public sealed class ApiResultAdapter(IStringLocalizer<SharedResource> localizer)
         var error = result.TopError;
         var detail = localizer[error.Template, [.. error.Args]].Value;
         var code = error.ReasonCode ?? ErrorCodes.ForDomainError(error.Code, error.Type);
-        if (error.Type == ErrorKind.Validation && error.ReasonCode is not null)
+        if (code == ErrorCodes.ProfileIncomplete)
+        {
+            throw new BusinessRuleException(detail, code);
+        }
+        if (error.Code == BookingErrors.HoldDurationInvalid.Code || error.Code == BookingErrors.PriceInvalid.Code)
+        {
+            throw new InvalidOperationException("Invalid booking configuration.");
+        }
+        if (error.Type == ErrorKind.Validation && (error.ReasonCode is not null || code != ErrorCodes.ValidationFailed))
         {
             var fields = result.Errors.GroupBy(item => ValidationField(item.Code))
                 .ToDictionary(group => group.Key, group => group.Select(item => localizer[item.Template, [.. item.Args]].Value).ToArray());
@@ -44,6 +52,14 @@ public sealed class ApiResultAdapter(IStringLocalizer<SharedResource> localizer)
 
     private static readonly IReadOnlyDictionary<string, string> BookingFields = new Dictionary<string, string>
     {
+        [ApplicationErrors.StopsNotOnRoute.Code] = "pickupStopId",
+        [ApplicationErrors.PickupAfterDropoff.Code] = "dropoffStopId",
+        [ApplicationErrors.SeatsNotInLayout([]).Code] = "seatNumbers",
+        [SBus.Application.Features.Bookings.Common.ReceiptErrorKeys.TooLarge] = "receipt",
+        [SBus.Application.Features.Bookings.Common.ReceiptErrorKeys.UnsupportedFile] = "receipt",
+        ["Content"] = "receipt",
+        ["Length"] = "receipt",
+        ["PublicToken"] = "token",
         [BookingErrors.TripRequired.Code] = "tripId",
         [BookingErrors.PassengerNameRequired.Code] = "passengerName",
         [BookingErrors.PassengerNameTooLong.Code] = "passengerName",

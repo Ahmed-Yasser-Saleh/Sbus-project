@@ -19,7 +19,7 @@ public sealed class TravelerProfiles(UserManager<AppUser> users, IUser currentUs
         var user = await FindCurrentAsync(ct);
         if (user is null)
         {
-            return Error.Validation(string.Empty, "تعذّر حفظ بياناتك. جرّب تاني.");
+            return Error.Validation(string.Empty, "تعذّر حفظ بياناتك. جرّب تاني.") with { ReasonCode = SBus.Application.Common.Errors.ErrorCodes.ProfileUpdateFailed };
         }
 
         user.FullName = fullName;
@@ -30,7 +30,7 @@ public sealed class TravelerProfiles(UserManager<AppUser> users, IUser currentUs
         }
 
         var result = await users.UpdateAsync(user);
-        return result.Succeeded ? Result.Success : Error.Validation(string.Empty, "تعذّر حفظ بياناتك. جرّب تاني.");
+        return result.Succeeded ? Result.Success : Error.Validation(string.Empty, "تعذّر حفظ بياناتك. جرّب تاني.") with { ReasonCode = SBus.Application.Common.Errors.ErrorCodes.ProfileUpdateFailed };
     }
 
     private async Task<AppUser?> FindCurrentAsync(CancellationToken ct)

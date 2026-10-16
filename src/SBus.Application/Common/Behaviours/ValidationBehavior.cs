@@ -35,7 +35,10 @@ public class ValidationBehavior<TRequest, TResponse>(IValidator<TRequest>? valid
             .ConvertAll(error => Error.Validation(
                 code: error.PropertyName,
                 description: error.ErrorMessage,
-                args: error.CustomState as object[] ?? []));
+                args: error.CustomState as object[] ?? []) with
+            {
+                ReasonCode = error.ErrorCode.EndsWith("Validator", StringComparison.Ordinal) ? null : error.ErrorCode,
+            });
 
         return (dynamic)errors;
     }

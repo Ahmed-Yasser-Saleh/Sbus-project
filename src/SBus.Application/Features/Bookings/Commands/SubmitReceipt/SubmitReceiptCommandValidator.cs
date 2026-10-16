@@ -19,6 +19,7 @@ public sealed class SubmitReceiptCommandValidator : AbstractValidator<SubmitRece
         RuleFor(x => x.Length)
             .GreaterThan(0).WithMessage("ارفع صورة التحويل.")
             .LessThanOrEqualTo(maxBytes)
+            .WithErrorCode(SBus.Application.Common.Errors.ErrorCodes.ReceiptTooLarge)
             .WithMessage("حجم الملف لازم يكون أقل من {0} ميجا.")
             .WithState(_ => new object[] { maxBytes / (1024 * 1024) });
     }

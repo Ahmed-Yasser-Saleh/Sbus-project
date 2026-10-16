@@ -35,7 +35,7 @@ public class CreateOnlineBookingCommandHandler(
         var profile = await profiles.GetCurrentAsync(ct);
         if (!user.IsTraveler || user.Id is null || profile?.IsComplete != true)
         {
-            return Error.Validation(string.Empty, "كمّل بياناتك قبل الحجز.");
+            return Error.Validation(string.Empty, "كمّل بياناتك قبل الحجز.") with { ReasonCode = SBus.Application.Common.Errors.ErrorCodes.ProfileIncomplete };
         }
 
         var passengerName = string.IsNullOrWhiteSpace(command.PassengerName) ? profile.FullName : command.PassengerName;

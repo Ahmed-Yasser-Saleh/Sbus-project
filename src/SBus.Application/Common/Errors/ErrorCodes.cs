@@ -3,6 +3,12 @@ namespace SBus.Application.Common.Errors;
 public static class ErrorCodes
 {
     public const string ProfileIncomplete = "TRAVELER_PROFILE_INCOMPLETE";
+    public const string ProfileUpdateFailed = "PROFILE_UPDATE_FAILED";
+    public const string ReceiptTooLarge = "RECEIPT_TOO_LARGE";
+    public const string ReceiptUnsupportedFile = "RECEIPT_UNSUPPORTED_FILE";
+    public const string BookingStopsNotOnRoute = "BOOKING_STOPS_NOT_ON_ROUTE";
+    public const string BookingStopOrderInvalid = "BOOKING_STOP_ORDER_INVALID";
+    public const string BookingSeatsNotInLayout = "BOOKING_SEATS_NOT_IN_LAYOUT";
     public const string EmailAlreadyRegistered = "AUTH_EMAIL_ALREADY_REGISTERED";
     public const string RegistrationFailed = "AUTH_REGISTRATION_FAILED";
     public const string ConfirmationInvalid = "AUTH_CONFIRMATION_INVALID";
@@ -40,6 +46,11 @@ public static class ErrorCodes
 
     public static string ForDomainError(string code, SBus.Domain.Common.Results.ErrorKind kind)
     {
+        if (code == ApplicationErrors.StopsNotOnRoute.Code) { return BookingStopsNotOnRoute; }
+        if (code == ApplicationErrors.PickupAfterDropoff.Code) { return BookingStopOrderInvalid; }
+        if (code == ApplicationErrors.SeatsNotInLayout([]).Code) { return BookingSeatsNotInLayout; }
+        if (code == SBus.Application.Features.Bookings.Common.ReceiptErrorKeys.TooLarge) { return ReceiptTooLarge; }
+        if (code == SBus.Application.Features.Bookings.Common.ReceiptErrorKeys.UnsupportedFile) { return ReceiptUnsupportedFile; }
         if (code == ApplicationErrors.TripNotFound.Code)
         {
             return TripNotFound;

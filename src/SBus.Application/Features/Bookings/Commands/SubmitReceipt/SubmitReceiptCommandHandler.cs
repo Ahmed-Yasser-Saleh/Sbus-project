@@ -50,14 +50,14 @@ public class SubmitReceiptCommandHandler(
 
         if (!await CopyWithLimitAsync(command.Content, buffer, _options.MaxReceiptBytes, ct))
         {
-            return Error.Validation("SubmitReceipt.TooLarge", "حجم الملف أكبر من المسموح.");
+            return Error.Validation(ReceiptErrorKeys.TooLarge, "حجم الملف أكبر من المسموح.");
         }
 
         var extension = ReceiptFileType.DetectExtension(buffer.GetBuffer().AsSpan(0, (int)Math.Min(buffer.Length, 16)));
 
         if (extension is null)
         {
-            return Error.Validation("SubmitReceipt.UnsupportedFile", "الملف لازم يكون صورة (JPG أو PNG أو WEBP) أو PDF.");
+            return Error.Validation(ReceiptErrorKeys.UnsupportedFile, "الملف لازم يكون صورة (JPG أو PNG أو WEBP) أو PDF.");
         }
 
         buffer.Position = 0;
