@@ -1,4 +1,5 @@
 using MediatR;
+
 using SBus.Application.Features.Trips.Dtos;
 using SBus.Domain.Common.Results;
 using SBus.Domain.Routes;

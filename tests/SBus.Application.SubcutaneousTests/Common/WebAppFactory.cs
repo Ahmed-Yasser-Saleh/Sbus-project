@@ -110,6 +110,7 @@ public class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
             {
                 services.AddSingleton(user);
             }
+
             services.RemoveAll<TimeProvider>();
             services.AddSingleton<TimeProvider>(Clock);
 

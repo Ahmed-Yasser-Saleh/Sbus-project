@@ -1,7 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
+
 using MediatR;
+
 using NSubstitute;
+
 using SBus.Application.Common.Errors;
 using SBus.Application.Common.Models;
 using SBus.Application.Features.Bookings.Commands.CancelBookingByOffice;
@@ -18,6 +21,7 @@ using SBus.Application.Features.Trips.Queries.GetTripManifest;
 using SBus.Domain.Common.Results;
 using SBus.Domain.Routes;
 using SBus.Web.Api.Contracts;
+
 using Xunit;
 
 namespace SBus.Api.Tests;
@@ -92,10 +96,10 @@ public sealed class OfficeEndpointTests
         Assert.Equal(HttpStatusCode.OK, (await client.PostAsync($"/api/v1/office/bookings/{Id}/payment/confirm", null)).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await client.PostAsJsonAsync($"/api/v1/office/bookings/{Id}/payment/reject", new RejectPaymentRequest("Wrong amount"))).StatusCode);
         await factory.Sender.Received().Send(new RejectPaymentCommand(Id, "Wrong amount"), Arg.Any<CancellationToken>());
-        var invalid = await AccountEndpointTests.Problem(await client.PostAsJsonAsync($"/api/v1/office/bookings/{Id}/payment/reject", new RejectPaymentRequest("")), 400, ErrorCodes.ValidationFailed);
+        var invalid = await AccountEndpointTests.Problem(await client.PostAsJsonAsync($"/api/v1/office/bookings/{Id}/payment/reject", new RejectPaymentRequest(string.Empty)), 400, ErrorCodes.ValidationFailed);
         Assert.True(invalid.GetProperty("errors").TryGetProperty("reason", out _));
         await AccountEndpointTests.Problem(await client.PutAsJsonAsync($"/api/v1/office/trips/{Id}/assignment", new TripAssignmentRequest(Guid.Empty, Id)), 400, ErrorCodes.ValidationFailed);
-        await AccountEndpointTests.Problem(await client.PostAsJsonAsync($"/api/v1/office/trips/{Id}/bookings", new OfficeBookingRequest("", "invalid", stops.Item1, stops.Item2, [])), 400, ErrorCodes.ValidationFailed);
+        await AccountEndpointTests.Problem(await client.PostAsJsonAsync($"/api/v1/office/trips/{Id}/bookings", new OfficeBookingRequest(string.Empty, "invalid", stops.Item1, stops.Item2, [])), 400, ErrorCodes.ValidationFailed);
     }
 
     [Fact]
@@ -148,6 +152,62 @@ public sealed class OfficeEndpointTests
         await AccountEndpointTests.Problem(response, status, code);
     }
 
+    [Theory]
+    [InlineData("book", "TripNotFound", 404, ErrorCodes.TripNotFound)]
+    [InlineData("book", "TripDeparted", 409, ErrorCodes.TripDeparted)]
+    [InlineData("book", "SeatsJustTaken", 409, ErrorCodes.BookingSeatUnavailable)]
+    [InlineData("book", "StopsNotOnRoute", 400, ErrorCodes.BookingStopsNotOnRoute)]
+    [InlineData("book", "PickupAfterDropoff", 400, ErrorCodes.BookingStopOrderInvalid)]
+    [InlineData("book", "SeatsNotInLayout", 400, ErrorCodes.BookingSeatsNotInLayout)]
+    [InlineData("assign", "TripNotFound", 404, ErrorCodes.TripNotFound)]
+    [InlineData("assign", "BusNotFound", 404, ErrorCodes.BusNotFound)]
+    [InlineData("assign", "DriverNotFound", 404, ErrorCodes.DriverNotFound)]
+    [InlineData("assign", "BusInactive", 409, ErrorCodes.BusInactive)]
+    [InlineData("assign", "DriverInactive", 409, ErrorCodes.DriverInactive)]
+    [InlineData("assign", "TripDeparted", 409, ErrorCodes.TripDeparted)]
+    [InlineData("cancel", "BookingNotFound", 404, ErrorCodes.BookingNotFound)]
+    [InlineData("cancel", "InvalidTransition", 409, ErrorCodes.BookingInvalidTransition)]
+    [InlineData("confirm", "InvalidTransition", 409, ErrorCodes.BookingInvalidTransition)]
+    [InlineData("reject", "BookingNotFound", 404, ErrorCodes.BookingNotFound)]
+    public async Task OfficeBusinessErrors_MatchSharedHandlers(string action, string name, int status, string code)
+    {
+        await using var factory = new ApiTestFactory();
+        var error = name switch
+        {
+            "SeatsNotInLayout" => ApplicationErrors.SeatsNotInLayout([1]),
+            "InvalidTransition" => SBus.Domain.Bookings.BookingErrors.InvalidTransition(default, default),
+            _ => (Error)typeof(ApplicationErrors).GetProperty(name)!.GetValue(null)!,
+        };
+        factory.Sender.Send(Arg.Any<CreateOfficeBookingCommand>(), Arg.Any<CancellationToken>()).Returns((Result<BookingCreatedDto>)error);
+        factory.Sender.Send(Arg.Any<UpdateTripAssignmentCommand>(), Arg.Any<CancellationToken>()).Returns((Result<Updated>)error);
+        factory.Sender.Send(Arg.Any<CancelBookingByOfficeCommand>(), Arg.Any<CancellationToken>()).Returns((Result<Updated>)error);
+        factory.Sender.Send(Arg.Any<ConfirmPaymentCommand>(), Arg.Any<CancellationToken>()).Returns((Result<Updated>)error);
+        factory.Sender.Send(Arg.Any<RejectPaymentCommand>(), Arg.Any<CancellationToken>()).Returns((Result<Updated>)error);
+        using var client = factory.Client();
+        factory.Authenticate(client, "Office");
+        var response = action switch
+        {
+            "book" => await client.PostAsJsonAsync($"/api/v1/office/trips/{Id}/bookings", new OfficeBookingRequest("Name", "01012345678", Id, Guid.NewGuid(), [1])),
+            "assign" => await client.PutAsJsonAsync($"/api/v1/office/trips/{Id}/assignment", new TripAssignmentRequest(Id, Id)),
+            "reject" => await client.PostAsJsonAsync($"/api/v1/office/bookings/{Id}/payment/reject", new RejectPaymentRequest("Reason")),
+            _ => await client.PostAsync($"/api/v1/office/bookings/{Id}/" + (action == "confirm" ? "payment/confirm" : "cancel"), null),
+        };
+        await AccountEndpointTests.Problem(response, status, code);
+    }
+
+    [Fact]
+    public async Task Dashboard_RejectsInvalidDateAndDefaultsToCairoToday()
+    {
+        await using var factory = new ApiTestFactory();
+        factory.Sender.Send(Arg.Any<GetOfficeDayQuery>(), Arg.Any<CancellationToken>()).Returns((Result<List<OfficeTripDto>>)new List<OfficeTripDto>());
+        factory.Sender.Send(new GetPendingPaymentsQuery(), Arg.Any<CancellationToken>()).Returns((Result<List<PendingPaymentDto>>)new List<PendingPaymentDto>());
+        using var client = factory.Client();
+        factory.Authenticate(client, "Office");
+        await AccountEndpointTests.Problem(await client.GetAsync("/api/v1/office/day?date=invalid"), 400, ErrorCodes.ValidationFailed);
+        var result = (await client.GetFromJsonAsync<ApiResponse<OfficeDayResponse>>("/api/v1/office/day"))!.Data;
+        Assert.Equal(result.Today, result.Date);
+        await factory.Sender.Received().Send(new GetOfficeDayQuery(result.Today), Arg.Any<CancellationToken>());
+    }
+
     private static PendingPaymentDto Payment() => new(Guid.NewGuid(), Id, "Name", "01012345678", [1], 150, Direction.CairoToSuez, new DateOnly(2030, 1, 2), new TimeOnly(9, 0), DateTimeOffset.UtcNow);
 }
-

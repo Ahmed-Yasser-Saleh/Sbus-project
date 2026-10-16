@@ -1,8 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+
 using SBus.Application.Common.Exceptions;
 using SBus.Application.Features.Bookings.Commands.CancelBookingByPassenger;
 using SBus.Application.Features.Bookings.Commands.SubmitReceipt;
@@ -47,12 +50,13 @@ public sealed class TicketsController(ISender sender, ApiResultAdapter results) 
     [ProducesResponseType(typeof(ProblemDetails), 413)]
     [ProducesResponseType(typeof(ProblemDetails), 415)]
     [ProducesResponseType(typeof(ProblemDetails), 429)]
-    public async Task<ApiResponse<bool>> Receipt([StringLength(128)] string token, [FromForm] IFormFile? receipt, CancellationToken ct)
+    public async Task<ApiResponse<bool>> Receipt([StringLength(128)] string token, IFormFile? receipt, CancellationToken ct)
     {
         if (receipt is null || receipt.Length == 0)
         {
             throw new RequestValidationException(new Dictionary<string, string[]> { ["receipt"] = ["Select your payment receipt."] });
         }
+
         await using var stream = receipt.OpenReadStream();
         results.Value(await sender.Send(new SubmitReceiptCommand(token, stream, receipt.Length), ct));
         return new(true);

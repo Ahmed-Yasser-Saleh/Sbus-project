@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+
 using SBus.Application.Features.Schedules.Commands.CreateSchedule;
 using SBus.Application.Features.Schedules.Commands.UpdateSchedule;
 using SBus.Application.Features.Schedules.Dtos;
@@ -30,4 +31,3 @@ public sealed class OfficeSchedulesController(ApiSender sender) : OfficeApiContr
     public async Task<ApiResponse<ScheduleUpdatedDto>> Update(Guid id, UpdateScheduleRequest request, CancellationToken ct) =>
         new(await sender.Send(new UpdateScheduleCommand(id, request.DepartureTime, request.Price, request.BusId, request.DriverId, request.IsActive), ct));
 }
-

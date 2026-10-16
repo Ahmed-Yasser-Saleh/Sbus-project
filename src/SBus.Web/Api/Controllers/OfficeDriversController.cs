@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+
 using SBus.Application.Features.Drivers.Commands.CreateDriver;
 using SBus.Application.Features.Drivers.Commands.UpdateDriver;
 using SBus.Application.Features.Drivers.Dtos;
@@ -27,4 +28,3 @@ public sealed class OfficeDriversController(ApiSender sender) : OfficeApiControl
     public async Task<ApiResponse<Updated>> Update(Guid id, UpdateDriverRequest request, CancellationToken ct) =>
         new(await sender.Send(new UpdateDriverCommand(id, request.Name, request.PhoneNumber, request.IsActive), ct));
 }
-

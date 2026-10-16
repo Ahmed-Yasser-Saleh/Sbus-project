@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+
 using SBus.Application.Features.Stops.Commands.CreateStop;
 using SBus.Application.Features.Stops.Commands.UpdateStop;
 using SBus.Application.Features.Stops.Dtos;
@@ -29,4 +30,3 @@ public sealed class OfficeStopsController(ApiSender sender) : OfficeApiControlle
     public async Task<ApiResponse<Updated>> Update(Guid id, UpdateStopRequest request, CancellationToken ct) =>
         new(await sender.Send(new UpdateStopCommand(id, request.Name, request.Description, request.IsActive), ct));
 }
-

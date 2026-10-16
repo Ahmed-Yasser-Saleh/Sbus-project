@@ -130,11 +130,31 @@ public static class ErrorCodes
             return LayoutDoesNotCoverBookedSeats;
         }
 
-        if (code == ApplicationErrors.StopsNotOnRoute.Code) { return BookingStopsNotOnRoute; }
-        if (code == ApplicationErrors.PickupAfterDropoff.Code) { return BookingStopOrderInvalid; }
-        if (code == ApplicationErrors.SeatsNotInLayout([]).Code) { return BookingSeatsNotInLayout; }
-        if (code == SBus.Application.Features.Bookings.Common.ReceiptErrorKeys.TooLarge) { return ReceiptTooLarge; }
-        if (code == SBus.Application.Features.Bookings.Common.ReceiptErrorKeys.UnsupportedFile) { return ReceiptUnsupportedFile; }
+        if (code == ApplicationErrors.StopsNotOnRoute.Code)
+        {
+            return BookingStopsNotOnRoute;
+        }
+
+        if (code == ApplicationErrors.PickupAfterDropoff.Code)
+        {
+            return BookingStopOrderInvalid;
+        }
+
+        if (code == ApplicationErrors.SeatsNotInLayout([]).Code)
+        {
+            return BookingSeatsNotInLayout;
+        }
+
+        if (code == SBus.Application.Features.Bookings.Common.ReceiptErrorKeys.TooLarge)
+        {
+            return ReceiptTooLarge;
+        }
+
+        if (code == SBus.Application.Features.Bookings.Common.ReceiptErrorKeys.UnsupportedFile)
+        {
+            return ReceiptUnsupportedFile;
+        }
+
         if (code == ApplicationErrors.TripNotFound.Code)
         {
             return TripNotFound;

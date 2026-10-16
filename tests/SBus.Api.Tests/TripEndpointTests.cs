@@ -1,7 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
+
 using Microsoft.Extensions.Options;
+
 using NSubstitute;
+
 using SBus.Application.Common.Errors;
 using SBus.Application.Common.Settings;
 using SBus.Application.Common.Time;
@@ -13,6 +16,7 @@ using SBus.Application.Features.Trips.Queries.SearchTrips;
 using SBus.Domain.Common.Results;
 using SBus.Domain.Routes;
 using SBus.Tests.Common;
+
 using Xunit;
 
 namespace SBus.Api.Tests;
@@ -54,7 +58,11 @@ public sealed class TripEndpointTests
     {
         await using var factory = new ApiTestFactory();
         using var client = factory.Client();
-        if (role is not null) { factory.Authenticate(client, role); }
+        if (role is not null)
+        {
+            factory.Authenticate(client, role);
+        }
+
         await AccountEndpointTests.Problem(await client.GetAsync("/api/v1/trips/" + Guid.NewGuid()), status, status == 401 ? ErrorCodes.Unauthenticated : ErrorCodes.Forbidden);
     }
 

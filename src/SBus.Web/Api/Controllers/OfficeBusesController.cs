@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+
 using SBus.Application.Features.Buses.Commands.CreateBus;
 using SBus.Application.Features.Buses.Commands.UpdateBus;
 using SBus.Application.Features.Buses.Dtos;
@@ -30,4 +31,3 @@ public sealed class OfficeBusesController(ApiSender sender) : OfficeApiControlle
     public async Task<ApiResponse<Updated>> Update(Guid id, UpdateBusRequest request, CancellationToken ct) =>
         new(await sender.Send(new UpdateBusCommand(id, request.PlateNumber, request.SeatLayoutId, request.IsActive), ct));
 }
-

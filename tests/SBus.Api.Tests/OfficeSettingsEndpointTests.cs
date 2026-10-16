@@ -1,22 +1,15 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+
 using MediatR;
+
 using NSubstitute;
 using NSubstitute.Extensions;
+
 using SBus.Application.Common.Errors;
 using SBus.Application.Common.Exceptions;
 using SBus.Application.Common.Models;
-using SBus.Application.Features.Stops.Commands.CreateStop;
-using SBus.Application.Features.Stops.Commands.UpdateStop;
-using SBus.Application.Features.Stops.Dtos;
-using SBus.Application.Features.Stops.Queries.GetStops;
-using SBus.Application.Features.Routes.Commands.SetRouteStops;
-using SBus.Application.Features.Routes.Dtos;
-using SBus.Application.Features.Routes.Queries.GetRoute;
-using SBus.Application.Features.SeatLayouts.Commands.CreateSeatLayout;
-using SBus.Application.Features.SeatLayouts.Dtos;
-using SBus.Application.Features.SeatLayouts.Queries.GetSeatLayouts;
 using SBus.Application.Features.Buses.Commands.CreateBus;
 using SBus.Application.Features.Buses.Commands.UpdateBus;
 using SBus.Application.Features.Buses.Dtos;
@@ -25,13 +18,24 @@ using SBus.Application.Features.Drivers.Commands.CreateDriver;
 using SBus.Application.Features.Drivers.Commands.UpdateDriver;
 using SBus.Application.Features.Drivers.Dtos;
 using SBus.Application.Features.Drivers.Queries.GetDrivers;
+using SBus.Application.Features.Routes.Commands.SetRouteStops;
+using SBus.Application.Features.Routes.Dtos;
+using SBus.Application.Features.Routes.Queries.GetRoute;
 using SBus.Application.Features.Schedules.Commands.CreateSchedule;
 using SBus.Application.Features.Schedules.Commands.UpdateSchedule;
 using SBus.Application.Features.Schedules.Dtos;
 using SBus.Application.Features.Schedules.Queries.GetSchedules;
+using SBus.Application.Features.SeatLayouts.Commands.CreateSeatLayout;
+using SBus.Application.Features.SeatLayouts.Dtos;
+using SBus.Application.Features.SeatLayouts.Queries.GetSeatLayouts;
+using SBus.Application.Features.Stops.Commands.CreateStop;
+using SBus.Application.Features.Stops.Commands.UpdateStop;
+using SBus.Application.Features.Stops.Dtos;
+using SBus.Application.Features.Stops.Queries.GetStops;
 using SBus.Domain.Common.Results;
 using SBus.Domain.Routes;
 using SBus.Web.Api.Contracts;
+
 using Xunit;
 
 namespace SBus.Api.Tests;
@@ -139,6 +143,7 @@ public sealed class OfficeSettingsEndpointTests
     [InlineData("buses", "PUT", "BusNotFound", 404, ErrorCodes.BusNotFound)]
     [InlineData("buses", "PUT", "SeatLayoutNotFound", 404, ErrorCodes.SeatLayoutNotFound)]
     [InlineData("buses", "PUT", "PlateNumberExists", 409, ErrorCodes.PlateNumberExists)]
+    [InlineData("buses", "PUT", "LayoutDoesNotCoverBookedSeats", 409, ErrorCodes.LayoutDoesNotCoverBookedSeats)]
     [InlineData("drivers", "PUT", "DriverNotFound", 404, ErrorCodes.DriverNotFound)]
     [InlineData("schedules", "POST", "BusNotFound", 404, ErrorCodes.BusNotFound)]
     [InlineData("schedules", "POST", "DriverNotFound", 404, ErrorCodes.DriverNotFound)]
@@ -154,7 +159,9 @@ public sealed class OfficeSettingsEndpointTests
     public async Task BusinessFailures_HaveSpecificStatusAndCode(string resource, string method, string errorName, int status, string code)
     {
         await using var factory = new ApiTestFactory();
-        var error = (Error)typeof(ApplicationErrors).GetProperty(errorName)!.GetValue(null)!;
+        var error = errorName == nameof(ApplicationErrors.LayoutDoesNotCoverBookedSeats)
+            ? ApplicationErrors.LayoutDoesNotCoverBookedSeats([1])
+            : (Error)typeof(ApplicationErrors).GetProperty(errorName)!.GetValue(null)!;
         Configure<StopDto>(factory, error);
         Configure<SeatLayoutDto>(factory, error);
         Configure<Guid>(factory, error);
@@ -163,6 +170,20 @@ public sealed class OfficeSettingsEndpointTests
         using var client = factory.Client();
         factory.Authenticate(client, "Office");
         await AccountEndpointTests.Problem(await Send(client, resource, method), status, code);
+    }
+
+    [Theory]
+    [InlineData("{\"stops\":null}", "stops")]
+    [InlineData("{\"stops\":[null]}", "stops[0]")]
+    public async Task Route_NullCollectionsAndItemsReturnValidation(string json, string field)
+    {
+        await using var factory = new ApiTestFactory();
+        using var client = factory.Client();
+        factory.Authenticate(client, "Office");
+        var response = await client.PutAsync("/api/v1/office/routes/CairoToSuez", new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
+        var problem = await AccountEndpointTests.Problem(response, 400, ErrorCodes.ValidationFailed);
+        Assert.True(problem.GetProperty("errors").TryGetProperty(field, out _));
+        Assert.Empty(factory.Sender.ReceivedCalls());
     }
 
     private static object Expected(string resource, string method) => (resource, method) switch
@@ -182,6 +203,7 @@ public sealed class OfficeSettingsEndpointTests
         ("seat-layouts", "POST") => new CreateSeatLayoutCommand("Layout", "D 1 2"),
         ("schedules", "POST") => new CreateScheduleCommand(Direction.CairoToSuez, new TimeOnly(9, 0), 150, Other, Other),
         ("schedules", "PUT") => new UpdateScheduleCommand(Id, new TimeOnly(9, 0), 150, Other, Other, false),
+
         // The route command contains a deserialized list; compare its elements explicitly in Send.
         _ => throw new InvalidOperationException(),
     };
@@ -205,10 +227,10 @@ public sealed class OfficeSettingsEndpointTests
 
         object body = (resource, method) switch
         {
-            ("stops", _) => new { name = invalid ? "" : "Stop", description = "Description", isActive = false },
-            ("buses", _) => new { plateNumber = invalid ? "" : "BUS 123", seatLayoutId = Other, isActive = false },
-            ("drivers", _) => new { name = invalid ? "" : "Driver", phoneNumber = "01012345678", isActive = false },
-            ("seat-layouts", _) => new { name = invalid ? "" : "Layout", grid = "D 1 2" },
+            ("stops", _) => new { name = invalid ? string.Empty : "Stop", description = "Description", isActive = false },
+            ("buses", _) => new { plateNumber = invalid ? string.Empty : "BUS 123", seatLayoutId = Other, isActive = false },
+            ("drivers", _) => new { name = invalid ? string.Empty : "Driver", phoneNumber = "01012345678", isActive = false },
+            ("seat-layouts", _) => new { name = invalid ? string.Empty : "Layout", grid = "D 1 2" },
             ("schedules", _) => new { direction = Direction.CairoToSuez, departureTime = "09:00:00", price = invalid ? 0 : 150, busId = Other, driverId = Other, isActive = false },
             _ => new { stops = new[] { new RouteStopItem(Id, 0), new RouteStopItem(Other, 120) } },
         };
@@ -233,4 +255,3 @@ public sealed class OfficeSettingsEndpointTests
     private static void Configure<T>(ApiTestFactory factory, Result<T> result, Exception? exception = null) =>
         factory.Sender.Configure().Send(Arg.Any<IRequest<Result<T>>>(), Arg.Any<CancellationToken>()).Returns(_ => exception is null ? result : throw exception);
 }
-

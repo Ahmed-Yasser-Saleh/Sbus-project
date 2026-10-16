@@ -17,7 +17,7 @@ using SBus.Application.Features.MobileAuth;
 
 namespace SBus.Api.Tests;
 
-public sealed class ApiTestFactory(string environment = "Production", int authLimit = 100) : WebApplicationFactory<Program>
+public sealed class ApiTestFactory(string environment = "Production", int authLimit = 100, bool apiEnabled = true) : WebApplicationFactory<Program>
 {
     public string SigningKey { get; } = Convert.ToBase64String(RandomNumberGenerator.GetBytes(48));
     public IMobileAuthService Auth { get; } = Substitute.For<IMobileAuthService>();
@@ -47,7 +47,7 @@ public sealed class ApiTestFactory(string environment = "Production", int authLi
             ["Authentication:Email:PublicOrigin"] = "https://localhost",
             ["Authentication:Google:ClientId"] = string.Empty,
             ["Authentication:Google:ClientSecret"] = string.Empty,
-            ["Authentication:Mobile:Enabled"] = "true",
+            ["Authentication:Mobile:Enabled"] = apiEnabled.ToString(),
             ["Authentication:Mobile:SigningKey"] = SigningKey,
             ["Authentication:Mobile:AuthPermitLimit"] = authLimit.ToString(System.Globalization.CultureInfo.InvariantCulture),
             ["Authentication:Mobile:CorsOrigins:0"] = "https://mobile.example",

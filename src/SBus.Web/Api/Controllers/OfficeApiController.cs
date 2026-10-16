@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using SBus.Application.Common.Security;
 
 namespace SBus.Web.Api.Controllers;
@@ -14,4 +15,3 @@ namespace SBus.Web.Api.Controllers;
 [ProducesResponseType(typeof(ProblemDetails), 500)]
 [ProducesResponseType(typeof(ProblemDetails), 503)]
 public abstract class OfficeApiController : ControllerBase;
-

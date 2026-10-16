@@ -1,8 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+
 using SBus.Application.Common.Time;
 using SBus.Application.Features.Bookings.Commands.CreateOnlineBooking;
 using SBus.Application.Features.Bookings.Dtos;
@@ -12,6 +14,7 @@ using SBus.Application.SubcutaneousTests.Common;
 using SBus.Domain.Bookings;
 using SBus.Infrastructure.Identity;
 using SBus.Web.Api.Contracts;
+
 using Xunit;
 
 namespace SBus.Application.SubcutaneousTests.Features.Bookings;
@@ -88,4 +91,3 @@ public sealed class OfficeApiIntegrationTests(WebAppFactory database)
 
     private static HttpClient Client(WebAppFactory host) => host.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("https://localhost"), AllowAutoRedirect = false });
 }
-

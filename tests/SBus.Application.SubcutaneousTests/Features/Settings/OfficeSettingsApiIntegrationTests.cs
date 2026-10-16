@@ -1,8 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+
 using SBus.Application.Common.Errors;
 using SBus.Application.Features.Buses.Commands.CreateBus;
 using SBus.Application.Features.Buses.Dtos;
@@ -21,6 +23,7 @@ using SBus.Application.SubcutaneousTests.Common;
 using SBus.Domain.Routes;
 using SBus.Infrastructure.Identity;
 using SBus.Web.Api.Contracts;
+
 using Xunit;
 
 namespace SBus.Application.SubcutaneousTests.Features.Settings;
@@ -106,4 +109,3 @@ public sealed class OfficeSettingsApiIntegrationTests(WebAppFactory database)
         }
     }
 }
-

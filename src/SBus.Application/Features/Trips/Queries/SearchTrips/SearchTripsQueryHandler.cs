@@ -1,5 +1,7 @@
 using MediatR;
+
 using Microsoft.Extensions.Options;
+
 using SBus.Application.Common.Settings;
 using SBus.Application.Common.Time;
 using SBus.Application.Features.Trips.Dtos;
@@ -19,7 +21,11 @@ public sealed class SearchTripsQueryHandler(ISender sender, TimeProvider clock, 
         var date = request.Date is { } selected && days.Contains(selected) ? selected : today;
         var direction = Enum.IsDefined(request.Direction) ? request.Direction : Direction.CairoToSuez;
         var trips = await sender.Send(new GetAvailableTripsQuery(direction, date), ct);
-        if (trips.IsError) { return trips.Errors; }
+        if (trips.IsError)
+        {
+            return trips.Errors;
+        }
+
         var offset = (request.Page - 1) * request.PageSize;
         return new TripSearchDto(direction, date, days, trips.Value.Skip(offset).Take(request.PageSize).ToList(),
             request.Page, request.PageSize, trips.Value.Count > offset + request.PageSize);

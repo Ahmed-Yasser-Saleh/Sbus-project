@@ -235,6 +235,21 @@ public sealed class ApiPipelineTests
         Assert.Contains("ValidationProblemDetails", json);
         Assert.Contains("/api/v1/auth/refresh", json);
         Assert.Contains("application/problem+json", json);
+        using var document = JsonDocument.Parse(json);
+        var paths = document.RootElement.GetProperty("paths");
+        Assert.True(paths.TryGetProperty("/api/v1/office/schedules/{id}", out _));
+        var upload = paths.GetProperty("/api/v1/tickets/{token}/receipt").GetProperty("post");
+        Assert.True(upload.GetProperty("requestBody").GetProperty("content").TryGetProperty("multipart/form-data", out _));
+        foreach (var path in paths.EnumerateObject())
+        {
+            foreach (var operation in path.Value.EnumerateObject().Where(x => x.Value.TryGetProperty("responses", out _)))
+            {
+                foreach (var response in operation.Value.GetProperty("responses").EnumerateObject().Where(x => int.Parse(x.Name, System.Globalization.CultureInfo.InvariantCulture) >= 400))
+                {
+                    Assert.Equal("application/problem+json", Assert.Single(response.Value.GetProperty("content").EnumerateObject()).Name);
+                }
+            }
+        }
     }
 
     [Theory]

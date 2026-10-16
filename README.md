@@ -4,11 +4,11 @@ A booking site for the Cairo ⇄ Suez minibus line. Passengers pick a trip and a
 
 Decisions are recorded in [docs/DECISIONS.md](docs/DECISIONS.md) and the build plan in [docs/PLAN.md](docs/PLAN.md).
 
-## Mobile API (Phase 1)
+## Mobile API (Phases 1 and 2)
 
-The API foundation runs inside `SBus.Web` at `/api/v1/auth`, independently of Razor cookie authentication. It provides password/Google sign-in, refresh rotation, logout, API-only ProblemDetails, CORS, rate limiting and development Swagger at `https://localhost:7116/api/docs`.
+The API runs inside `SBus.Web` at `/api/v1`, independently of Razor cookie authentication. It provides password/Google sign-in, refresh rotation, logout, API-only ProblemDetails, CORS, rate limiting and development Swagger at `https://localhost:7116/api/docs`.
 
-The API is disabled by default. The user generated and applied `AddMobileRefreshTokens` and confirmed it on 2026-10-16. Its schema matches the entity/EF configuration. Configure the signing secret before enabling `Authentication:Mobile:Enabled`; store `Authentication:Mobile:SigningKey` in user-secrets/environment variables. See [docs/API.md](docs/API.md) for the schema, settings, endpoints, error codes and database-free test commands. Feature endpoints and Flutter are subsequent phases.
+The API is disabled by default. The user generated and applied `AddMobileRefreshTokens` and confirmed it on 2026-10-16. Its schema matches the entity/EF configuration. Configure the signing secret before enabling `Authentication:Mobile:Enabled`; store `Authentication:Mobile:SigningKey` in user-secrets/environment variables. See [docs/API.md](docs/API.md) for the schema, settings, endpoints, error codes and database-free test commands. Trips, bookings, tickets, profiles and Office operations/settings are implemented; see [the Phase 2 endpoint and error reference](docs/API-PHASE2.md). Flutter has not started.
 
 ```powershell
 dotnet test tests/SBus.Api.Tests/SBus.Api.Tests.csproj
@@ -53,10 +53,11 @@ dotnet test
 | Project | What it covers |
 |---|---|
 | `SBus.Domain.UnitTests` | Booking state machine, seat layout parsing, route rules |
+| `SBus.Api.Tests` | Database-free JWT/controller/ProblemDetails/endpoint contracts and auth service tests |
 | `SBus.Application.UnitTests` | Validators, phone normalisation, Cairo time, receipt file detection |
 | `SBus.Application.SubcutaneousTests` | Booking flows against a real PostgreSQL database, including 20 concurrent bookings of one seat; translation coverage |
 
-The database tests use a separate `sbus_tests` database (dropped and recreated on every run) and read the connection from the same user-secrets, or from the `SBUS_TEST_CONNECTION` environment variable. Without either they are skipped.
+The database tests use a separate `sbus_tests` database (dropped and recreated on every run) and read the connection from the same user-secrets, or from the `SBUS_TEST_CONNECTION` environment variable. Without either they are skipped. The fixture refuses destructive setup unless the actual EF connection targets exactly `sbus_tests`. A supplied SBUS_TEST_CONNECTION must name that database explicitly.
 
 ## Languages
 

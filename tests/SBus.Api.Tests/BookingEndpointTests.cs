@@ -1,11 +1,14 @@
 using System.Net;
 using System.Net.Http.Json;
+
 using NSubstitute;
+
 using SBus.Application.Common.Errors;
 using SBus.Application.Features.Accounts.Dtos;
 using SBus.Application.Features.Bookings.Commands.CreateOnlineBooking;
 using SBus.Application.Features.Bookings.Dtos;
 using SBus.Domain.Common.Results;
+
 using Xunit;
 
 namespace SBus.Api.Tests;
@@ -20,7 +23,8 @@ public sealed class BookingEndpointTests
         factory.Sender.Send(Arg.Any<CreateOnlineBookingCommand>(), Arg.Any<CancellationToken>()).Returns(new BookingCreatedDto(Guid.NewGuid(), "ticket-token"));
         using var client = Traveler(factory);
         Assert.Equal(HttpStatusCode.OK, (await client.PostAsJsonAsync("/api/v1/bookings", request)).StatusCode);
-        await factory.Sender.Received().Send(Arg.Is<CreateOnlineBookingCommand>(command => command.TripId == request.TripId
+        await factory.Sender.Received().Send(
+            Arg.Is<CreateOnlineBookingCommand>(command => command.TripId == request.TripId
             && command.PickupStopId == request.PickupStopId && command.DropoffStopId == request.DropoffStopId
             && command.SeatNumbers.SequenceEqual(request.SeatNumbers) && !command.UpdateAccountDetails), Arg.Any<CancellationToken>());
     }
@@ -40,9 +44,14 @@ public sealed class BookingEndpointTests
         await using var factory = new ApiTestFactory();
         var error = scenario switch
         {
-            0 => ApplicationErrors.TripNotFound, 1 => ApplicationErrors.SeatsTaken([1]), 2 => ApplicationErrors.SeatsJustTaken,
-            3 => ApplicationErrors.TripDeparted, 4 => ApplicationErrors.TripNotBookable, 5 => ApplicationErrors.StopsNotOnRoute,
-            6 => ApplicationErrors.PickupAfterDropoff, 7 => ApplicationErrors.SeatsNotInLayout([1]),
+            0 => ApplicationErrors.TripNotFound,
+            1 => ApplicationErrors.SeatsTaken([1]),
+            2 => ApplicationErrors.SeatsJustTaken,
+            3 => ApplicationErrors.TripDeparted,
+            4 => ApplicationErrors.TripNotBookable,
+            5 => ApplicationErrors.StopsNotOnRoute,
+            6 => ApplicationErrors.PickupAfterDropoff,
+            7 => ApplicationErrors.SeatsNotInLayout([1]),
             _ => Error.Validation(string.Empty, "Unable to save.") with { ReasonCode = ErrorCodes.ProfileUpdateFailed },
         };
         factory.Sender.Send(Arg.Any<CreateOnlineBookingCommand>(), Arg.Any<CancellationToken>()).Returns((Result<BookingCreatedDto>)error);
@@ -58,7 +67,11 @@ public sealed class BookingEndpointTests
     {
         await using var factory = new ApiTestFactory();
         using var client = factory.Client();
-        if (role is not null) { factory.Authenticate(client, role); }
+        if (role is not null)
+        {
+            factory.Authenticate(client, role);
+        }
+
         await AccountEndpointTests.Problem(await client.PostAsJsonAsync("/api/v1/bookings", Request()), status, status == 401 ? ErrorCodes.Unauthenticated : ErrorCodes.Forbidden);
     }
 
@@ -83,7 +96,11 @@ public sealed class BookingEndpointTests
         using var client = Traveler(factory);
         var response = await client.PostAsJsonAsync("/api/v1/bookings", Request());
         await AccountEndpointTests.Problem(response, 500, ErrorCodes.InternalError);
-        for (var index = 0; index < 9; index++) { await client.PostAsJsonAsync("/api/v1/bookings", Request() with { SeatNumbers = [] }); }
+        for (var index = 0; index < 9; index++)
+        {
+            await client.PostAsJsonAsync("/api/v1/bookings", Request() with { SeatNumbers = [] });
+        }
+
         response = await client.PostAsJsonAsync("/api/v1/bookings", Request());
         await AccountEndpointTests.Problem(response, 429, ErrorCodes.RateLimitExceeded);
         Assert.NotNull(response.Headers.RetryAfter);

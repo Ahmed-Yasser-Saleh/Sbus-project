@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+
 using Microsoft.AspNetCore.Mvc;
+
 using SBus.Application.Features.Routes.Commands.SetRouteStops;
 using SBus.Application.Features.Routes.Dtos;
 using SBus.Application.Features.Routes.Queries.GetRoute;
@@ -22,4 +24,3 @@ public sealed class OfficeRoutesController(ApiSender sender) : OfficeApiControll
     public async Task<ApiResponse<Updated>> Update([EnumDataType(typeof(Direction))] Direction direction, RouteStopsRequest request, CancellationToken ct) =>
         new(await sender.Send(new SetRouteStopsCommand(direction, request.Stops), ct));
 }
-

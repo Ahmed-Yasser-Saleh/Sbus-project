@@ -1,5 +1,7 @@
 using FluentValidation;
+
 using MediatR;
+
 using SBus.Domain.Common.Results;
 using SBus.Web.Api.Errors;
 
@@ -22,4 +24,3 @@ public sealed class ApiSender(ISender sender, IServiceProvider services, ApiResu
         return results.Value(await sender.Send(request, ct));
     }
 }
-

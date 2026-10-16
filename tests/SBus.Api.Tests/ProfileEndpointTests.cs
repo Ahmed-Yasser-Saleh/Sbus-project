@@ -1,10 +1,13 @@
 using System.Net;
 using System.Net.Http.Json;
+
 using NSubstitute;
+
 using SBus.Application.Common.Errors;
 using SBus.Application.Features.Accounts.Commands.UpdateTravelerProfile;
 using SBus.Application.Features.Accounts.Dtos;
 using SBus.Domain.Common.Results;
+
 using Xunit;
 
 namespace SBus.Api.Tests;
@@ -36,7 +39,11 @@ public sealed class ProfileEndpointTests
     {
         await using var factory = new ApiTestFactory();
         using var client = factory.Client();
-        if (role is not null) { factory.Authenticate(client, role); }
+        if (role is not null)
+        {
+            factory.Authenticate(client, role);
+        }
+
         var response = method == "get" ? await client.GetAsync("/api/v1/me/profile") : await client.PutAsJsonAsync("/api/v1/me/profile", new UpdateTravelerProfileCommand("Name", "01012345678"));
         await AccountEndpointTests.Problem(response, status, status == 401 ? ErrorCodes.Unauthenticated : ErrorCodes.Forbidden);
     }
@@ -64,9 +71,19 @@ public sealed class ProfileEndpointTests
     {
         await using var factory = new ApiTestFactory();
         using var client = factory.Client();
-        if (role is not null) { factory.Authenticate(client, role); }
+        if (role is not null)
+        {
+            factory.Authenticate(client, role);
+        }
+
         var response = await client.GetAsync("/api/v1/company/status");
-        if (status == 200) { Assert.Contains("\"available\":false", await response.Content.ReadAsStringAsync()); }
-        else { await AccountEndpointTests.Problem(response, status, status == 401 ? ErrorCodes.Unauthenticated : ErrorCodes.Forbidden); }
+        if (status == 200)
+        {
+            Assert.Contains("\"available\":false", await response.Content.ReadAsStringAsync());
+        }
+        else
+        {
+            await AccountEndpointTests.Problem(response, status, status == 401 ? ErrorCodes.Unauthenticated : ErrorCodes.Forbidden);
+        }
     }
 }

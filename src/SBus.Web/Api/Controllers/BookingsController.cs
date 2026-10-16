@@ -1,8 +1,10 @@
 using MediatR;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+
 using SBus.Application.Common.Security;
 using SBus.Application.Features.Bookings.Commands.CreateOnlineBooking;
 using SBus.Application.Features.Bookings.Dtos;

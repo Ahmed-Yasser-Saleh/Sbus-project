@@ -50,6 +50,7 @@ public static class ApiRegistration
         services.AddExceptionHandler<ApiExceptionHandler>();
         services.AddScoped<ApiResultAdapter>();
         services.AddScoped<ApiSender>();
+        services.AddScoped<FluentValidation.IValidator<Contracts.RouteStopsRequest>, Contracts.RouteStopsRequestValidator>();
         services.AddScoped<CompleteApiProfileFilter>();
         services.AddScoped<SBus.Application.Features.Accounts.IAccountRecovery, SBus.Web.Services.AccountRecoveryService>();
         services.Configure<RequestLocalizationOptions>(o => o.RequestCultureProviders.Insert(0, new ApiCultureProvider()));

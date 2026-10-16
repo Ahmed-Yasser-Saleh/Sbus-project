@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
+
 using NSubstitute;
+
 using SBus.Application.Common.Errors;
 using SBus.Application.Features.Bookings.Commands.CancelBookingByPassenger;
 using SBus.Application.Features.Bookings.Commands.SubmitReceipt;
@@ -11,6 +13,7 @@ using SBus.Application.Features.Bookings.Queries.GetTicket;
 using SBus.Domain.Bookings;
 using SBus.Domain.Common.Results;
 using SBus.Domain.Routes;
+
 using Xunit;
 
 namespace SBus.Api.Tests;
@@ -83,7 +86,11 @@ public sealed class TicketEndpointTests
         factory.Sender.Send(Arg.Any<SubmitReceiptCommand>(), Arg.Any<CancellationToken>()).Returns(Result.Updated);
         using var client = factory.Client();
         Assert.Equal(HttpStatusCode.OK, (await Send(client, action)).StatusCode);
-        for (var index = 0; index < 9; index++) { await Send(client, action); }
+        for (var index = 0; index < 9; index++)
+        {
+            await Send(client, action);
+        }
+
         var response = await Send(client, action);
         await AccountEndpointTests.Problem(response, 429, ErrorCodes.RateLimitExceeded);
         Assert.NotNull(response.Headers.RetryAfter);
@@ -119,14 +126,37 @@ public sealed class TicketEndpointTests
     {
         await using var factory = new ApiTestFactory();
         using var client = factory.Client();
-        if (role is not null) { factory.Authenticate(client, role); }
+        if (role is not null)
+        {
+            factory.Authenticate(client, role);
+        }
+
         await AccountEndpointTests.Problem(await client.GetAsync("/api/v1/me/tickets"), status, status == 401 ? ErrorCodes.Unauthenticated : ErrorCodes.Forbidden);
+    }
+
+    [Fact]
+    public async Task Receipt_UnsupportedMediaAndTransportLimitUseProblems()
+    {
+        await using var factory = new ApiTestFactory();
+        using var client = factory.Client();
+        await AccountEndpointTests.Problem(await client.PostAsJsonAsync("/api/v1/tickets/token/receipt", new { receipt = "invalid" }), 415, ErrorCodes.UnsupportedMediaType);
+        factory.Sender.Send(Arg.Any<SubmitReceiptCommand>(), Arg.Any<CancellationToken>()).Returns<Result<Updated>>(
+            _ => throw new Microsoft.AspNetCore.Http.BadHttpRequestException("Transport body limit exceeded.", 413));
+        await AccountEndpointTests.Problem(await Send(client, "receipt"), 413, ErrorCodes.RequestTooLarge);
     }
 
     private static Task<HttpResponseMessage> Send(HttpClient client, string action)
     {
-        if (action == "get") { return client.GetAsync("/api/v1/tickets/token"); }
-        if (action == "cancel") { return client.PostAsync("/api/v1/tickets/token/cancel", null); }
+        if (action == "get")
+        {
+            return client.GetAsync("/api/v1/tickets/token");
+        }
+
+        if (action == "cancel")
+        {
+            return client.PostAsync("/api/v1/tickets/token/cancel", null);
+        }
+
         var form = new MultipartFormDataContent();
         form.Add(new ByteArrayContent([0x89, 0x50, 0x4e, 0x47]), "receipt", "receipt.png");
         return client.PostAsync("/api/v1/tickets/token/receipt", form);

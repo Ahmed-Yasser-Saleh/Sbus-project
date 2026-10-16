@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Filters;
+
 using SBus.Application.Common.Errors;
 using SBus.Application.Common.Exceptions;
 using SBus.Application.Common.Interfaces;
@@ -13,6 +14,7 @@ public sealed class CompleteApiProfileFilter(ITravelerProfiles profiles) : IAsyn
         {
             throw new BusinessRuleException("Complete your name and mobile number before continuing.", ErrorCodes.ProfileIncomplete);
         }
+
         await next();
     }
 }

@@ -15,13 +15,6 @@ namespace SBus.Web.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/auth")]
-[ProducesResponseType(typeof(ValidationProblemDetails), 400)]
-[ProducesResponseType(typeof(ProblemDetails), 401)]
-[ProducesResponseType(typeof(ProblemDetails), 403)]
-[ProducesResponseType(typeof(ProblemDetails), 409)]
-[ProducesResponseType(typeof(ProblemDetails), 413)]
-[ProducesResponseType(typeof(ProblemDetails), 415)]
-[ProducesResponseType(typeof(ProblemDetails), 429)]
 [ProducesResponseType(typeof(ProblemDetails), 500)]
 [ProducesResponseType(typeof(ProblemDetails), 503)]
 [EnableRateLimiting(ApiRegistration.AuthRatePolicy)]
@@ -30,26 +23,46 @@ public sealed class MobileAuthController(IMobileAuthService auth, IOptions<Mobil
     [HttpPost("login")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<SessionResponse>), 200)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+    [ProducesResponseType(typeof(ProblemDetails), 401)]
+    [ProducesResponseType(typeof(ProblemDetails), 403)]
+    [ProducesResponseType(typeof(ProblemDetails), 415)]
+    [ProducesResponseType(typeof(ProblemDetails), 429)]
     public async Task<ApiResponse<SessionResponse>> Login(LoginRequest request, CancellationToken ct) => new(SessionMapper.Map(await auth.LoginAsync(request, ct)));
 
     [HttpPost("refresh")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<SessionResponse>), 200)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+    [ProducesResponseType(typeof(ProblemDetails), 401)]
+    [ProducesResponseType(typeof(ProblemDetails), 415)]
+    [ProducesResponseType(typeof(ProblemDetails), 429)]
     public async Task<ApiResponse<SessionResponse>> Refresh(RefreshRequest request, CancellationToken ct) => new(SessionMapper.Map(await auth.RefreshAsync(request, ct)));
 
     [HttpPost("google")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<GoogleResponse>), 200)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+    [ProducesResponseType(typeof(ProblemDetails), 401)]
+    [ProducesResponseType(typeof(ProblemDetails), 415)]
+    [ProducesResponseType(typeof(ProblemDetails), 429)]
     public async Task<ApiResponse<GoogleResponse>> Google(GoogleRequest request, CancellationToken ct) => new(SessionMapper.Map(await auth.GoogleAsync(request, ct)));
 
     [HttpPost("google/link")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<SessionResponse>), 200)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), 400)]
+    [ProducesResponseType(typeof(ProblemDetails), 401)]
+    [ProducesResponseType(typeof(ProblemDetails), 403)]
+    [ProducesResponseType(typeof(ProblemDetails), 415)]
+    [ProducesResponseType(typeof(ProblemDetails), 429)]
     public async Task<ApiResponse<SessionResponse>> LinkGoogle(GoogleLinkRequest request, CancellationToken ct) => new(SessionMapper.Map(await auth.LinkGoogleAsync(request, ct)));
 
     [HttpPost("logout")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ProducesResponseType(typeof(ApiResponse<bool>), 200)]
+    [ProducesResponseType(typeof(ProblemDetails), 401)]
+    [ProducesResponseType(typeof(ProblemDetails), 429)]
     public async Task<ApiResponse<bool>> Logout(CancellationToken ct)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new UnauthenticatedException();

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+
 using SBus.Application.Features.SeatLayouts.Commands.CreateSeatLayout;
 using SBus.Application.Features.SeatLayouts.Dtos;
 using SBus.Application.Features.SeatLayouts.Queries.GetSeatLayouts;
@@ -20,4 +21,3 @@ public sealed class OfficeSeatLayoutsController(ApiSender sender) : OfficeApiCon
     public async Task<ApiResponse<SeatLayoutDto>> Create(CreateSeatLayoutCommand request, CancellationToken ct) =>
         new(await sender.Send(request, ct));
 }
-

@@ -6,14 +6,7 @@ The API lives in `SBus.Web`; the Razor Pages continue to use their existing Iden
 
 The user generated and applied `20261013050141_AddMobileRefreshTokens` and confirmed it on 2026-10-16. The entity/configuration match its column names, PostgreSQL types, indexes, nullable columns and restrictive foreign keys. No agent-generated migration or snapshot edits were made. The existing disposable test fixture is explicitly authorized to apply the reviewed migrations to sbus_tests.
 
-The user should generate, review and apply:
-
-```powershell
-dotnet ef migrations add AddMobileRefreshTokens --project src/SBus.Infrastructure --startup-project src/SBus.Web --output-dir Data/Migrations
-dotnet ef database update --project src/SBus.Infrastructure --startup-project src/SBus.Web
-```
-
-Keep `AppSettings:InitializeDatabaseOnStartup=false`. Configure the existing SMTP startup settings as described in `AUTHENTICATION.md` before invoking EF tooling. Leave the mobile API disabled while generating the migration.
+No new migration is required. Keep AppSettings:InitializeDatabaseOnStartup=false. Configure SMTP and the signing key before enabling the mobile API.
 
 Expected new table `MobileRefreshTokens`:
 
@@ -85,7 +78,7 @@ Each JWT request validates signature, issuer, audience, lifetime, current accoun
 
 CompanyOwner/CompanyEmployee policies and legacy Office remain distinct. Existing company-role exclusions and landing precedence are preserved. API authentication never sets a Razor authentication cookie.
 
-Pagination foundation uses validated `PageRequest` (page 1â€“10000, pageSize 1â€“100, default 20), `PagedResponse<T>` and `PageMetadata`. Feature-specific filtering/query pagination will be implemented in Application during Phase 2, preserving current defaults.
+Pagination foundation uses validated `PageRequest` (page 1â€“10000, pageSize 1â€“100, default 20), `PagedResponse<T>` and `PageMetadata`. Phase 2 applies filtering and optional database paging in Application; existing Razor query defaults are preserved.
 
 ## Errors
 
@@ -108,7 +101,7 @@ Categories use `https://sbus.app/errors/` plus `validation`, `authentication`, `
 | 500 | INTERNAL_ERROR |
 | 503 | API_UNAVAILABLE, AUTH_GOOGLE_UNAVAILABLE |
 
-`ErrorCodes` also defines initial booking adapter codes: BOOKING_NOT_FOUND, TRIP_NOT_FOUND, BOOKING_SEAT_UNAVAILABLE, TRIP_DEPARTED, TRIP_NOT_BOOKABLE, BOOKING_RECEIPT_NOT_ALLOWED, BOOKING_CANCELLATION_CLOSED, BOOKING_INVALID_TRANSITION. Feature contracts and remaining codes are Phase 2 work. The shared result adapter maps typed Application/Domain results into the same exception/ProblemDetails pipeline without changing Razor handling.
+`ErrorCodes` also defines initial booking adapter codes: BOOKING_NOT_FOUND, TRIP_NOT_FOUND, BOOKING_SEAT_UNAVAILABLE, TRIP_DEPARTED, TRIP_NOT_BOOKABLE, BOOKING_RECEIPT_NOT_ALLOWED, BOOKING_CANCELLATION_CLOSED, BOOKING_INVALID_TRANSITION. The remaining feature contracts and codes are documented in [the Phase 2 report](API-PHASE2.md#error-contracts). The shared result adapter maps typed Application/Domain results into the same exception/ProblemDetails pipeline without changing Razor handling.
 
 ## Database-free checks
 
@@ -121,9 +114,9 @@ dotnet test tests/SBus.Api.Tests/SBus.Api.Tests.csproj
 dotnet test tests/SBus.Application.SubcutaneousTests/SBus.Application.SubcutaneousTests.csproj --filter "FullyQualifiedName~TravelerAccessTests|FullyQualifiedName~TranslationCoverageTests|FullyQualifiedName~LoginConfirmationTests|FullyQualifiedName~PartialNavigationTests|FullyQualifiedName~BookingPassengerTests"
 ```
 
-The API tests mock Identity/provider verification/persistence as appropriate and exercise the real JWT/authorization/error/controller pipeline through `WebApplicationFactory`. Hosted database jobs are removed. EF model checks do not open a database connection. Provider cryptography depends on Google's library; live Google sign-in, SMTP delivery and PostgreSQL refresh-family concurrency remain deployment/integration verification tasks.
+The API tests mock Identity/provider verification/persistence as appropriate and exercise the real JWT/authorization/error/controller pipeline through `WebApplicationFactory`. Hosted database jobs are removed. EF model checks do not open a database connection. Provider cryptography depends on Google's library; live Google sign-in and SMTP delivery remain deployment verification tasks. PostgreSQL refresh-family concurrency is covered by real integration tests.
 
-The full subcutaneous suite is now authorized against disposable sbus_tests. Its fixture drops/recreates that database and calls MigrateAsync; it never targets the development database. Set SBUS_TEST_CONNECTION or use Web user-secrets. Avoid unfiltered runs without a connection: existing DatabaseFact tests then report skips.
+The full subcutaneous suite is now authorized against disposable sbus_tests. Its fixture drops/recreates that database and calls MigrateAsync; its guard now rejects any actual EF database name other than sbus_tests. Set SBUS_TEST_CONNECTION or use Web user-secrets. Avoid unfiltered runs without a connection: existing DatabaseFact tests then report skips.
 
 ## Phase 1 verification report (2026-10-16)
 

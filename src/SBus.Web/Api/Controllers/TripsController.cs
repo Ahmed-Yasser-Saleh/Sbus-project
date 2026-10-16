@@ -1,7 +1,9 @@
 using MediatR;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using SBus.Application.Common.Security;
 using SBus.Application.Features.Trips.Dtos;
 using SBus.Application.Features.Trips.Queries.GetTripForBooking;

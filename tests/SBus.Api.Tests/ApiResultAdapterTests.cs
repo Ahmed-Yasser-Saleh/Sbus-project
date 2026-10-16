@@ -16,6 +16,47 @@ namespace SBus.Api.Tests;
 
 public sealed class ApiResultAdapterTests
 {
+    public static IEnumerable<object[]> SettingsValidationErrors()
+    {
+        yield return [SBus.Domain.Fleet.SeatLayoutErrors.NameRequired, "name"];
+        yield return [SBus.Domain.Fleet.SeatLayoutErrors.NameTooLong, "name"];
+        yield return [SBus.Domain.Fleet.SeatLayoutErrors.GridRequired, "grid"];
+        yield return [SBus.Domain.Fleet.SeatLayoutErrors.TooManyRows, "grid"];
+        yield return [SBus.Domain.Fleet.SeatLayoutErrors.TooManyColumns(1), "grid"];
+        yield return [SBus.Domain.Fleet.SeatLayoutErrors.TooManySeats, "grid"];
+        yield return [SBus.Domain.Fleet.SeatLayoutErrors.MultipleDrivers, "grid"];
+        yield return [SBus.Domain.Fleet.SeatLayoutErrors.InvalidCell("?", 1), "grid"];
+        yield return [SBus.Domain.Fleet.SeatLayoutErrors.DuplicateSeat(1), "grid"];
+        yield return [SBus.Domain.Fleet.SeatLayoutErrors.NoSeats, "grid"];
+        yield return [SBus.Domain.Routes.RouteStopErrors.DirectionInvalid, "direction"];
+        yield return [SBus.Domain.Routes.RouteStopErrors.AtLeastTwoStops, "stops"];
+        yield return [SBus.Domain.Routes.RouteStopErrors.StopRequired, "stops"];
+        yield return [SBus.Domain.Routes.RouteStopErrors.DuplicateStop, "stops"];
+        yield return [SBus.Domain.Routes.RouteStopErrors.FirstStopMustStartAtZero, "stops"];
+        yield return [SBus.Domain.Routes.RouteStopErrors.MinutesMustIncrease, "stops"];
+        yield return [SBus.Domain.Stops.StopErrors.NameRequired, "name"];
+        yield return [SBus.Domain.Stops.StopErrors.NameTooLong, "name"];
+        yield return [SBus.Domain.Fleet.BusErrors.PlateNumberRequired, "plateNumber"];
+        yield return [SBus.Domain.Fleet.BusErrors.PlateNumberTooLong, "plateNumber"];
+        yield return [SBus.Domain.Fleet.BusErrors.SeatLayoutRequired, "seatLayoutId"];
+        yield return [SBus.Domain.Drivers.DriverErrors.NameRequired, "name"];
+        yield return [SBus.Domain.Drivers.DriverErrors.NameTooLong, "name"];
+        yield return [SBus.Domain.Drivers.DriverErrors.PhoneRequired, "phoneNumber"];
+        yield return [SBus.Domain.Drivers.DriverErrors.PhoneTooLong, "phoneNumber"];
+        yield return [SBus.Domain.Schedules.ScheduleErrors.DirectionInvalid, "direction"];
+        yield return [SBus.Domain.Schedules.ScheduleErrors.PriceInvalid, "price"];
+        yield return [SBus.Domain.Schedules.ScheduleErrors.BusRequired, "busId"];
+        yield return [SBus.Domain.Schedules.ScheduleErrors.DriverRequired, "driverId"];
+    }
+
+    [Theory]
+    [MemberData(nameof(SettingsValidationErrors))]
+    public void SettingsValidation_UsesRequestFieldNames(Error error, string field)
+    {
+        var exception = Assert.Throws<ValidationException>(() => Create().Value<string>(error));
+        Assert.Equal(field, Assert.Single(exception.Errors).PropertyName);
+    }
+
     [Fact]
     public void Success_ReturnsSameDto()
     {
