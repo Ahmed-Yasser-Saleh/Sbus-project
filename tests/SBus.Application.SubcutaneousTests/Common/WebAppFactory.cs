@@ -1,5 +1,8 @@
+using System.Security.Cryptography;
+
 using MediatR;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -44,11 +47,25 @@ public class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
         using var scope = Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
+        if (context.Database.GetDbConnection().Database != "sbus_tests")
+        {
+            throw new InvalidOperationException("The destructive database fixture must target sbus_tests.");
+        }
+
         await context.Database.EnsureDeletedAsync();
         await context.Database.MigrateAsync();
 
         World = await TestWorld.CreateAsync(context);
-        context.Users.Add(new AppUser { Id = "test-traveler", UserName = "test-traveler", FullName = "Mona Ahmed", PhoneNumber = "+201012345678" });
+        context.Users.Add(new AppUser
+        {
+            Id = "test-traveler",
+            UserName = "test-traveler@example.com",
+            NormalizedUserName = "TEST-TRAVELER@EXAMPLE.COM",
+            Email = "test-traveler@example.com",
+            NormalizedEmail = "TEST-TRAVELER@EXAMPLE.COM",
+            FullName = "Mona Ahmed",
+            PhoneNumber = "+201012345678",
+        });
         await context.SaveChangesAsync();
     }
 
@@ -65,9 +82,22 @@ public class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("Authentication:Email:PublicOrigin", "https://localhost");
         builder.UseSetting("Authentication:Email:Host", "unused");
         builder.UseSetting("Authentication:Email:From", "test@example.com");
+        builder.UseSetting("Authentication:Mobile:Enabled", "true");
+        builder.UseSetting("Authentication:Mobile:SigningKey", Convert.ToBase64String(RandomNumberGenerator.GetBytes(48)));
+        builder.UseSetting("Authentication:Mobile:AuthPermitLimit", "1000");
 
         builder.ConfigureTestServices(services =>
         {
+            // Infrastructure captures its connection before WebApplicationFactory's host settings
+            // are applied. Override the EF options themselves before any destructive setup.
+            services.ConfigureDbContext<AppDbContext>((_, options) =>
+                options.UseNpgsql(TestDatabase.ConnectionString ?? "Host=unused"));
+
+            // Keep JWT lifetime validation on the same deterministic clock as application commands.
+            services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+                options.TokenValidationParameters.LifetimeValidator = (notBefore, expires, _, _) =>
+                    expires.HasValue && expires.Value > Clock.GetUtcNow().UtcDateTime
+                    && (!notBefore.HasValue || notBefore.Value <= Clock.GetUtcNow().UtcDateTime));
             var user = Substitute.For<IUser>();
             user.Id.Returns("test-traveler");
             user.IsTraveler.Returns(true);

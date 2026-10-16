@@ -16,6 +16,9 @@ public readonly record struct Error
 
     public string Code { get; }
 
+    // Optional stable reason, independent of legacy field-name codes used by Razor forms.
+    public string? ReasonCode { get; init; }
+
     public string Template { get; }
 
     public IReadOnlyList<object> Args => _args ?? [];

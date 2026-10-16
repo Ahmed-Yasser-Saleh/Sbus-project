@@ -4,6 +4,18 @@ A booking site for the Cairo ⇄ Suez minibus line. Passengers pick a trip and a
 
 Decisions are recorded in [docs/DECISIONS.md](docs/DECISIONS.md) and the build plan in [docs/PLAN.md](docs/PLAN.md).
 
+## Mobile API (Phase 1)
+
+The API foundation runs inside `SBus.Web` at `/api/v1/auth`, independently of Razor cookie authentication. It provides password/Google sign-in, refresh rotation, logout, API-only ProblemDetails, CORS, rate limiting and development Swagger at `https://localhost:7116/api/docs`.
+
+The API is disabled by default. The user generated and applied `AddMobileRefreshTokens` and confirmed it on 2026-10-16. Its schema matches the entity/EF configuration. Configure the signing secret before enabling `Authentication:Mobile:Enabled`; store `Authentication:Mobile:SigningKey` in user-secrets/environment variables. See [docs/API.md](docs/API.md) for the schema, settings, endpoints, error codes and database-free test commands. Feature endpoints and Flutter are subsequent phases.
+
+```powershell
+dotnet test tests/SBus.Api.Tests/SBus.Api.Tests.csproj
+```
+
+This project uses mocked authentication/storage and database-free `WebApplicationFactory` hosts. The PostgreSQL suite is now authorized: its existing fixture recreates sbus_tests and applies the user-reviewed migrations. Configure SBUS_TEST_CONNECTION or Web user-secrets before running it.
+
 ## Stack
 
 - .NET 10, ASP.NET Core Razor Pages, PostgreSQL 18

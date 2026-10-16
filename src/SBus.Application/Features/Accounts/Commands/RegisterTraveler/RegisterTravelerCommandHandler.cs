@@ -23,11 +23,11 @@ public sealed class RegisterTravelerCommandHandler(
         {
             return Error.Validation(
                 nameof(RegisterTravelerCommand.Email),
-                "تعذّر إنشاء الحساب بهذه البيانات. جرّب تسجيل الدخول أو استعادة كلمة المرور.");
+                "تعذّر إنشاء الحساب بهذه البيانات. جرّب تسجيل الدخول أو استعادة كلمة المرور.") with
+            { ReasonCode = SBus.Application.Common.Errors.ErrorCodes.RegistrationFailed };
         }
 
         await confirmationSender.SendAsync(userId, ct);
         return Result.Success;
     }
 }
-

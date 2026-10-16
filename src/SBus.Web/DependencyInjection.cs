@@ -8,11 +8,13 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Localization;
+
 using SBus.Application.Common.Interfaces;
 using SBus.Application.Common.Security;
 using SBus.Infrastructure.Identity;
 using SBus.Web.Infrastructure;
 using SBus.Web.Services;
+
 using Serilog;
 
 namespace SBus.Web;
@@ -170,6 +172,8 @@ public static class DependencyInjection
         app.UseRequestLocalization();
 
         app.UseRouting();
+
+        app.UseCors();
 
         app.Use(async (context, next) =>
         {

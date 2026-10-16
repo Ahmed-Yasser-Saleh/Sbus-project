@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.WebUtilities;
 
+using SBus.Application.Features.Accounts;
 using SBus.Infrastructure.Identity;
-
 using SBus.Web.Infrastructure;
 
 namespace SBus.Web.Pages.Account;
@@ -16,7 +16,7 @@ namespace SBus.Web.Pages.Account;
 [AllowAnonymous]
 [EnableRateLimiting(RateLimitPolicies.Account)]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-public class ConfirmEmailModel(UserManager<AppUser> users) : PageModel
+public class ConfirmEmailModel(IAccountRecovery recovery) : PageModel
 {
     [BindProperty(SupportsGet = true)]
     [System.ComponentModel.DataAnnotations.StringLength(128)]
@@ -39,24 +39,11 @@ public class ConfirmEmailModel(UserManager<AppUser> users) : PageModel
             return Page();
         }
 
-        var user = await users.FindByIdAsync(UserId);
-        if (user is not null)
+        if (await recovery.ConfirmAsync(UserId, Code, HttpContext.RequestAborted))
         {
-            try
-            {
-                var token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Code));
-                if ((await users.ConfirmEmailAsync(user, token)).Succeeded)
-                {
-                    Message = "Email confirmed. You may now sign in.";
-                }
-            }
-            catch (FormatException)
-            {
-                // Invalid tokens receive the same generic result as unknown accounts.
-            }
+            Message = "Email confirmed. You may now sign in.";
         }
 
         return Page();
     }
 }
-

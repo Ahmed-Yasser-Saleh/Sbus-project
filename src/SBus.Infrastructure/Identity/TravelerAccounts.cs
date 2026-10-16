@@ -2,6 +2,7 @@ using System.Security.Claims;
 
 using Microsoft.AspNetCore.Identity;
 
+using SBus.Application.Common.Errors;
 using SBus.Application.Common.Exceptions;
 using SBus.Application.Common.Interfaces;
 using SBus.Application.Common.Validation;
@@ -37,7 +38,8 @@ public sealed class TravelerAccounts(UserManager<AppUser> users, SignInManager<A
         {
             return Error.Validation(
                 nameof(RegisterTravelerCommand.Email),
-                "البريد الإلكتروني مستخدم بالفعل.");
+                "البريد الإلكتروني مستخدم بالفعل.") with
+            { ReasonCode = ErrorCodes.EmailAlreadyRegistered };
         }
 
         return new TravelerRegistrationOutcome(user?.Id);

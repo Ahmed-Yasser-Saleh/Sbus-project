@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.RateLimiting;
+
+using SBus.Application.Features.Accounts;
 using SBus.Infrastructure.Identity;
 using SBus.Web.Infrastructure;
 using SBus.Web.Services;
@@ -13,7 +15,7 @@ namespace SBus.Web.Pages.Account;
 
 [AllowAnonymous]
 [EnableRateLimiting(RateLimitPolicies.Account)]
-public class ForgotPasswordModel(UserManager<AppUser> users, IAccountEmail email, ILogger<ForgotPasswordModel> logger) : PageModel
+public class ForgotPasswordModel(IAccountRecovery recovery) : PageModel
 {
     [BindProperty]
     [Required]
@@ -28,20 +30,8 @@ public class ForgotPasswordModel(UserManager<AppUser> users, IAccountEmail email
             return Page();
         }
 
-        var user = await users.FindByEmailAsync(Email.Trim());
-        if (user is not null && user.EmailConfirmed && await users.HasPasswordAsync(user))
-        {
-            try
-            {
-                await email.SendResetAsync(user, ct);
-            }
-            catch (Exception ex) when (ex is System.Net.Mail.SmtpException or InvalidOperationException)
-            {
-                logger.LogError("Account email delivery failed ({FailureType}).", ex.GetType().Name);
-            }
-        }
+        await recovery.SendResetAsync(Email, ct);
 
         return RedirectToPage("/Account/CheckEmail", new { purpose = "reset-password" });
     }
 }
-

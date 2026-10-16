@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.WebUtilities;
 
 using SBus.Application.Common.Validation;
+using SBus.Application.Features.Accounts;
 using SBus.Infrastructure.Identity;
-
 using SBus.Web.Infrastructure;
 
 namespace SBus.Web.Pages.Account;
@@ -18,7 +18,7 @@ namespace SBus.Web.Pages.Account;
 [AllowAnonymous]
 [EnableRateLimiting(RateLimitPolicies.Account)]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-public class ResetPasswordModel(UserManager<AppUser> users) : PageModel
+public class ResetPasswordModel(IAccountRecovery recovery) : PageModel
 {
     [BindProperty(SupportsGet = true)]
     [Required]
@@ -48,28 +48,12 @@ public class ResetPasswordModel(UserManager<AppUser> users) : PageModel
             return Page();
         }
 
-        var user = await users.FindByIdAsync(UserId);
-        if (user is not null && user.EmailConfirmed && await users.HasPasswordAsync(user))
+        if (await recovery.ResetAsync(UserId, Code, Password, HttpContext.RequestAborted))
         {
-            try
-            {
-                var token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Code));
-                var result = await users.ResetPasswordAsync(user, token, Password);
-                if (result.Succeeded)
-                {
-                    // ResetPassword updates the security stamp; existing sessions are revoked
-                    // at the next validation (configured on each authenticated request).
-                    return RedirectToPage("/Account/Login");
-                }
-            }
-            catch (FormatException)
-            {
-                // Invalid tokens receive the same generic result as unknown accounts.
-            }
+            return RedirectToPage("/Account/Login");
         }
 
         ModelState.AddModelError(string.Empty, "Unable to reset password. Request a new link and use a password meeting the requirements.");
         return Page();
     }
 }
-

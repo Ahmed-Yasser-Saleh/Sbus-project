@@ -6,6 +6,7 @@
     <Project Path="src/SBus.Web/SBus.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/SBus.Api.Tests/SBus.Api.Tests.csproj" />
     <Project Path="tests/SBus.Application.SubcutaneousTests/SBus.Application.SubcutaneousTests.csproj" />
     <Project Path="tests/SBus.Application.UnitTests/SBus.Application.UnitTests.csproj" />
     <Project Path="tests/SBus.Domain.UnitTests/SBus.Domain.UnitTests.csproj" />

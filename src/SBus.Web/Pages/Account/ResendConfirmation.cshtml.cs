@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.RateLimiting;
+
+using SBus.Application.Features.Accounts;
 using SBus.Infrastructure.Identity;
 using SBus.Web.Infrastructure;
 using SBus.Web.Services;
@@ -13,7 +15,7 @@ namespace SBus.Web.Pages.Account;
 
 [AllowAnonymous]
 [EnableRateLimiting(RateLimitPolicies.Account)]
-public class ResendConfirmationModel(UserManager<AppUser> users, IAccountEmail email, ILogger<ResendConfirmationModel> logger) : PageModel
+public class ResendConfirmationModel(IAccountRecovery recovery) : PageModel
 {
     [BindProperty]
     [Required]
@@ -28,20 +30,8 @@ public class ResendConfirmationModel(UserManager<AppUser> users, IAccountEmail e
             return Page();
         }
 
-        var user = await users.FindByEmailAsync(Email.Trim());
-        if (user is not null && !user.EmailConfirmed)
-        {
-            try
-            {
-                await email.SendConfirmationAsync(user, ct);
-            }
-            catch (Exception ex) when (ex is System.Net.Mail.SmtpException or InvalidOperationException)
-            {
-                logger.LogError("Account email delivery failed ({FailureType}).", ex.GetType().Name);
-            }
-        }
+        await recovery.SendConfirmationAsync(Email, ct);
 
         return RedirectToPage("/Account/CheckEmail");
     }
 }
-
