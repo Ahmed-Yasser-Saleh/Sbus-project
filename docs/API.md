@@ -148,3 +148,7 @@ GET /api/v1/trips returns data, pagination, effective direction/date and booking
 POST /api/v1/bookings; GET /api/v1/tickets/{token}; POST /api/v1/tickets/{token}/receipt (multipart receipt); POST /api/v1/tickets/{token}/cancel; GET /api/v1/me/tickets?page. All delegate to the existing commands/queries. Account-owned tickets remain private; unowned bearer links remain usable anonymously. Receipt expiry is unchanged. My Tickets retains 20 records/page and every booking status.
 
 35 API feature tests, 18 real-database booking tests (including a complete JWT HTTP flow and cross-user ownership checks), and 111 Application unit tests passed. Validation carries stable reason codes separately from legacy Razor field keys, preserving form bindings. No business rules or schema changed.
+
+### Profile and company status feature
+
+GET/PUT /api/v1/me/profile reuse the existing Traveler profile service and update command. Incomplete profiles may access these endpoints to complete registration. GET /api/v1/company/status preserves the Company Coming Soon placeholder with available=false. Ten API tests passed, covering authorization, validation, save errors and the existing company-role boundary. No schema or Razor changes.
