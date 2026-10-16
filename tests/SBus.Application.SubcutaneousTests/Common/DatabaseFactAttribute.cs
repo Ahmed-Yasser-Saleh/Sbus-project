@@ -8,7 +8,7 @@ public sealed class DatabaseFactAttribute : FactAttribute
     {
         if (TestDatabase.ConnectionString is null)
         {
-            Skip = $"No test database. Set ConnectionStrings:DefaultConnection in the SBus.Web user-secrets or set {TestDatabase.EnvironmentVariable}.";
+            Skip = $"No test database. Set ConnectionStrings:{TestDatabase.ConnectionName} in the SBus.Web user-secrets or set {TestDatabase.EnvironmentVariable}.";
         }
     }
 }

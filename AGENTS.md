@@ -29,7 +29,7 @@ Follow `.editorconfig`: spaces, four-space C# indentation, two-space XML indenta
 
 ## Testing Guidelines
 
-Use xUnit and NSubstitute; name classes `*Tests` and methods descriptively, e.g. `CreateHold_DuplicateSeats_Fails`. Add regression coverage in the corresponding layer. No numeric coverage threshold is configured. Database tests recreate `sbus_tests`; configure user-secrets or `SBUS_TEST_CONNECTION`, otherwise they skip. Preserve translation coverage: Arabic keys require English entries in `Resources/SharedResource.en.resx`, including matching placeholders.
+Use xUnit and NSubstitute; name classes `*Tests` and methods descriptively, e.g. `CreateHold_DuplicateSeats_Fails`. Add regression coverage in the corresponding layer. No numeric coverage threshold is configured. Database tests recreate `sbus_tests`; configure the dedicated `ConnectionStrings:TestConnection` Web user-secret or `SBUS_TEST_CONNECTION`, otherwise they skip. Never derive test settings from `DefaultConnection`. Destructive setup hard-fails unless the actual EF connection names exactly `sbus_tests` and uses an explicit loopback host (localhost, 127.0.0.1 or ::1). Preserve translation coverage: Arabic keys require English entries in `Resources/SharedResource.en.resx`, including matching placeholders.
 
 ## Commit & Pull Request Guidelines
 
@@ -44,3 +44,5 @@ History uses short imperative subjects such as `add auth` and `update UI design`
 Run `dotnet test tests/SBus.Api.Tests/SBus.Api.Tests.csproj` for API foundation and feature coverage. See `docs/API-PHASE2.md` for endpoint/error contracts and the phase report. The PostgreSQL fixture recreates sbus_tests and calls MigrateAsync; its execution is now authorized for full-suite verification.
 
 Store `ConnectionStrings:DefaultConnection` and `AppSettings:OfficeUserPassword` in Web user-secrets; see `README.md` for setup. Keep uploaded receipts outside `wwwroot` and exclude credentials and passenger data from commits.
+
+Phase 2 is under user review. Do not start Phase 3 or add new features until the user explicitly approves proceeding.

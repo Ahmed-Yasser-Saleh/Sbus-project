@@ -48,12 +48,9 @@ public class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
         using var scope = Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        if (context.Database.GetDbConnection().Database != "sbus_tests")
-        {
-            throw new InvalidOperationException("The destructive database fixture must target sbus_tests.");
-        }
-
+        TestDatabaseTarget.EnsureAllowed(context.Database.GetDbConnection());
         await context.Database.EnsureDeletedAsync();
+        TestDatabaseTarget.EnsureAllowed(context.Database.GetDbConnection());
         await context.Database.MigrateAsync();
 
         World = await TestWorld.CreateAsync(context);

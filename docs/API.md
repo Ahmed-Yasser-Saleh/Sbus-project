@@ -116,7 +116,7 @@ dotnet test tests/SBus.Application.SubcutaneousTests/SBus.Application.Subcutaneo
 
 The API tests mock Identity/provider verification/persistence as appropriate and exercise the real JWT/authorization/error/controller pipeline through `WebApplicationFactory`. Hosted database jobs are removed. EF model checks do not open a database connection. Provider cryptography depends on Google's library; live Google sign-in and SMTP delivery remain deployment verification tasks. PostgreSQL refresh-family concurrency is covered by real integration tests.
 
-The full subcutaneous suite is now authorized against disposable sbus_tests. Its fixture drops/recreates that database and calls MigrateAsync; its guard now rejects any actual EF database name other than sbus_tests. Set SBUS_TEST_CONNECTION or use Web user-secrets. Avoid unfiltered runs without a connection: existing DatabaseFact tests then report skips.
+The full subcutaneous suite is now authorized against disposable sbus_tests. Its fixture drops/recreates that database and calls MigrateAsync; its guard rejects any database other than exactly sbus_tests and any host outside the explicit loopback allowlist. Set the dedicated SBUS_TEST_CONNECTION or ConnectionStrings:TestConnection in Web user-secrets; DefaultConnection is never a test fallback. Avoid unfiltered runs without a connection: existing DatabaseFact tests then report skips.
 
 ## Phase 1 verification report (2026-10-16)
 
@@ -153,3 +153,9 @@ Legacy Office JWT endpoints now expose day view, manifest, walk-in booking, trip
 ### Office settings feature
 
 /api/v1/office/stops, buses, drivers and schedules support GET/POST and PUT /{id}; seat-layouts support GET/POST only; routes/{direction} supports GET/PUT. The APIs use the existing settings commands and queries, including active-only filters, immutable layouts, route ordering, schedule propagation and booked-seat protection. List paging runs in PostgreSQL and defaults to 20 (maximum 100); optional Application query paging leaves Razor reads unpaged. Eighty-six API tests and a real PostgreSQL HTTP workflow passed, covering creates/updates, filtering/paging, duplicate names, inactive route stops, permissions and safe errors. No schema, business or Razor behavior changes.
+
+## Database safety follow-up (2026-10-16)
+
+The incident was caused by dotnet test invoking WebAppFactory.InitializeAsync (EnsureDeletedAsync then MigrateAsync) with the development target Host=localhost;Port=5432;Database=sbus; credentials are omitted. The shell used System.Data.Common.DbConnectionStringBuilder to derive the test connection; its indexer and serialized connection disagreed. This was an agent error.
+
+The fixture now validates the actual EF connection immediately before each destructive operation, requiring exactly sbus_tests and localhost / 127.0.0.1 / ::1 (including bracketed IPv6). Dedicated configuration uses SBUS_TEST_CONNECTION or ConnectionStrings:TestConnection only; there is no development-connection fallback or automatic database-name rewrite. All 19 safety unit tests passed, covering allowed targets, rejected development/remote/multiple/socket targets, environment precedence and ignoring DefaultConnection. Verification used database-free safety tests only; no database was opened or recreated in this follow-up. Phase 3 remains on hold pending explicit user approval.

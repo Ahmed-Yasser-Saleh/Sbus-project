@@ -14,7 +14,7 @@ The API is disabled by default. The user generated and applied `AddMobileRefresh
 dotnet test tests/SBus.Api.Tests/SBus.Api.Tests.csproj
 ```
 
-This project uses mocked authentication/storage and database-free `WebApplicationFactory` hosts. The PostgreSQL suite is now authorized: its existing fixture recreates sbus_tests and applies the user-reviewed migrations. Configure SBUS_TEST_CONNECTION or Web user-secrets before running it.
+This project uses mocked authentication/storage and database-free `WebApplicationFactory` hosts. The PostgreSQL suite is now authorized: its existing fixture recreates sbus_tests and applies the user-reviewed migrations. Configure the dedicated SBUS_TEST_CONNECTION environment variable or ConnectionStrings:TestConnection in Web user-secrets before running it.
 
 ## Stack
 
@@ -57,7 +57,14 @@ dotnet test
 | `SBus.Application.UnitTests` | Validators, phone normalisation, Cairo time, receipt file detection |
 | `SBus.Application.SubcutaneousTests` | Booking flows against a real PostgreSQL database, including 20 concurrent bookings of one seat; translation coverage |
 
-The database tests use a separate `sbus_tests` database (dropped and recreated on every run) and read the connection from the same user-secrets, or from the `SBUS_TEST_CONNECTION` environment variable. Without either they are skipped. The fixture refuses destructive setup unless the actual EF connection targets exactly `sbus_tests`. A supplied SBUS_TEST_CONNECTION must name that database explicitly.
+The database tests drop/recreate only a local `sbus_tests` database. Their connection comes exclusively from `SBUS_TEST_CONNECTION` or `ConnectionStrings:TestConnection` in Web user-secrets, with the environment variable taking precedence. They never read or rewrite `DefaultConnection`. Without a dedicated setting, database tests skip; an unsafe dedicated setting hard-fails.
+
+```powershell
+dotnet user-secrets set "ConnectionStrings:TestConnection" "Host=localhost;Port=5432;Database=sbus_tests;Username=<test user>;Password=<test password>" --project src/SBus.Web
+dotnet test tests/SBus.Application.SubcutaneousTests/SBus.Application.SubcutaneousTests.csproj --filter FullyQualifiedName~TestDatabaseSafetyTests
+```
+
+The fixture validates the actual EF connection immediately before both EnsureDeletedAsync and MigrateAsync. It requires the exact database name `sbus_tests` and an explicit host of `localhost`, `127.0.0.1` or `::1` (bracketed IPv6 is also accepted). Remote hosts, host lists, sockets, absent database names and all other database names are rejected. Safety unit tests need no database and never open a connection.
 
 ## Languages
 

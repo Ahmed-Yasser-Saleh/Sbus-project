@@ -7,40 +7,33 @@ namespace SBus.Application.SubcutaneousTests.Common;
 public static class TestDatabase
 {
     public const string EnvironmentVariable = "SBUS_TEST_CONNECTION";
+    public const string ConnectionName = "TestConnection";
 
     private static readonly Lazy<string?> Connection = new(Resolve);
 
     public static string? ConnectionString => Connection.Value;
 
-    private static string? Resolve()
+    internal static string? Resolve(IConfiguration configuration, string? environmentConnection)
     {
-        var fromEnvironment = Environment.GetEnvironmentVariable(EnvironmentVariable);
-
-        if (!string.IsNullOrWhiteSpace(fromEnvironment))
-        {
-            return fromEnvironment;
-        }
-
-        var configuration = new ConfigurationBuilder()
-            .AddUserSecrets(typeof(Program).Assembly, optional: true)
-            .Build();
-
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = !string.IsNullOrWhiteSpace(environmentConnection)
+            ? environmentConnection : configuration.GetConnectionString(ConnectionName);
 
         if (string.IsNullOrWhiteSpace(connectionString))
         {
             return null;
         }
 
-        var builder = new NpgsqlConnectionStringBuilder(connectionString);
+        using var connection = new NpgsqlConnection(connectionString);
+        TestDatabaseTarget.EnsureAllowed(connection);
+        return connection.ConnectionString;
+    }
 
-        if (string.IsNullOrEmpty(builder.Password))
-        {
-            return null;
-        }
+    private static string? Resolve()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddUserSecrets(typeof(Program).Assembly, optional: true)
+            .Build();
 
-        builder.Database = "sbus_tests";
-
-        return builder.ConnectionString;
+        return Resolve(configuration, Environment.GetEnvironmentVariable(EnvironmentVariable));
     }
 }
