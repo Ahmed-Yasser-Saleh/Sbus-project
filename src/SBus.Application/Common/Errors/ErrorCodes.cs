@@ -2,6 +2,7 @@ namespace SBus.Application.Common.Errors;
 
 public static class ErrorCodes
 {
+    public const string ProfileIncomplete = "TRAVELER_PROFILE_INCOMPLETE";
     public const string EmailAlreadyRegistered = "AUTH_EMAIL_ALREADY_REGISTERED";
     public const string RegistrationFailed = "AUTH_REGISTRATION_FAILED";
     public const string ConfirmationInvalid = "AUTH_CONFIRMATION_INVALID";

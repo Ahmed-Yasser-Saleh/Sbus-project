@@ -136,3 +136,9 @@ The test fixture now refuses every destructive operation unless the resolved EF 
 ### Development database incident
 
 An earlier test invocation used a generic connection-string builder whose indexer showed sbus_tests while the serialized connection still parsed as sbus. The existing destructive fixture consequently recreated the development sbus database. Development data may have been lost. No backup restoration has been attempted. This was an agent error, not a schema mismatch. Subsequent runs use Npgsql's builder with serialization round-trip verification and the hard fixture guard, and run only on sbus_tests. Migration files and the snapshot remain unchanged.
+
+## Phase 2 progress
+
+### Trips feature
+
+GET /api/v1/trips returns data, pagination, effective direction/date and booking-window days. Its Application handler reuses GetAvailableTripsQuery, normalizes defaults exactly like the home page, and paginates the results. GET /api/v1/trips/{id} reuses GetTripForBookingQuery and requires the existing Traveler policy plus a complete profile. Full/departed trips remain data states. Ten feature tests passed; no schema or Razor behavior changes.

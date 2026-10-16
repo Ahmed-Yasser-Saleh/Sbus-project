@@ -49,6 +49,7 @@ public static class ApiRegistration
         services.AddProblemDetails(o => o.CustomizeProblemDetails = ApiProblems.Customize);
         services.AddExceptionHandler<ApiExceptionHandler>();
         services.AddScoped<ApiResultAdapter>();
+        services.AddScoped<CompleteApiProfileFilter>();
         services.AddScoped<SBus.Application.Features.Accounts.IAccountRecovery, SBus.Web.Services.AccountRecoveryService>();
         services.Configure<RequestLocalizationOptions>(o => o.RequestCultureProviders.Insert(0, new ApiCultureProvider()));
         services.AddControllers(o => o.Filters.Add<ApiValidationFilter>());
